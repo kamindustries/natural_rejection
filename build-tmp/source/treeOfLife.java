@@ -125,37 +125,37 @@ public void setupGUI() {
   cp5.addSlider("spare1")
   .setPosition(marginX, marginY+20)
   .setRange(-1.f, 1.f)
-  .setValue(-.25f)
+  .setValue(-0.9f)
   .setSize(300,9)
   ;
   cp5.addSlider("spare2")
   .setPosition(marginX, marginY+30)
   .setRange(0.1f, 10.0f)
-  .setValue(0.4f)
+  .setValue(1.0f)
   .setSize(300,9)
   ;
   cp5.addSlider("spare3")
   .setPosition(marginX, marginY+40)
-  .setRange(0.1f, 10.0f)
-  .setValue(1.4f)
+  .setRange(0.1f, 5.0f)
+  .setValue(3.0f)
   .setSize(300,9)
   ;
   cp5.addSlider("spare4")
   .setPosition(marginX, marginY+50)
-  .setRange(0.1f, 10.0f)
-  .setValue(1.4f)
+  .setRange(0.01f, 2.0f)
+  .setValue(1.0f)
   .setSize(300,9)
   ;  
   cp5.addSlider("spare5")
   .setPosition(marginX, marginY+60)
-  .setRange(0.1f, 10.0f)
-  .setValue(1.4f)
+  .setRange(0.1f, 30.0f)
+  .setValue(30.0f)
   .setSize(300,9)
   ;  
   cp5.addSlider("spare6")
   .setPosition(marginX, marginY+70)
-  .setRange(-360.0f, 360.0f)
-  .setValue(360.0f)
+  .setRange(-50.0f, 50.0f)
+  .setValue(3.0f)
   .setSize(300,9)
   ;  
   // this is important:
@@ -202,13 +202,13 @@ public void draw() {
   // tree_meshes = new ArrayList<PShape>();
 
 
-  if (frameCount%24==0) {
-    tree_list.clear();
-    tree_meshes.clear();
-    GROW();
-  }
+  // if (frameCount%24==0) {
+  //   tree_list.clear();
+  //   tree_meshes.clear();
+  //   GROW();
+  // }
 
-  background(128);
+  background(25);
   camera_pos = cam.getPosition();
   camera_lookAt = cam.getLookAt();
   zoom = (float)cam.getDistance() * spare_slider1;
@@ -227,16 +227,18 @@ public void draw() {
 
 
   pushMatrix();
-    // if (frameCount%24==0) lineShader = loadShader("linefrag.glsl", "linevert.glsl");
-    // lineShader.set("stroke", spare_slider3);
-    // shader(lineShader, LINES);
+    if (frameCount%24==0) lineShader = loadShader("linefrag.glsl", "linevert.glsl");
+    lineShader.set("stroke_weight", (float)spare_slider2);
+    lineShader.set("stroke_color", 0.0f);
+    shader(lineShader, LINES);
     shape(tree_meshes.get(0));
   popMatrix();
   
   pushMatrix();
-    // if (frameCount%24==0) lineShader2 = loadShader("linefrag.glsl", "linevert.glsl");
-    // lineShader2.set("stroke", spare_slider2);
-    // shader(lineShader2, LINES);    
+    if (frameCount%24==0) lineShader2 = loadShader("linefrag.glsl", "linevert.glsl");
+    lineShader2.set("stroke_weight", (float)spare_slider3);
+    lineShader2.set("stroke_color", 1.0f);
+    shader(lineShader2, LINES);    
     translate(push_back[0] / zoom, push_back[1] / zoom, push_back[2] / zoom);
     shape(tree_meshes.get(1));
   popMatrix();
@@ -310,7 +312,7 @@ public void GROW() {
   // println("max depth: "+max_depth);
 
   // Calculate max depth of file
-  max_depth = 2;
+  max_depth = 0;
   for (int i = 0; i < tree_list.size(); i++) {
     Branch b0 = tree_list.get(i);
     if (max_depth<=b0.depth) {
@@ -326,7 +328,7 @@ public void GROW() {
 
   // load meshes with vertex info.
   // need to do some smart coloration based on age
-  for(int j = 1; j < tree_meshes.size(); j++) {
+  for(int j = 0; j < tree_meshes.size(); j++) {
 
     PShape mesh = tree_meshes.get(j);
     mesh = createShape();
@@ -337,18 +339,19 @@ public void GROW() {
         Branch b1 = tree_list.get(i+1);
 
         // set up colors
-        float grad0 = b0.depth/PApplet.parseFloat(max_depth)*255.0f;
-        float grad1 = b1.depth/PApplet.parseFloat(max_depth)*255.0f;
+        float grad0 = abs((1 - (b0.depth/(float)max_depth))) * 255;
+        float grad1 = abs((1 - (b1.depth/(float)max_depth))) * 255;
+        // println(grad0);
         int c0 = color(grad0,grad0,grad0);
         int c1 = color(grad1,grad1,grad1);
         int cw = color(255,255,255);
-        int cr = color(255,0,0);
+        int cr = color(0,0,0);
 
         // make second mesh all white
-        if (j == 1) {
-          c0 = cw;
-          c1 = cw;
-        }
+        // if (j == 1) {
+        //   c0 = cw;
+        //   c1 = cw;
+        // }
 
         // specific termination color
         if (b1.children > 0){
@@ -363,6 +366,7 @@ public void GROW() {
         else {
           mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
           mesh.stroke(cr);
+          // mesh.stroke(c1);
           mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
           mesh.stroke(c0);
 
@@ -416,13 +420,13 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
   // The more children it has, the less spread it will have. Limited to
   // a certain range to give good results. **MAKE MIN/MAX EDITABLE**
   float spread = 1/(PApplet.parseFloat(branch.children)-1);
-  if (spread > 1.0f) spread = spare_slider4;
-  if (spread < 0.03f) spread = spare_slider5;
-  spread = spread * 1.0f;
+  if (spread > 1.0f) spread = 1.0f;
+  if (spread < 0.03f) spread = .03f;
+  spread = spread * spare_slider6/200.0f;
 
   // Create a random vector to compare to
   PVector rand_vec = new PVector(random(-1,1), random(-1,1), random(-1,1));
-  rand_vec.mult(1.0f);
+  rand_vec.mult(spread);
   PVector init_grow_dir = PVector.add(branch.grow_dir, rand_vec);
   init_grow_dir.normalize();
 
@@ -432,9 +436,12 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
   // tan1 = rotational tangent ("yellow vector")
 
   // PVector cross_p = branch.grow_dir.cross(rand_vec);
+  PVector perp_vector = branch.grow_dir.cross(rand_vec);
+  perp_vector.mult((spare_slider5/10.0f) * 2.0f * PI * branch.children);
+  init_grow_dir.add(perp_vector);
   PVector cross_p = branch.grow_dir.cross(init_grow_dir);
   // cross_p.normalize();
-  cross_p.mult(spare_slider6/100.0f);
+  // cross_p.mult(spare_slider6/100.0);
 
   // add original growing dir with scaled cross product
   // PVector initial_grow_dir = PVector.add(branch.grow_dir, cross_p);
@@ -446,6 +453,7 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
   // float dot = initial_grow_dir.dot(branch.grow_dir);
   float dot = init_grow_dir.dot(branch.grow_dir);
   PVector len = PVector.mult(branch.grow_dir, dot);
+  len.mult(spare_slider4 * (1 - current_depth/(float)max_depth));
 
   Branch p = branch.parent;
   int offset_scale = current_depth;
@@ -506,10 +514,12 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
     // float rot = cos(spare_slider6*PI*i/(float)_parent.length);
     float angle = PI * i/(float)_parent.length;
     // PVector tan2_rotate = PVector.mult(tan2,rot);
-    PVector rot_cos = PVector.mult(tan1, cos(angle));
-    PVector rot_sin = PVector.mult(cross_p, sin(angle));
+    float rand_scale = .25f;
+    PVector rot_cos = PVector.mult(tan1, cos(angle + random(-rand_scale, rand_scale)));
+    PVector rot_sin = PVector.mult(cross_p, sin(angle + random(-rand_scale, rand_scale)));
     PVector new_grow_dir = PVector.add(rot_cos, rot_sin);
     new_grow_dir.add(len);
+    new_grow_dir.normalize();
     
     // new_grow_dir = initial_grow_dir;
     // new_grow_dir.normalize();
@@ -584,8 +594,8 @@ public void setup() {
   // Read XML
   ///////////////////////////////////////////////////////////////////////
   
-  // xml = loadXML("tree_of_life_complete.xml");
-  xml = loadXML("harpalinae.xml");
+  xml = loadXML("tree_of_life_complete.xml");
+  // xml = loadXML("harpalinae.xml");
   // xml = loadXML("test3.xml");
   // xml = loadXML("test4.xml");
   axiom = xml.getChildren("NODE");
@@ -594,7 +604,10 @@ public void setup() {
   ///////////////////////////////////////////////////////////////////////
   // START GROWING!
   ///////////////////////////////////////////////////////////////////////
+  int timer = millis();
   GROW();
+  println("max depth: " + max_depth);
+  println("processing time: " + (millis()-timer)/1000.0f);
 
 
   // int timer = millis();

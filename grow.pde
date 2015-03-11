@@ -38,7 +38,7 @@ void GROW() {
   // println("max depth: "+max_depth);
 
   // Calculate max depth of file
-  max_depth = 2;
+  max_depth = 0;
   for (int i = 0; i < tree_list.size(); i++) {
     Branch b0 = tree_list.get(i);
     if (max_depth<=b0.depth) {
@@ -54,7 +54,7 @@ void GROW() {
 
   // load meshes with vertex info.
   // need to do some smart coloration based on age
-  for(int j = 1; j < tree_meshes.size(); j++) {
+  for(int j = 0; j < tree_meshes.size(); j++) {
 
     PShape mesh = tree_meshes.get(j);
     mesh = createShape();
@@ -65,18 +65,19 @@ void GROW() {
         Branch b1 = tree_list.get(i+1);
 
         // set up colors
-        float grad0 = b0.depth/float(max_depth)*255.0;
-        float grad1 = b1.depth/float(max_depth)*255.0;
+        float grad0 = abs((1 - (b0.depth/(float)max_depth))) * 255;
+        float grad1 = abs((1 - (b1.depth/(float)max_depth))) * 255;
+        // println(grad0);
         color c0 = color(grad0,grad0,grad0);
         color c1 = color(grad1,grad1,grad1);
         color cw = color(255,255,255);
-        color cr = color(255,0,0);
+        color cr = color(0,0,0);
 
         // make second mesh all white
-        if (j == 1) {
-          c0 = cw;
-          c1 = cw;
-        }
+        // if (j == 1) {
+        //   c0 = cw;
+        //   c1 = cw;
+        // }
 
         // specific termination color
         if (b1.children > 0){
@@ -91,6 +92,7 @@ void GROW() {
         else {
           mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
           mesh.stroke(cr);
+          // mesh.stroke(c1);
           mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
           mesh.stroke(c0);
 

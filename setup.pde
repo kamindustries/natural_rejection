@@ -37,7 +37,10 @@ void setup() {
   ///////////////////////////////////////////////////////////////////////
   // START GROWING!
   ///////////////////////////////////////////////////////////////////////
+  int timer = millis();
   GROW();
+  println("max depth: " + max_depth);
+  println("processing time: " + (millis()-timer)/1000.0);
 
 
   // int timer = millis();

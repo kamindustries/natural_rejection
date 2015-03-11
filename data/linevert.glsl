@@ -11,7 +11,8 @@ varying vec4 vertColor;
 
 uniform sampler2D texture;
 
-uniform float stroke;
+uniform float stroke_weight;
+uniform float stroke_color;
 uniform float camera_pos[];
 
 // uniform int gl_VertexID;
@@ -31,7 +32,7 @@ void main() {
   vec4 clip0 = transform * vertex;
   vec4 clip1 = clip0 + transform * vec4(direction.xyz, 0);
   
-  float thickness = direction.w * stroke;
+  float thickness = direction.w * stroke_weight * pow(float(color.r), 3.0);
   
   vec3 win0 = clipToWindow(clip0, viewport); 
   vec3 win1 = clipToWindow(clip1, viewport); 
@@ -42,6 +43,12 @@ void main() {
 
   gl_Position.xy = clip0.xy + offset.xy;
   gl_Position.zw = clip0.zw;
-  vertColor = color;  
+
+  // set color to assigned stroke color
+  vec4 out_color;
+  // out_color.rgb = color.rgb;
+  out_color.rgb = vec3(stroke_color,stroke_color,stroke_color);
+  out_color.a = color.a;
+  vertColor = out_color;  
     
 }

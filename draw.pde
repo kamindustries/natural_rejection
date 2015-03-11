@@ -6,13 +6,17 @@ void draw() {
   // tree_meshes = new ArrayList<PShape>();
 
 
+  ///////////////////////////////////////////////////////////////////////
+  // RE DRAW EVERY F R A M E
+  ///////////////////////////////////////////////////////////////////////
+  
   if (frameCount%24==0) {
     tree_list.clear();
     tree_meshes.clear();
     GROW();
   }
 
-  background(128);
+  background(25);
   camera_pos = cam.getPosition();
   camera_lookAt = cam.getLookAt();
   zoom = (float)cam.getDistance() * spare_slider1;
@@ -31,16 +35,18 @@ void draw() {
 
 
   pushMatrix();
-    // if (frameCount%24==0) lineShader = loadShader("linefrag.glsl", "linevert.glsl");
-    // lineShader.set("stroke", spare_slider3);
-    // shader(lineShader, LINES);
+    if (frameCount%24==0) lineShader = loadShader("linefrag.glsl", "linevert.glsl");
+    lineShader.set("stroke_weight", (float)spare_slider2);
+    lineShader.set("stroke_color", 0.0);
+    shader(lineShader, LINES);
     shape(tree_meshes.get(0));
   popMatrix();
   
   pushMatrix();
-    // if (frameCount%24==0) lineShader2 = loadShader("linefrag.glsl", "linevert.glsl");
-    // lineShader2.set("stroke", spare_slider2);
-    // shader(lineShader2, LINES);    
+    if (frameCount%24==0) lineShader2 = loadShader("linefrag.glsl", "linevert.glsl");
+    lineShader2.set("stroke_weight", (float)spare_slider3);
+    lineShader2.set("stroke_color", 1.0);
+    shader(lineShader2, LINES);    
     translate(push_back[0] / zoom, push_back[1] / zoom, push_back[2] / zoom);
     shape(tree_meshes.get(1));
   popMatrix();
