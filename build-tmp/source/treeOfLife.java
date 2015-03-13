@@ -74,13 +74,17 @@ Branch trunk;
 ArrayList<Branch> tree_list = new ArrayList<Branch>();
 ArrayList<Branch> extinct_branches = new ArrayList<Branch>();
 ArrayList<PShape> tree_meshes = new ArrayList<PShape>();
+ArrayList<PShape> extinct_meshes = new ArrayList<PShape>();
 PShape extinct_points;
 
+float[] stroke_black = {0.0f, 0.0f, 0.0f};
+float[] stroke_white = {1.0f, 1.0f, 1.0f};
+float[] stroke_red = {1.0f, 0.0f, 0.0f};
 
 float branch_length = 300.0f;
 int depth;
 // int [] depth_array;
-int max_depth = 18;
+int max_depth = 122;
 float xml_calc_time = 0.0f;
 float geom_calc_time = 0.0f;
 
@@ -95,7 +99,8 @@ float spare_slider3 = 3.0f;
 float spare_slider4 = 1.0f;
 float spare_slider5 = 30.0f;
 float spare_slider6 = 3.0f;
-float spare_slider7 = -20.0f;
+float spare_slider7 = 4.0f;
+float spare_slider8 = 0.27f;
 ///////////////////////////////////////////////////////////////////////
 // Branch class
 ///////////////////////////////////////////////////////////////////////
@@ -185,7 +190,7 @@ public void setupGUI() {
   cp5.addSlider("spare5")
   .setPosition(marginX, marginY+60)
   .setRange(0.01f, 10.0f)
-  .setValue(2.25f)
+  .setValue(10.0f)
   .setSize(300,9)
   ;  
   cp5.addSlider("spare6")
@@ -196,8 +201,14 @@ public void setupGUI() {
   ;  
   cp5.addSlider("spare7")
   .setPosition(marginX, marginY+80)
-  .setRange(-50.0f, 50.0f)
-  .setValue(-20.0f)
+  .setRange(0.0f, 5.0f)
+  .setValue(4.0f)
+  .setSize(300,9)
+  ;  
+  cp5.addSlider("spare8")
+  .setPosition(marginX, marginY+90)
+  .setRange(0, 1.0f)
+  .setValue(0.27f)
   .setSize(300,9)
   ;  
   // this is important:
@@ -227,6 +238,9 @@ public void controlEvent(ControlEvent theEvent) {
   }
   if (theEvent.isFrom(cp5.getController("spare7"))) {
     spare_slider7 = theEvent.getController().getValue();
+  }
+  if (theEvent.isFrom(cp5.getController("spare8"))) {
+    spare_slider8 = theEvent.getController().getValue();
   }
   // if (theEvent.isFrom(checkbox)) {
   //     user_toggle_table1 = (int)checkbox.getArrayValue()[0];
@@ -268,60 +282,67 @@ public void draw() {
 
   textFont(font1);
 
+  if (frameCount%24==0) lineShader = loadShader("linefrag.glsl", "linevert.glsl");
 
-  pushMatrix();
-    if (frameCount%24==0) lineShader = loadShader("linefrag.glsl", "linevert.glsl");
-    lineShader.set("stroke_weight", (float)spare_slider2);
-    lineShader.set("stroke_color", 0.0f);
-    shader(lineShader, LINES);
-    shape(tree_meshes.get(0));
-  popMatrix();
+  // pushMatrix();
+  //   lineShader.set("stroke_weight", (float)spare_slider2);
+  //   lineShader.set("stroke_color", stroke_black);
+  //   shader(lineShader, LINES);
+  //   shape(tree_meshes.get(0));
+  // popMatrix();
   
   // noFill();
   box(10); 
   
-  pushMatrix();
-    if (frameCount%24==0) lineShader2 = loadShader("linefrag.glsl", "linevert.glsl");
-    lineShader2.set("stroke_weight", (float)spare_slider3);
-    lineShader2.set("stroke_color", 1.0f);
-    shader(lineShader2, LINES);    
-    translate(push_back[0]/halo_displ, push_back[1]/halo_displ, push_back[2]/halo_displ);
-    shape(tree_meshes.get(1));
-  popMatrix();
+  // pushMatrix();
+  //   lineShader.set("stroke_weight", (float)spare_slider3);
+  //   lineShader.set("stroke_color", stroke_white);
+  //   shader(lineShader, LINES);    
+  //   translate(push_back[0]/halo_displ, push_back[1]/halo_displ, push_back[2]/halo_displ);
+  //   shape(tree_meshes.get(1));
+  // popMatrix();
 
+  pushMatrix();
+    lineShader.set("stroke_weight", (float)spare_slider2);
+    lineShader.set("stroke_color", stroke_red);
+    shader(lineShader, LINES);
+    for (int i = 0; i < extinct_meshes.size(); i++) {
+      shape(extinct_meshes.get(i));
+    }
+  popMatrix();
 
   resetShader();
 
   // // Pick ray tests
-  if (extinct_branches.size()>0){
-    shape(extinct_points);
+  // if (extinct_branches.size()>0){
+  //   shape(extinct_points);
 
-    Ray3D r = PickRay(camera_pos);
-    float radius = 10.0f;
+  //   Ray3D r = PickRay(camera_pos);
+  //   float radius = 10.0;
 
-    for (int i = 0; i < extinct_points.getVertexCount(); i++) {
-      PVector cen = extinct_points.getVertex(i);
-      PVector cen_orig = extinct_points.getVertex(i);
-      PVector fix_zoom = new PVector(camera_lookAt[0],camera_lookAt[1],camera_lookAt[2]);
-      fix_zoom.sub(cen);
-      fix_zoom.normalize();
-      fix_zoom.mult(sqrt(cam_zoom) * -1.0f);
-      cen.add(fix_zoom); //fix for peasycam "zoom"
+  //   for (int i = 0; i < extinct_points.getVertexCount(); i++) {
+  //     PVector cen = extinct_points.getVertex(i);
+  //     PVector cen_orig = extinct_points.getVertex(i);
+  //     PVector fix_zoom = new PVector(camera_lookAt[0],camera_lookAt[1],camera_lookAt[2]);
+  //     fix_zoom.sub(cen);
+  //     fix_zoom.normalize();
+  //     fix_zoom.mult(sqrt(cam_zoom) * -1.0);
+  //     cen.add(fix_zoom); //fix for peasycam "zoom"
 
-      ///////////////////////////////////////////////////////////////////////
-      // do intersection calculation
-      ///////////////////////////////////////////////////////////////////////
-      float f = IntersectSphere(r, cen, radius);
+  //     ///////////////////////////////////////////////////////////////////////
+  //     // do intersection calculation
+  //     ///////////////////////////////////////////////////////////////////////
+  //     float f = IntersectSphere(r, cen, radius);
 
-      // If hovering, do something
-      if (f > 0.0f) {
-        hover[i] = f;
-        fill(0,255,0);
-        text("cool", cen_orig.x, cen_orig.y + 10, cen_orig.z + 5);
-      }
-      if (f <= 0.0f) hover[i] = 0.0f;
-    }
-  }
+  //     // If hovering, do something
+  //     if (f > 0.0) {
+  //       hover[i] = f;
+  //       fill(0,255,0);
+  //       text("cool", cen_orig.x, cen_orig.y + 10, cen_orig.z + 5);
+  //     }
+  //     if (f <= 0.0) hover[i] = 0.0;
+  //   }
+  // }
 
 
   drawGUI();
@@ -390,22 +411,26 @@ public float IntersectSphere(Ray3D _r, PVector _cen, float _radius){
 public void GROW() {
   tree_list.clear();
   tree_meshes.clear();
+  extinct_branches.clear();
+  extinct_meshes.clear();
 
   randomSeed(0);
+  
   ///////////////////////////////////////////////////////////////////////
-  // Trunk Geometry 
+  // T R U N K 
   ///////////////////////////////////////////////////////////////////////
+  
   float xml_timer = millis();
   PVector root_pos = new PVector(0.0f, 0.0f, 0.0f);
   PVector trunk_pos = new PVector(0.0f, branch_length/10.0f, 0.0f);
   PVector init_grow_dir = new PVector(0.05f, 1.f, 0.05f);
   root = new Branch(null, root_pos, init_grow_dir, 1, 0);
-  trunk = new Branch(root, trunk_pos, root.grow_dir, root.children, 0);
+  trunk = new Branch(null, trunk_pos, root.grow_dir, root.children, 0);
   // tree_list.add(root);
   // tree_list.add(trunk);
 
   Branch current;
-  current = new Branch(trunk, trunk.position, trunk.grow_dir, 1, trunk.depth);
+  current = new Branch(null, trunk.position, trunk.grow_dir, 1, trunk.depth);
 
   // Draw a trunk
   for (int i = 0; i < 1; i++) {
@@ -424,12 +449,8 @@ public void GROW() {
   ///////////////////////////////////////////////////////////////////////
   // R E A D    X M L  
   ///////////////////////////////////////////////////////////////////////
+  
   readChild(axiom, depth, trunk);
-
-  // Print results
-  // println("Done with readChild");
-  // println("tree_list size: " + tree_list.size());
-  // println("max depth: "+max_depth);
 
   // how long it took to go through the xml file
   xml_calc_time = (millis() - xml_timer)/1000.0f;
@@ -449,14 +470,11 @@ public void GROW() {
       max_depth = b0.depth;
     }
   }
-  // println("max depth: "+max_depth);
-
-  // depth_array = new int[0];
 
   tree_meshes.add(new PShape());
   tree_meshes.add(new PShape());
 
-  // load meshes with vertex info.
+  // load meshes with vertex info
   // need to do some smart coloration based on age
   for(int j = 0; j < tree_meshes.size(); j++) {
 
@@ -464,51 +482,112 @@ public void GROW() {
     mesh = createShape();
     mesh.beginShape(LINES);
 
-      for (int i = 0; i < tree_list.size()-2; i+=2){
-        Branch b0 = tree_list.get(i);
-        Branch b1 = tree_list.get(i+1);
+      // for (int i = 0; i < tree_list.size()-2; i+=2){
+      //   Branch b0 = tree_list.get(i);
+      //   Branch b1 = tree_list.get(i+1);
 
-        // set up colors
-        float grad0 = abs((1 - (b0.depth/(float)max_depth))) * 255;
-        float grad1 = abs((1 - (b1.depth/(float)max_depth))) * 255;
-        int c0 = color(grad0,grad0,grad0);
-        int c1 = color(grad1,grad1,grad1);
-        int cw = color(255,255,255);
-        int cr = color(0,0,0);
+      //   // set up colors
+      //   float grad0 = abs((1 - (b0.depth/(float)max_depth))) * 255;
+      //   float grad1 = abs((1 - (b1.depth/(float)max_depth))) * 255;
+      //   color c0 = color(grad0,grad0,grad0);
+      //   color c1 = color(grad1,grad1,grad1);
+      //   color cw = color(255,255,255);
+      //   color cr = color(0,0,0);
 
-        if (b1.children == 0) {
-          c1 = cr; 
-        }
-        mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
-        mesh.stroke(c1);
-        mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
-        mesh.stroke(c0);
+      //   if (b1.children == 0) {
+      //     c1 = cr; 
+      //   }
+      //   mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
+      //   mesh.stroke(c1);
+      //   mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
+      //   mesh.stroke(c0);
+      // }
 
-        // make second mesh all white
-        // if (j == 1) {
-        //   c0 = cw;
-        //   c1 = cw;
-        // }
-
-        // specific termination color
-        // if (b1.children > 0){
-        //   mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
-        //   mesh.stroke(c1);
-        //   mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
-        //   mesh.stroke(c0);
-        // } 
-        // else {
-        //   mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
-        //   mesh.stroke(cr);
-        //   // mesh.stroke(c1);
-        //   mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
-        //   mesh.stroke(c0);
-        // }
-      }
     mesh.endShape();
     tree_meshes.set(j, mesh);
   }
   geom_calc_time = (millis() - xml_timer)/1000.0f;
+
+  if (extinct_branches.size()>0){
+    Branch p = extinct_branches.get(400);
+    int num_extinct_points = extinct_branches.size();
+    float scatter = 300.0f;
+    
+    extinct_points = createShape();
+    extinct_points.beginShape(POINTS);
+      extinct_points.strokeWeight(8);
+      extinct_points.stroke(255,0,0);
+      for (int i = 0; i < num_extinct_points; i++){
+        Branch ex = extinct_branches.get(i);
+        extinct_points.vertex(ex.position.x, ex.position.y, ex.position.z); 
+      }
+    extinct_points.endShape();
+    hover = new float[num_extinct_points];
+
+    for (int i = 0; i < extinct_points.getVertexCount(); i++) {
+      extinct_meshes.add(new PShape());
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////
+  // D R A W   E X T I N C T   C U R V E S
+  ///////////////////////////////////////////////////////////////////////
+
+  for (int i = 0; i < extinct_meshes.size(); i++){
+    Branch p0 = extinct_branches.get(i);
+    Branch p1 = p0.parent;
+    
+
+    PShape mesh = extinct_meshes.get(i);
+    mesh = createShape();
+    mesh.beginShape();
+    mesh.noFill();
+    // mesh.curveTightness(spare_slider8);
+    mesh.curveTightness(0.05f);
+    mesh.curveVertex(p0.position.x, p0.position.y, p0.position.z);
+    mesh.curveVertex(p0.position.x, p0.position.y, p0.position.z);
+
+    int j = 1;
+
+      while (p1 != null || p0 != null) {
+        // set up colors
+        float grad0 = abs((1 - (j/(1.f+(float)p0.depth)))) * 255;
+        float grad1 = abs((1 - (j/(1.f+(float)p1.depth)))) * 255;
+        int c0 = color(grad0,grad0,grad0);
+        int c1 = color(grad1,grad1,grad1);
+        int cw = color(255,255,255);
+        int cr = color(0,0,0); 
+        
+        PVector o0 = p0.position;
+        PVector o1 = p1.position;
+
+        PVector r = new PVector(random(-1,1), random(-1,1), random(-1,1));
+        r.mult(j * spare_slider8);
+
+        if (p1.parent == null) {
+          o0.add(r);
+          o1.add(r);
+          mesh.curveVertex(o0.x, o0.y, o0.z);
+          mesh.stroke(c0);
+          mesh.curveVertex(o1.x, o1.y, o1.z);
+          mesh.stroke(c1);
+          break;
+        }
+        else {
+          PVector perp_vector = p0.grow_dir.cross(r);
+          perp_vector.mult(j * spare_slider7);
+          o0.add(perp_vector);
+          o0.add(r);
+          mesh.curveVertex(o0.x, o0.y, o0.z);
+          mesh.stroke(c0);
+          
+          p0 = p1.parent;
+        }
+      }
+    mesh.endShape();
+    extinct_meshes.set(i, mesh);
+    j++;
+  }
 }
 public void readChild(XML[] _parent, int _depth, Branch _branch) {
   Branch branch = _branch;    //the incoming parent branch
@@ -574,11 +653,12 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
   float perturb = _parent.length;
   if (current_depth == 0) perturb = 20;
   if (perturb >= 20) perturb = 10;
-  if (perturb <= 1) perturb = 1;
+  if (perturb <= 1) perturb = 2;
   perturb *= perturb*0.5f;
   // perturb = PI * perturb/20.0;
-  perturb *= pow(((max_depth-current_depth+1)/(float)max_depth),2);
-  perturb *= spare_slider5 * 10.0f;
+  // perturb *= pow(((max_depth-current_depth+1)/(float)max_depth),3);
+  perturb *= pow((max_depth+1)/((float)current_depth+1.f),1.4f);
+  perturb *= spare_slider5 * 0.1f;
   
   cross_p.mult(perturb);
 
@@ -679,7 +759,8 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
     tree_list.add(next_branch);
     
     // if (children.length == 0 && extinct != 0){
-    if (extinct != 0){
+    // if (extinct != 0){
+    if (children.length == 0){
       // tree_list.add(branch);
       // tree_list.add(next_branch);
 
@@ -777,36 +858,8 @@ public void setup() {
   println("total processing time: " + (millis()-timer)/1000.0f);
   println("num extinct species: " + extinct_branches.size());
 
-  float extinct_timer = millis();
-  println(extinct_timer);
 
-  if (extinct_branches.size()>0){
-    Branch p = extinct_branches.get(400);
-    int num_extinct_points = extinct_branches.size();
-    float scatter = 300.0f;
-    
-    extinct_points = createShape();
-    extinct_points.beginShape(POINTS);
-      extinct_points.strokeWeight(8);
-      extinct_points.stroke(255,0,0);
-      // while (p != null) {
-      //   if (p.parent == null) break;
-      //   else {
-      //     extinct_points.vertex(p.position.x, p.position.y, p.position.z);
-      //     extinct_points.vertex(p.parent.position.x, p.parent.position.y, p.parent.position.z);
-      //     p = p.parent;
-      //   }
-      // }
-      for (int i = 0; i < num_extinct_points; i++){
-        Branch ex = extinct_branches.get(i);
-        extinct_points.vertex(ex.position.x, ex.position.y, ex.position.z); 
-      }
-    extinct_points.endShape();
-    println(millis());
-    println("extinct processing time: "+(extinct_timer-millis())/1000.0f);
 
-    hover = new float[num_extinct_points];
-  }
   drawGUI();
 
 }

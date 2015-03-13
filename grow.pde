@@ -1,22 +1,26 @@
 void GROW() {
   tree_list.clear();
   tree_meshes.clear();
+  extinct_branches.clear();
+  extinct_meshes.clear();
 
   randomSeed(0);
+  
   ///////////////////////////////////////////////////////////////////////
-  // Trunk Geometry 
+  // T R U N K 
   ///////////////////////////////////////////////////////////////////////
+  
   float xml_timer = millis();
   PVector root_pos = new PVector(0.0, 0.0, 0.0);
   PVector trunk_pos = new PVector(0.0, branch_length/10.0, 0.0);
   PVector init_grow_dir = new PVector(0.05, 1., 0.05);
   root = new Branch(null, root_pos, init_grow_dir, 1, 0);
-  trunk = new Branch(root, trunk_pos, root.grow_dir, root.children, 0);
+  trunk = new Branch(null, trunk_pos, root.grow_dir, root.children, 0);
   // tree_list.add(root);
   // tree_list.add(trunk);
 
   Branch current;
-  current = new Branch(trunk, trunk.position, trunk.grow_dir, 1, trunk.depth);
+  current = new Branch(null, trunk.position, trunk.grow_dir, 1, trunk.depth);
 
   // Draw a trunk
   for (int i = 0; i < 1; i++) {
@@ -35,12 +39,8 @@ void GROW() {
   ///////////////////////////////////////////////////////////////////////
   // R E A D    X M L  
   ///////////////////////////////////////////////////////////////////////
+  
   readChild(axiom, depth, trunk);
-
-  // Print results
-  // println("Done with readChild");
-  // println("tree_list size: " + tree_list.size());
-  // println("max depth: "+max_depth);
 
   // how long it took to go through the xml file
   xml_calc_time = (millis() - xml_timer)/1000.0;
@@ -60,14 +60,11 @@ void GROW() {
       max_depth = b0.depth;
     }
   }
-  // println("max depth: "+max_depth);
-
-  // depth_array = new int[0];
 
   tree_meshes.add(new PShape());
   tree_meshes.add(new PShape());
 
-  // load meshes with vertex info.
+  // load meshes with vertex info
   // need to do some smart coloration based on age
   for(int j = 0; j < tree_meshes.size(); j++) {
 
@@ -75,49 +72,113 @@ void GROW() {
     mesh = createShape();
     mesh.beginShape(LINES);
 
-      for (int i = 0; i < tree_list.size()-2; i+=2){
-        Branch b0 = tree_list.get(i);
-        Branch b1 = tree_list.get(i+1);
+      // for (int i = 0; i < tree_list.size()-2; i+=2){
+      //   Branch b0 = tree_list.get(i);
+      //   Branch b1 = tree_list.get(i+1);
 
-        // set up colors
-        float grad0 = abs((1 - (b0.depth/(float)max_depth))) * 255;
-        float grad1 = abs((1 - (b1.depth/(float)max_depth))) * 255;
-        color c0 = color(grad0,grad0,grad0);
-        color c1 = color(grad1,grad1,grad1);
-        color cw = color(255,255,255);
-        color cr = color(0,0,0);
+      //   // set up colors
+      //   float grad0 = abs((1 - (b0.depth/(float)max_depth))) * 255;
+      //   float grad1 = abs((1 - (b1.depth/(float)max_depth))) * 255;
+      //   color c0 = color(grad0,grad0,grad0);
+      //   color c1 = color(grad1,grad1,grad1);
+      //   color cw = color(255,255,255);
+      //   color cr = color(0,0,0);
 
-        if (b1.children == 0) {
-          c1 = cr; 
-        }
-        mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
-        mesh.stroke(c1);
-        mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
-        mesh.stroke(c0);
+      //   if (b1.children == 0) {
+      //     c1 = cr; 
+      //   }
+      //   mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
+      //   mesh.stroke(c1);
+      //   mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
+      //   mesh.stroke(c0);
+      // }
 
-        // make second mesh all white
-        // if (j == 1) {
-        //   c0 = cw;
-        //   c1 = cw;
-        // }
-
-        // specific termination color
-        // if (b1.children > 0){
-        //   mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
-        //   mesh.stroke(c1);
-        //   mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
-        //   mesh.stroke(c0);
-        // } 
-        // else {
-        //   mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
-        //   mesh.stroke(cr);
-        //   // mesh.stroke(c1);
-        //   mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
-        //   mesh.stroke(c0);
-        // }
-      }
     mesh.endShape();
     tree_meshes.set(j, mesh);
   }
   geom_calc_time = (millis() - xml_timer)/1000.0;
+
+  if (extinct_branches.size()>0){
+    Branch p = extinct_branches.get(400);
+    int num_extinct_points = extinct_branches.size();
+    float scatter = 300.0;
+    
+    extinct_points = createShape();
+    extinct_points.beginShape(POINTS);
+      extinct_points.strokeWeight(8);
+      extinct_points.stroke(255,0,0);
+      for (int i = 0; i < num_extinct_points; i++){
+        Branch ex = extinct_branches.get(i);
+        extinct_points.vertex(ex.position.x, ex.position.y, ex.position.z); 
+      }
+    extinct_points.endShape();
+    hover = new float[num_extinct_points];
+
+    for (int i = 0; i < extinct_points.getVertexCount(); i++) {
+      extinct_meshes.add(new PShape());
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////
+  // D R A W   E X T I N C T   C U R V E S
+  ///////////////////////////////////////////////////////////////////////
+
+  for (int i = 0; i < extinct_meshes.size(); i++){
+    Branch p0 = extinct_branches.get(i);
+    Branch p1 = p0.parent;
+    
+
+    PShape mesh = extinct_meshes.get(i);
+    mesh = createShape();
+    mesh.beginShape();
+    mesh.noFill();
+    // mesh.curveTightness(spare_slider8);
+    mesh.curveTightness(0.05);
+    mesh.curveVertex(p0.position.x, p0.position.y, p0.position.z);
+    mesh.curveVertex(p0.position.x, p0.position.y, p0.position.z);
+
+    int j = 1;
+
+      while (p1 != null || p0 != null) {
+        // set up colors
+        float grad0 = abs((1 - (j/(1.+(float)p0.depth)))) * 255;
+        float grad1 = abs((1 - (j/(1.+(float)p1.depth)))) * 255;
+        color c0 = color(grad0,grad0,grad0);
+        color c1 = color(grad1,grad1,grad1);
+        color cw = color(255,255,255);
+        color cr = color(0,0,0); 
+        
+        PVector o0 = p0.position;
+        PVector o1 = p1.position;
+
+        PVector r = new PVector(random(-1,1), random(-1,1), random(-1,1));
+        r.mult(j * spare_slider8);
+
+        if (p1.parent == null) {
+          o0.add(r);
+          o1.add(r);
+          mesh.curveVertex(o0.x, o0.y, o0.z);
+          mesh.stroke(c0);
+          mesh.curveVertex(o1.x, o1.y, o1.z);
+          mesh.stroke(c1);
+          break;
+        }
+        else {
+          PVector perp_vector = p0.grow_dir.cross(r);
+          perp_vector.mult(j * spare_slider7);
+          o0.add(perp_vector);
+          o0.add(r);
+          mesh.curveVertex(o0.x, o0.y, o0.z);
+          mesh.stroke(c0);
+          mesh.curveVertex(o1.x, o1.y, o1.z);
+          mesh.stroke(c1);
+          
+          p0 = p1.parent;
+        }
+      }
+    mesh.endShape();
+    extinct_meshes.set(i, mesh);
+    j++;
+  }
+
 }

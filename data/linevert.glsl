@@ -12,8 +12,9 @@ varying vec4 vertColor;
 uniform sampler2D texture;
 
 uniform float stroke_weight;
-uniform float stroke_color;
+uniform float stroke_color[];
 uniform float camera_pos[];
+// uniform vec3 foo;
 
 // uniform int gl_VertexID;
   
@@ -25,6 +26,8 @@ vec3 clipToWindow(vec4 clip, vec4 viewport) {
   
 void main() {
 
+  vec3 stroke_c = vec3(stroke_color[0],stroke_color[1],stroke_color[2]);
+
   vec3 cam = vec3(camera_pos[0],camera_pos[1],camera_pos[2]);
 
   vec4 clip0 = transform * vertex;
@@ -32,7 +35,7 @@ void main() {
   
   float thickness_mod = color.r;
   if (thickness_mod<=0.25) thickness_mod = 0.25;
-  thickness_mod = thickness_mod*thickness_mod*thickness_mod;
+  thickness_mod = thickness_mod;
   float thickness = direction.w * stroke_weight * thickness_mod * 2.0;
 
   vec3 win0 = clipToWindow(clip0, viewport); 
@@ -48,13 +51,15 @@ void main() {
   vec3 look_at = cam - gl_Position.xyz;
   float look_at_len = 1.0-abs(length(look_at) * 0.001);
 
+  float stroke_c_avg = (stroke_c.r+stroke_c.g+stroke_c.b)/3.0;
   // set color to assigned stroke color
   vec4 out_color;
-  // out_color = color;
+  out_color = color;
   // out_color.rgb = color.rgb;
-  out_color.rgb = vec3(stroke_color,stroke_color,stroke_color);
-  if (stroke_color >=1.0) out_color.a = 1.0;
-  if (stroke_color < 1.0) out_color.a = color.a * look_at_len;
+  // out_color.rgb = stroke_c;
+  if (stroke_c_avg >=0.98) out_color.a = 1.0;
+  if (stroke_c_avg < 1.0) out_color.a = (color.a * look_at_len);
+  if (out_color.a < 0.4) out_color.a = 0.4;
   
   // out_color.rgb = vec3(look_at_len,look_at_len,look_at_len);
   vertColor = out_color;

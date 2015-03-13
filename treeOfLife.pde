@@ -44,13 +44,17 @@ Branch trunk;
 ArrayList<Branch> tree_list = new ArrayList<Branch>();
 ArrayList<Branch> extinct_branches = new ArrayList<Branch>();
 ArrayList<PShape> tree_meshes = new ArrayList<PShape>();
+ArrayList<PShape> extinct_meshes = new ArrayList<PShape>();
 PShape extinct_points;
 
+float[] stroke_black = {0.0, 0.0, 0.0};
+float[] stroke_white = {1.0, 1.0, 1.0};
+float[] stroke_red = {1.0, 0.0, 0.0};
 
 float branch_length = 300.0;
 int depth;
 // int [] depth_array;
-int max_depth = 18;
+int max_depth = 122;
 float xml_calc_time = 0.0;
 float geom_calc_time = 0.0;
 
@@ -65,4 +69,5 @@ float spare_slider3 = 3.0;
 float spare_slider4 = 1.0;
 float spare_slider5 = 30.0;
 float spare_slider6 = 3.0;
-float spare_slider7 = -20.0;
+float spare_slider7 = 4.0;
+float spare_slider8 = 0.27;

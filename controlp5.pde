@@ -70,7 +70,7 @@ void setupGUI() {
   cp5.addSlider("spare5")
   .setPosition(marginX, marginY+60)
   .setRange(0.01, 10.0)
-  .setValue(2.25)
+  .setValue(10.0)
   .setSize(300,9)
   ;  
   cp5.addSlider("spare6")
@@ -81,8 +81,14 @@ void setupGUI() {
   ;  
   cp5.addSlider("spare7")
   .setPosition(marginX, marginY+80)
-  .setRange(-50.0, 50.0)
-  .setValue(-20.0)
+  .setRange(0.0, 5.0)
+  .setValue(4.0)
+  .setSize(300,9)
+  ;  
+  cp5.addSlider("spare8")
+  .setPosition(marginX, marginY+90)
+  .setRange(0, 1.0)
+  .setValue(0.27)
   .setSize(300,9)
   ;  
   // this is important:
@@ -112,6 +118,9 @@ void controlEvent(ControlEvent theEvent) {
   }
   if (theEvent.isFrom(cp5.getController("spare7"))) {
     spare_slider7 = theEvent.getController().getValue();
+  }
+  if (theEvent.isFrom(cp5.getController("spare8"))) {
+    spare_slider8 = theEvent.getController().getValue();
   }
   // if (theEvent.isFrom(checkbox)) {
   //     user_toggle_table1 = (int)checkbox.getArrayValue()[0];

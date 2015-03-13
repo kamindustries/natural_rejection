@@ -56,36 +56,8 @@ void setup() {
   println("total processing time: " + (millis()-timer)/1000.0);
   println("num extinct species: " + extinct_branches.size());
 
-  float extinct_timer = millis();
-  println(extinct_timer);
 
-  if (extinct_branches.size()>0){
-    Branch p = extinct_branches.get(400);
-    int num_extinct_points = extinct_branches.size();
-    float scatter = 300.0;
-    
-    extinct_points = createShape();
-    extinct_points.beginShape(POINTS);
-      extinct_points.strokeWeight(8);
-      extinct_points.stroke(255,0,0);
-      // while (p != null) {
-      //   if (p.parent == null) break;
-      //   else {
-      //     extinct_points.vertex(p.position.x, p.position.y, p.position.z);
-      //     extinct_points.vertex(p.parent.position.x, p.parent.position.y, p.parent.position.z);
-      //     p = p.parent;
-      //   }
-      // }
-      for (int i = 0; i < num_extinct_points; i++){
-        Branch ex = extinct_branches.get(i);
-        extinct_points.vertex(ex.position.x, ex.position.y, ex.position.z); 
-      }
-    extinct_points.endShape();
-    println(millis());
-    println("extinct processing time: "+(extinct_timer-millis())/1000.0);
 
-    hover = new float[num_extinct_points];
-  }
   drawGUI();
 
 }

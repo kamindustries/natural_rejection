@@ -62,11 +62,12 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
   float perturb = _parent.length;
   if (current_depth == 0) perturb = 20;
   if (perturb >= 20) perturb = 10;
-  if (perturb <= 1) perturb = 1;
+  if (perturb <= 1) perturb = 2;
   perturb *= perturb*0.5;
   // perturb = PI * perturb/20.0;
-  perturb *= pow(((max_depth-current_depth+1)/(float)max_depth),2);
-  perturb *= spare_slider5 * 10.0;
+  // perturb *= pow(((max_depth-current_depth+1)/(float)max_depth),3);
+  perturb *= pow((max_depth+1)/((float)current_depth+1.),1.4);
+  perturb *= spare_slider5 * 0.1;
   
   cross_p.mult(perturb);
 
@@ -167,7 +168,8 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
     tree_list.add(next_branch);
     
     // if (children.length == 0 && extinct != 0){
-    if (extinct != 0){
+    // if (extinct != 0){
+    if (children.length == 0){
       // tree_list.add(branch);
       // tree_list.add(next_branch);
 
