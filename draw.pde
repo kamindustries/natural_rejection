@@ -29,7 +29,14 @@ void draw() {
 
   textFont(font1);
 
-  if (frameCount%24==0) lineShader = loadShader("linefrag.glsl", "linevert.glsl");
+  if (FULL_TREE==false){
+    if (frameCount%24==0) lineShader = loadShader("linefrag.glsl", "linevert.glsl");
+    lineShader.set("stroke_weight", (float)spare_slider2);
+    lineShader.set("stroke_color", stroke_red);
+    lineShader.set("stroke_weight", (float)spare_slider3);
+    lineShader.set("stroke_color", stroke_white);
+    lineShader.set("push", spare_slider1);
+    }
 
   // pushMatrix();
   //   lineShader.set("stroke_weight", (float)spare_slider2);
@@ -50,8 +57,8 @@ void draw() {
   // popMatrix();
 
   pushMatrix();
-    lineShader.set("stroke_weight", (float)spare_slider2);
-    lineShader.set("stroke_color", stroke_red);
+    // lineShader.set("stroke_weight", (float)spare_slider2);
+    // lineShader.set("stroke_color", stroke_red);
     shader(lineShader, LINES);
     for (int i = 0; i < extinct_meshes.size(); i++) {
       shape(extinct_meshes.get(i));
@@ -59,10 +66,10 @@ void draw() {
   popMatrix();
 
   pushMatrix();
-    lineShader.set("stroke_weight", (float)spare_slider3);
-    lineShader.set("stroke_color", stroke_white);
-    lineShader.set("push", spare_slider1);
-    shader(lineShader, LINES);
+    // lineShader.set("stroke_weight", (float)spare_slider3);
+    // lineShader.set("stroke_color", stroke_white);
+    // lineShader.set("push", spare_slider1);
+    shader(lineShader2, LINES);
     // translate(push_back[0]/halo_displ, push_back[1]/halo_displ, push_back[2]/halo_displ);
     for (int i = 0; i < extinct_meshes.size(); i++) {
       shape(extinct_meshes.get(i));

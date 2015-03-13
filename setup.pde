@@ -24,6 +24,12 @@ void setup() {
   lineShader = loadShader("linefrag.glsl", "linevert.glsl");
   lineShader2 = loadShader("linefrag.glsl", "linevert.glsl");
 
+  lineShader.set("stroke_weight", (float)spare_slider2);
+  lineShader.set("stroke_color", stroke_red);
+  lineShader2.set("stroke_weight", (float)spare_slider3);
+  lineShader2.set("stroke_color", stroke_white);
+  lineShader2.set("push", spare_slider1);
+  
   pointShader = new PShader(this, "point_vert.glsl", "point_frag.glsl");
   pointShader.set("weight", extinct_pts_weight);
   pointShader.set("sprite", loadImage("particle.png"));

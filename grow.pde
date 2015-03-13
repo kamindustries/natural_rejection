@@ -123,7 +123,7 @@ void GROW() {
   // D R A W   E X T I N C T   C U R V E S
   ///////////////////////////////////////////////////////////////////////
   for (int i = 0; i < extinct_meshes.size(); i++){
-    int j = 1;
+    float j = 1;
     
     Branch p = extinct_branches.get(i);
     
@@ -146,6 +146,9 @@ void GROW() {
     mesh.stroke(c0);
 
       while (p != null) {
+
+        j = (max_depth - j) / (float)max_depth;
+        j *= 10.;
 
         PVector o = p.position;
         PVector r = new PVector(random(-1.,1.), random(-1.,1.), random(-1.,1.));
@@ -177,5 +180,6 @@ void GROW() {
       }
     mesh.endShape();
     extinct_meshes.set(i, mesh);
+    // println(j);
   }
 }
