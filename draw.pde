@@ -5,8 +5,10 @@ void draw() {
   ///////////////////////////////////////////////////////////////////////
   // RE DRAW EVERY  F R A M E
   ///////////////////////////////////////////////////////////////////////
-  if (frameCount%24==0) {
-    GROW();
+  if (FULL_TREE==false){
+    if (frameCount%24==0) {
+      GROW();
+    }
   }
 
   camera_pos = cam.getPosition();
@@ -56,6 +58,17 @@ void draw() {
     }
   popMatrix();
 
+  pushMatrix();
+    lineShader.set("stroke_weight", (float)spare_slider3);
+    lineShader.set("stroke_color", stroke_white);
+    lineShader.set("push", spare_slider1);
+    shader(lineShader, LINES);
+    // translate(push_back[0]/halo_displ, push_back[1]/halo_displ, push_back[2]/halo_displ);
+    for (int i = 0; i < extinct_meshes.size(); i++) {
+      shape(extinct_meshes.get(i));
+    }
+  popMatrix();
+
   resetShader();
 
   // // Pick ray tests
@@ -90,8 +103,10 @@ void draw() {
   // }
 
 
-  drawGUI();
-  textFont(font2);
-  text(frameRate, width - 70, marginY);
-
+    drawGUI();
+  
+  if (show_fps==true){
+    textFont(font2);
+    text(frameRate, width - 70, marginY);
+  }
 }

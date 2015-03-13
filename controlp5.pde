@@ -1,15 +1,18 @@
 void drawGUI() {
   currCameraMatrix = new PMatrix3D(p3d.camera);
   camera();
-  cp5.draw(); //DRAW CONTROLS AFTER CAMERA FOR GREAT SUCCESS
+  if(show_hud==true){
+    cp5.draw(); //DRAW CONTROLS AFTER CAMERA FOR GREAT SUCCESS
+  }
   p3d.camera = currCameraMatrix;
 
   // TITLE
-  fill(0);
-  textFont(font1);
-  textAlign(LEFT);
-  text("Natural Rejection", marginX, marginY + 10);
-  
+  if (show_hud==true){
+    fill(0);
+    textFont(font1);
+    textAlign(LEFT);
+    text("Natural Rejection", marginX, marginY + 10);
+  }
   // textFont(fontHeader2);
   // text("Comparing Seattle's Interests in Fiction and Non-fiction", 
   //       marginX, marginY + 58);
@@ -46,31 +49,31 @@ void setupGUI() {
   cp5.addSlider("spare1")
   .setPosition(marginX, marginY+20)
   .setRange(-1.f, 1.f)
-  .setValue(-0.9)
+  .setValue(0.1)
   .setSize(300,9)
   ;
   cp5.addSlider("spare2")
   .setPosition(marginX, marginY+30)
   .setRange(0.1, 10.0)
-  .setValue(1.0)
+  .setValue(3.2)
   .setSize(300,9)
   ;
   cp5.addSlider("spare3")
   .setPosition(marginX, marginY+40)
-  .setRange(0.1, 5.0)
-  .setValue(3.0)
+  .setRange(0.1, 10.0)
+  .setValue(3.7)
   .setSize(300,9)
   ;
   cp5.addSlider("spare4")
   .setPosition(marginX, marginY+50)
   .setRange(0.01, 2.0)
-  .setValue(1.0)
+  .setValue(.37)
   .setSize(300,9)
   ;  
   cp5.addSlider("spare5")
   .setPosition(marginX, marginY+60)
   .setRange(0.01, 10.0)
-  .setValue(10.0)
+  .setValue(3.2)
   .setSize(300,9)
   ;  
   cp5.addSlider("spare6")
@@ -81,16 +84,22 @@ void setupGUI() {
   ;  
   cp5.addSlider("spare7")
   .setPosition(marginX, marginY+80)
-  .setRange(0.0, 5.0)
-  .setValue(4.0)
+  .setRange(0.0, 20.0)
+  .setValue(10.0)
   .setSize(300,9)
   ;  
   cp5.addSlider("spare8")
   .setPosition(marginX, marginY+90)
   .setRange(0, 1.0)
-  .setValue(0.27)
+  .setValue(0.14)
   .setSize(300,9)
   ;  
+  cp5.addSlider("spare9")
+  .setPosition(marginX, marginY+100)
+  .setRange(-1., 1.0)
+  .setValue(0.0)
+  .setSize(300,9)
+  ; 
   // this is important:
   cp5.setAutoDraw(false);
 
@@ -121,6 +130,9 @@ void controlEvent(ControlEvent theEvent) {
   }
   if (theEvent.isFrom(cp5.getController("spare8"))) {
     spare_slider8 = theEvent.getController().getValue();
+  }  
+  if (theEvent.isFrom(cp5.getController("spare9"))) {
+    spare_slider9 = theEvent.getController().getValue();
   }
   // if (theEvent.isFrom(checkbox)) {
   //     user_toggle_table1 = (int)checkbox.getArrayValue()[0];

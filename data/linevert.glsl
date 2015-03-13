@@ -14,7 +14,7 @@ uniform sampler2D texture;
 uniform float stroke_weight;
 uniform float stroke_color[];
 uniform float camera_pos[];
-// uniform vec3 foo;
+uniform float push;
 
 // uniform int gl_VertexID;
   
@@ -27,6 +27,7 @@ vec3 clipToWindow(vec4 clip, vec4 viewport) {
 void main() {
 
   vec3 stroke_c = vec3(stroke_color[0],stroke_color[1],stroke_color[2]);
+  float stroke_c_avg = (stroke_c.r+stroke_c.g+stroke_c.b)/3.0;
 
   vec3 cam = vec3(camera_pos[0],camera_pos[1],camera_pos[2]);
 
@@ -34,7 +35,9 @@ void main() {
   vec4 clip1 = clip0 + transform * vec4(direction.xyz, 0);
   
   float thickness_mod = color.r;
-  if (thickness_mod<=0.25) thickness_mod = 0.25;
+  // if (stroke_c_avg >=0.98 && thickness_mod<=0.15) thickness_mod = 0.15;
+  if (thickness_mod<=0.15) thickness_mod = 0.15;
+  if (color.r <= 0.05) thickness_mod = 0.01;
   thickness_mod = thickness_mod;
   float thickness = direction.w * stroke_weight * thickness_mod * 2.0;
 
@@ -43,25 +46,32 @@ void main() {
   vec2 tangent = win1.xy - win0.xy;
   vec2 normal = normalize(vec2(-tangent.y, tangent.x));
   
-  vec2 offset = normal * thickness * 1.0;
+  float foo = 1.0;
+  if (stroke_c_avg >=0.98) foo = stroke_weight;
+
+  vec2 offset = normal * thickness * foo;
 
   gl_Position.xy = clip0.xy + offset.xy;
   gl_Position.zw = clip0.zw;
+  if (stroke_c_avg >=0.98) gl_Position.z = clip0.z + (push/10.0);
 
   vec3 look_at = cam - gl_Position.xyz;
   float look_at_len = 1.0-abs(length(look_at) * 0.001);
 
-  float stroke_c_avg = (stroke_c.r+stroke_c.g+stroke_c.b)/3.0;
   // set color to assigned stroke color
   vec4 out_color;
   out_color = color;
   // out_color.rgb = color.rgb;
   // out_color.rgb = stroke_c;
-  if (stroke_c_avg >=0.98) out_color.a = 1.0;
+  if (stroke_c_avg >=0.98) {
+    out_color.rgb = stroke_c.rgb;
+    out_color.a = 1.0;
+  }
   if (stroke_c_avg < 1.0) out_color.a = (color.a * look_at_len);
-  if (out_color.a < 0.4) out_color.a = 0.4;
+  if (out_color.a < 0.1) out_color.a = 0.1;
   
   // out_color.rgb = vec3(look_at_len,look_at_len,look_at_len);
+  // out_color = color;
   vertColor = out_color;
   // vertColor = color;
     

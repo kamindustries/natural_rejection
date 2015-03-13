@@ -27,7 +27,7 @@ void GROW() {
     PVector new_pos = PVector.mult(root.grow_dir, branch_length/10.0);  
     new_pos.add(current.position);
 
-    trunk = new Branch(current, new_pos, current.grow_dir, 1, current.depth);
+    trunk = new Branch(null, new_pos, current.grow_dir, 1, current.depth);
     current = trunk;
 
     // tree_list.add(trunk.parent);
@@ -64,7 +64,7 @@ void GROW() {
   tree_meshes.add(new PShape());
   tree_meshes.add(new PShape());
 
-  // load meshes with vertex info
+  // load meshes with vertex info.
   // need to do some smart coloration based on age
   for(int j = 0; j < tree_meshes.size(); j++) {
 
@@ -122,63 +122,60 @@ void GROW() {
   ///////////////////////////////////////////////////////////////////////
   // D R A W   E X T I N C T   C U R V E S
   ///////////////////////////////////////////////////////////////////////
-
   for (int i = 0; i < extinct_meshes.size(); i++){
-    Branch p0 = extinct_branches.get(i);
-    Branch p1 = p0.parent;
+    int j = 1;
     
+    Branch p = extinct_branches.get(i);
+    
+    // set up colors
+    float c_rand = random(10,50);    
+    float grad0 = abs((1 - (j/(1.+(float)p.depth)))) * 255;
+    color c0 = color(c_rand,c_rand,c_rand);
+    color cw = color(255,255,255);
+    color cr = color(0,0,0);
+
 
     PShape mesh = extinct_meshes.get(i);
     mesh = createShape();
     mesh.beginShape();
     mesh.noFill();
-    // mesh.curveTightness(spare_slider8);
-    mesh.curveTightness(0.05);
-    mesh.curveVertex(p0.position.x, p0.position.y, p0.position.z);
-    mesh.curveVertex(p0.position.x, p0.position.y, p0.position.z);
+    // mesh.curveTightness(spare_slider9);
+    mesh.curveTightness(-.25);
 
-    int j = 1;
+    mesh.curveVertex(p.position.x, p.position.y, p.position.z);
+    mesh.stroke(c0);
 
-      while (p1 != null || p0 != null) {
-        // set up colors
-        float grad0 = abs((1 - (j/(1.+(float)p0.depth)))) * 255;
-        float grad1 = abs((1 - (j/(1.+(float)p1.depth)))) * 255;
-        color c0 = color(grad0,grad0,grad0);
-        color c1 = color(grad1,grad1,grad1);
-        color cw = color(255,255,255);
-        color cr = color(0,0,0); 
-        
-        PVector o0 = p0.position;
-        PVector o1 = p1.position;
+      while (p != null) {
 
-        PVector r = new PVector(random(-1,1), random(-1,1), random(-1,1));
-        r.mult(j * spare_slider8);
+        PVector o = p.position;
+        PVector r = new PVector(random(-1.,1.), random(-1.,1.), random(-1.,1.));
+        r.mult(j * spare_slider8 / 100.0);
 
-        if (p1.parent == null) {
-          o0.add(r);
-          o1.add(r);
-          mesh.curveVertex(o0.x, o0.y, o0.z);
+        if (p.parent == null) {
+          PVector perp_vector = p.grow_dir.cross(r);
+          perp_vector.mult(j * spare_slider7 * 0.2);
+          r.mult(40.);
+          o.add(r);
+          // o.add(perp_vector);
+          mesh.curveVertex(o.x, o.y, o.z);
           mesh.stroke(c0);
-          mesh.curveVertex(o1.x, o1.y, o1.z);
-          mesh.stroke(c1);
+          mesh.curveVertex(o.x, o.y, o.z);
+          mesh.stroke(c0);
           break;
         }
         else {
-          PVector perp_vector = p0.grow_dir.cross(r);
+          PVector perp_vector = p.grow_dir.cross(r);
           perp_vector.mult(j * spare_slider7);
-          o0.add(perp_vector);
-          o0.add(r);
-          mesh.curveVertex(o0.x, o0.y, o0.z);
+          o.add(r);
+          o.add(perp_vector);
+          mesh.curveVertex(o.x, o.y, o.z);
           mesh.stroke(c0);
-          mesh.curveVertex(o1.x, o1.y, o1.z);
-          mesh.stroke(c1);
           
-          p0 = p1.parent;
+          p = p.parent;
         }
+        j++;
       }
     mesh.endShape();
     extinct_meshes.set(i, mesh);
-    j++;
   }
-
 }

@@ -16,7 +16,10 @@ ToxiclibsSupport gfx;
  
 XML xml;
 
+boolean FULL_TREE = true;
 boolean PRINT_INFO = false;
+boolean show_hud = true;
+boolean show_fps = true;
 
 PeasyCam cam;
 ControlP5 cp5;
@@ -63,11 +66,12 @@ XML[] axiom;
 PFont font1 = createFont("SourceSansPro-Semibold", 20, true);
 PFont font2 = createFont("monaco", 10, true);
 
-float spare_slider1 = -0.9;
-float spare_slider2 = 1.0;
-float spare_slider3 = 3.0;
-float spare_slider4 = 1.0;
-float spare_slider5 = 30.0;
-float spare_slider6 = 3.0;
-float spare_slider7 = 4.0;
-float spare_slider8 = 0.27;
+float spare_slider1 = 0.1;
+float spare_slider2 = 3.2;
+float spare_slider3 = 3.7;
+float spare_slider4 = .37;
+float spare_slider5 = 3.2;
+float spare_slider6 = 1.0;
+float spare_slider7 = 10.0;
+float spare_slider8 = 0.14;
+float spare_slider9 = 0.05;

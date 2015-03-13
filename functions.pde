@@ -56,3 +56,17 @@ float IntersectSphere(Ray3D _r, PVector _cen, float _radius){
   return -1.0; //we ignore negative intersections, -1 qualifies as a miss
 }
 
+///////////////////////////////////////////////////////////////////////
+// K E Y B O A R D
+///////////////////////////////////////////////////////////////////////
+
+void keyPressed() {
+  if (key == 'h'){
+    if (show_hud==true) show_hud=false;
+    else if (show_hud==false) show_hud=true;
+  }
+  if (key == 'H'){
+    if (show_fps==true) show_fps=false;
+    else if (show_fps==false) show_fps=true;
+  }
+}

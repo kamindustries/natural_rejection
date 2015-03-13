@@ -61,12 +61,12 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
   
   float perturb = _parent.length;
   if (current_depth == 0) perturb = 20;
-  if (perturb >= 20) perturb = 10;
+  if (perturb >= 20) perturb = 5;
   if (perturb <= 1) perturb = 2;
   perturb *= perturb*0.5;
-  // perturb = PI * perturb/20.0;
-  // perturb *= pow(((max_depth-current_depth+1)/(float)max_depth),3);
-  perturb *= pow((max_depth+1)/((float)current_depth+1.),1.4);
+  // perturb *= pow((max_depth+1)/((float)current_depth+1.),1.4);
+  // perturb *= pow((current_depth+1)/((float)max_depth+1.),.7);
+  perturb *= (current_depth)/((float)max_depth+1.);
   perturb *= spare_slider5 * 0.1;
   
   cross_p.mult(perturb);
@@ -78,14 +78,16 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
   PVector tan1 = init_grow_dir.cross(cross_p);
   float dot = init_grow_dir.dot(branch.grow_dir);
   PVector len = PVector.mult(branch.grow_dir, dot);
-  // len.mult(spare_slider4 * 1.0 * ((current_depth)/(float)max_depth));
-  len.mult(spare_slider4 * 1.0 * (max_depth-current_depth)/(float)max_depth);
+  len.mult(spare_slider4 * .1 * ((current_depth+1.)/(float)max_depth));
+  // len.mult(spare_slider4 * 1.0 * (max_depth-current_depth)/(float)max_depth);
+  // len.mult(spare_slider4 * .01 * (max_depth-current_depth)/(float)max_depth);
 
-  Branch p = branch.parent;
-  int offset_scale = current_depth;
 
   // go down the tree to the root adding more branches
   // stochastically
+
+  // Branch p = branch.parent;
+  // int offset_scale = current_depth;
 
   // float rand_foo = random(1.0);
   // if (branch.children == 0 && rand_foo < 0.001) {
@@ -150,7 +152,7 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
     PVector rot_cos = PVector.mult(tan1, cos(angle + random(-rand_scale, rand_scale)));
     PVector rot_sin = PVector.mult(cross_p, sin(angle + random(-rand_scale, rand_scale)));
     PVector new_grow_dir = PVector.add(rot_cos, rot_sin);
-    // len.mult(perturb);
+    // len.mult(2.);
     new_grow_dir.add(len);
     new_grow_dir.normalize();
     
@@ -167,12 +169,12 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
     tree_list.add(branch);
     tree_list.add(next_branch);
     
-    // if (children.length == 0 && extinct != 0){
-    // if (extinct != 0){
-    if (children.length == 0){
-      // tree_list.add(branch);
-      // tree_list.add(next_branch);
-
+    if (FULL_TREE==true) {
+      if (children.length == 0 && extinct != 0){
+        extinct_branches.add(next_branch);
+      }
+    }
+    else if (children.length == 0 && random(0.,1.)<0.5){
       extinct_branches.add(next_branch);
     }
     // if (children.length > 0){

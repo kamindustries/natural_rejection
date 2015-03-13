@@ -46,7 +46,10 @@ ToxiclibsSupport gfx;
  
 XML xml;
 
+boolean FULL_TREE = true;
 boolean PRINT_INFO = false;
+boolean show_hud = true;
+boolean show_fps = true;
 
 PeasyCam cam;
 ControlP5 cp5;
@@ -93,14 +96,15 @@ XML[] axiom;
 PFont font1 = createFont("SourceSansPro-Semibold", 20, true);
 PFont font2 = createFont("monaco", 10, true);
 
-float spare_slider1 = -0.9f;
-float spare_slider2 = 1.0f;
-float spare_slider3 = 3.0f;
-float spare_slider4 = 1.0f;
-float spare_slider5 = 30.0f;
-float spare_slider6 = 3.0f;
-float spare_slider7 = 4.0f;
-float spare_slider8 = 0.27f;
+float spare_slider1 = 0.1f;
+float spare_slider2 = 3.2f;
+float spare_slider3 = 3.7f;
+float spare_slider4 = .37f;
+float spare_slider5 = 3.2f;
+float spare_slider6 = 1.0f;
+float spare_slider7 = 10.0f;
+float spare_slider8 = 0.14f;
+float spare_slider9 = 0.05f;
 ///////////////////////////////////////////////////////////////////////
 // Branch class
 ///////////////////////////////////////////////////////////////////////
@@ -121,15 +125,18 @@ class Branch {
 public void drawGUI() {
   currCameraMatrix = new PMatrix3D(p3d.camera);
   camera();
-  cp5.draw(); //DRAW CONTROLS AFTER CAMERA FOR GREAT SUCCESS
+  if(show_hud==true){
+    cp5.draw(); //DRAW CONTROLS AFTER CAMERA FOR GREAT SUCCESS
+  }
   p3d.camera = currCameraMatrix;
 
   // TITLE
-  fill(0);
-  textFont(font1);
-  textAlign(LEFT);
-  text("Natural Rejection", marginX, marginY + 10);
-  
+  if (show_hud==true){
+    fill(0);
+    textFont(font1);
+    textAlign(LEFT);
+    text("Natural Rejection", marginX, marginY + 10);
+  }
   // textFont(fontHeader2);
   // text("Comparing Seattle's Interests in Fiction and Non-fiction", 
   //       marginX, marginY + 58);
@@ -166,31 +173,31 @@ public void setupGUI() {
   cp5.addSlider("spare1")
   .setPosition(marginX, marginY+20)
   .setRange(-1.f, 1.f)
-  .setValue(-0.9f)
+  .setValue(0.1f)
   .setSize(300,9)
   ;
   cp5.addSlider("spare2")
   .setPosition(marginX, marginY+30)
   .setRange(0.1f, 10.0f)
-  .setValue(1.0f)
+  .setValue(3.2f)
   .setSize(300,9)
   ;
   cp5.addSlider("spare3")
   .setPosition(marginX, marginY+40)
-  .setRange(0.1f, 5.0f)
-  .setValue(3.0f)
+  .setRange(0.1f, 10.0f)
+  .setValue(3.7f)
   .setSize(300,9)
   ;
   cp5.addSlider("spare4")
   .setPosition(marginX, marginY+50)
   .setRange(0.01f, 2.0f)
-  .setValue(1.0f)
+  .setValue(.37f)
   .setSize(300,9)
   ;  
   cp5.addSlider("spare5")
   .setPosition(marginX, marginY+60)
   .setRange(0.01f, 10.0f)
-  .setValue(10.0f)
+  .setValue(3.2f)
   .setSize(300,9)
   ;  
   cp5.addSlider("spare6")
@@ -201,16 +208,22 @@ public void setupGUI() {
   ;  
   cp5.addSlider("spare7")
   .setPosition(marginX, marginY+80)
-  .setRange(0.0f, 5.0f)
-  .setValue(4.0f)
+  .setRange(0.0f, 20.0f)
+  .setValue(10.0f)
   .setSize(300,9)
   ;  
   cp5.addSlider("spare8")
   .setPosition(marginX, marginY+90)
   .setRange(0, 1.0f)
-  .setValue(0.27f)
+  .setValue(0.14f)
   .setSize(300,9)
   ;  
+  cp5.addSlider("spare9")
+  .setPosition(marginX, marginY+100)
+  .setRange(-1.f, 1.0f)
+  .setValue(0.0f)
+  .setSize(300,9)
+  ; 
   // this is important:
   cp5.setAutoDraw(false);
 
@@ -241,6 +254,9 @@ public void controlEvent(ControlEvent theEvent) {
   }
   if (theEvent.isFrom(cp5.getController("spare8"))) {
     spare_slider8 = theEvent.getController().getValue();
+  }  
+  if (theEvent.isFrom(cp5.getController("spare9"))) {
+    spare_slider9 = theEvent.getController().getValue();
   }
   // if (theEvent.isFrom(checkbox)) {
   //     user_toggle_table1 = (int)checkbox.getArrayValue()[0];
@@ -260,8 +276,10 @@ public void draw() {
   ///////////////////////////////////////////////////////////////////////
   // RE DRAW EVERY  F R A M E
   ///////////////////////////////////////////////////////////////////////
-  if (frameCount%24==0) {
-    GROW();
+  if (FULL_TREE==false){
+    if (frameCount%24==0) {
+      GROW();
+    }
   }
 
   camera_pos = cam.getPosition();
@@ -311,6 +329,17 @@ public void draw() {
     }
   popMatrix();
 
+  pushMatrix();
+    lineShader.set("stroke_weight", (float)spare_slider3);
+    lineShader.set("stroke_color", stroke_white);
+    lineShader.set("push", spare_slider1);
+    shader(lineShader, LINES);
+    // translate(push_back[0]/halo_displ, push_back[1]/halo_displ, push_back[2]/halo_displ);
+    for (int i = 0; i < extinct_meshes.size(); i++) {
+      shape(extinct_meshes.get(i));
+    }
+  popMatrix();
+
   resetShader();
 
   // // Pick ray tests
@@ -345,10 +374,12 @@ public void draw() {
   // }
 
 
-  drawGUI();
-  textFont(font2);
-  text(frameRate, width - 70, marginY);
-
+    drawGUI();
+  
+  if (show_fps==true){
+    textFont(font2);
+    text(frameRate, width - 70, marginY);
+  }
 }
 ///////////////////////////////////////////////////////////////////////
 // Return ray
@@ -408,6 +439,20 @@ public float IntersectSphere(Ray3D _r, PVector _cen, float _radius){
   return -1.0f; //we ignore negative intersections, -1 qualifies as a miss
 }
 
+///////////////////////////////////////////////////////////////////////
+// K E Y B O A R D
+///////////////////////////////////////////////////////////////////////
+
+public void keyPressed() {
+  if (key == 'h'){
+    if (show_hud==true) show_hud=false;
+    else if (show_hud==false) show_hud=true;
+  }
+  if (key == 'H'){
+    if (show_fps==true) show_fps=false;
+    else if (show_fps==false) show_fps=true;
+  }
+}
 public void GROW() {
   tree_list.clear();
   tree_meshes.clear();
@@ -437,7 +482,7 @@ public void GROW() {
     PVector new_pos = PVector.mult(root.grow_dir, branch_length/10.0f);  
     new_pos.add(current.position);
 
-    trunk = new Branch(current, new_pos, current.grow_dir, 1, current.depth);
+    trunk = new Branch(null, new_pos, current.grow_dir, 1, current.depth);
     current = trunk;
 
     // tree_list.add(trunk.parent);
@@ -474,7 +519,7 @@ public void GROW() {
   tree_meshes.add(new PShape());
   tree_meshes.add(new PShape());
 
-  // load meshes with vertex info
+  // load meshes with vertex info.
   // need to do some smart coloration based on age
   for(int j = 0; j < tree_meshes.size(); j++) {
 
@@ -532,61 +577,61 @@ public void GROW() {
   ///////////////////////////////////////////////////////////////////////
   // D R A W   E X T I N C T   C U R V E S
   ///////////////////////////////////////////////////////////////////////
-
   for (int i = 0; i < extinct_meshes.size(); i++){
-    Branch p0 = extinct_branches.get(i);
-    Branch p1 = p0.parent;
+    int j = 1;
     
+    Branch p = extinct_branches.get(i);
+    
+    // set up colors
+    float c_rand = random(10,50);    
+    float grad0 = abs((1 - (j/(1.f+(float)p.depth)))) * 255;
+    int c0 = color(c_rand,c_rand,c_rand);
+    int cw = color(255,255,255);
+    int cr = color(0,0,0);
+
 
     PShape mesh = extinct_meshes.get(i);
     mesh = createShape();
     mesh.beginShape();
     mesh.noFill();
-    // mesh.curveTightness(spare_slider8);
-    mesh.curveTightness(0.05f);
-    mesh.curveVertex(p0.position.x, p0.position.y, p0.position.z);
-    mesh.curveVertex(p0.position.x, p0.position.y, p0.position.z);
+    // mesh.curveTightness(spare_slider9);
+    mesh.curveTightness(-.25f);
 
-    int j = 1;
+    mesh.curveVertex(p.position.x, p.position.y, p.position.z);
+    mesh.stroke(c0);
 
-      while (p1 != null || p0 != null) {
-        // set up colors
-        float grad0 = abs((1 - (j/(1.f+(float)p0.depth)))) * 255;
-        float grad1 = abs((1 - (j/(1.f+(float)p1.depth)))) * 255;
-        int c0 = color(grad0,grad0,grad0);
-        int c1 = color(grad1,grad1,grad1);
-        int cw = color(255,255,255);
-        int cr = color(0,0,0); 
-        
-        PVector o0 = p0.position;
-        PVector o1 = p1.position;
+      while (p != null) {
 
-        PVector r = new PVector(random(-1,1), random(-1,1), random(-1,1));
-        r.mult(j * spare_slider8);
+        PVector o = p.position;
+        PVector r = new PVector(random(-1.f,1.f), random(-1.f,1.f), random(-1.f,1.f));
+        r.mult(j * spare_slider8 / 100.0f);
 
-        if (p1.parent == null) {
-          o0.add(r);
-          o1.add(r);
-          mesh.curveVertex(o0.x, o0.y, o0.z);
+        if (p.parent == null) {
+          PVector perp_vector = p.grow_dir.cross(r);
+          perp_vector.mult(j * spare_slider7 * 0.2f);
+          r.mult(40.f);
+          o.add(r);
+          // o.add(perp_vector);
+          mesh.curveVertex(o.x, o.y, o.z);
           mesh.stroke(c0);
-          mesh.curveVertex(o1.x, o1.y, o1.z);
-          mesh.stroke(c1);
+          mesh.curveVertex(o.x, o.y, o.z);
+          mesh.stroke(c0);
           break;
         }
         else {
-          PVector perp_vector = p0.grow_dir.cross(r);
+          PVector perp_vector = p.grow_dir.cross(r);
           perp_vector.mult(j * spare_slider7);
-          o0.add(perp_vector);
-          o0.add(r);
-          mesh.curveVertex(o0.x, o0.y, o0.z);
+          o.add(r);
+          o.add(perp_vector);
+          mesh.curveVertex(o.x, o.y, o.z);
           mesh.stroke(c0);
           
-          p0 = p1.parent;
+          p = p.parent;
         }
+        j++;
       }
     mesh.endShape();
     extinct_meshes.set(i, mesh);
-    j++;
   }
 }
 public void readChild(XML[] _parent, int _depth, Branch _branch) {
@@ -652,12 +697,12 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
   
   float perturb = _parent.length;
   if (current_depth == 0) perturb = 20;
-  if (perturb >= 20) perturb = 10;
+  if (perturb >= 20) perturb = 5;
   if (perturb <= 1) perturb = 2;
   perturb *= perturb*0.5f;
-  // perturb = PI * perturb/20.0;
-  // perturb *= pow(((max_depth-current_depth+1)/(float)max_depth),3);
-  perturb *= pow((max_depth+1)/((float)current_depth+1.f),1.4f);
+  // perturb *= pow((max_depth+1)/((float)current_depth+1.),1.4);
+  // perturb *= pow((current_depth+1)/((float)max_depth+1.),.7);
+  perturb *= (current_depth)/((float)max_depth+1.f);
   perturb *= spare_slider5 * 0.1f;
   
   cross_p.mult(perturb);
@@ -669,14 +714,16 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
   PVector tan1 = init_grow_dir.cross(cross_p);
   float dot = init_grow_dir.dot(branch.grow_dir);
   PVector len = PVector.mult(branch.grow_dir, dot);
-  // len.mult(spare_slider4 * 1.0 * ((current_depth)/(float)max_depth));
-  len.mult(spare_slider4 * 1.0f * (max_depth-current_depth)/(float)max_depth);
+  len.mult(spare_slider4 * .1f * ((current_depth+1.f)/(float)max_depth));
+  // len.mult(spare_slider4 * 1.0 * (max_depth-current_depth)/(float)max_depth);
+  // len.mult(spare_slider4 * .01 * (max_depth-current_depth)/(float)max_depth);
 
-  Branch p = branch.parent;
-  int offset_scale = current_depth;
 
   // go down the tree to the root adding more branches
   // stochastically
+
+  // Branch p = branch.parent;
+  // int offset_scale = current_depth;
 
   // float rand_foo = random(1.0);
   // if (branch.children == 0 && rand_foo < 0.001) {
@@ -741,7 +788,7 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
     PVector rot_cos = PVector.mult(tan1, cos(angle + random(-rand_scale, rand_scale)));
     PVector rot_sin = PVector.mult(cross_p, sin(angle + random(-rand_scale, rand_scale)));
     PVector new_grow_dir = PVector.add(rot_cos, rot_sin);
-    // len.mult(perturb);
+    // len.mult(2.);
     new_grow_dir.add(len);
     new_grow_dir.normalize();
     
@@ -758,12 +805,12 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
     tree_list.add(branch);
     tree_list.add(next_branch);
     
-    // if (children.length == 0 && extinct != 0){
-    // if (extinct != 0){
-    if (children.length == 0){
-      // tree_list.add(branch);
-      // tree_list.add(next_branch);
-
+    if (FULL_TREE==true) {
+      if (children.length == 0 && extinct != 0){
+        extinct_branches.add(next_branch);
+      }
+    }
+    else if (children.length == 0 && random(0.f,1.f)<0.5f){
       extinct_branches.add(next_branch);
     }
     // if (children.length > 0){
@@ -802,7 +849,7 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
 }
 public void setup() {
   // size(1280,800,P3D);
-  size(960,560,P3D);
+  size(960,560,OPENGL);
 
   // Setting up the camera
   cam= new PeasyCam(this,0,0,100,600);       
@@ -839,17 +886,22 @@ public void setup() {
   ///////////////////////////////////////////////////////////////////////
   
   // xml = loadXML("tree_of_life_complete.xml");
-  xml = loadXML("harpalinae.xml");
-  // xml = loadXML("test3.xml");
-  // xml = loadXML("test4.xml");
+  if (FULL_TREE==true) xml = loadXML("tree_of_life_complete.xml");
+  else {
+    xml = loadXML("harpalinae.xml");
+    // xml = loadXML("test3.xml");
+    // xml = loadXML("test4.xml");
+  }
   axiom = xml.getChildren("NODE");
   depth = 0;
+  println("init max depth: " + max_depth);
 
   ///////////////////////////////////////////////////////////////////////
   // START GROWING!
   ///////////////////////////////////////////////////////////////////////
   float timer = millis();
   GROW();
+  // GROW();
   println("tree_list size: " + tree_list.size());
   println("tree mesh size: " + tree_meshes.get(0).getVertexCount());
   println("max depth: " + max_depth);

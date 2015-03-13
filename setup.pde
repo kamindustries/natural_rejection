@@ -1,6 +1,6 @@
 void setup() {
   // size(1280,800,P3D);
-  size(960,560,P3D);
+  size(960,560,OPENGL);
 
   // Setting up the camera
   cam= new PeasyCam(this,0,0,100,600);       
@@ -37,17 +37,22 @@ void setup() {
   ///////////////////////////////////////////////////////////////////////
   
   // xml = loadXML("tree_of_life_complete.xml");
-  xml = loadXML("harpalinae.xml");
-  // xml = loadXML("test3.xml");
-  // xml = loadXML("test4.xml");
+  if (FULL_TREE==true) xml = loadXML("tree_of_life_complete.xml");
+  else {
+    xml = loadXML("harpalinae.xml");
+    // xml = loadXML("test3.xml");
+    // xml = loadXML("test4.xml");
+  }
   axiom = xml.getChildren("NODE");
   depth = 0;
+  println("init max depth: " + max_depth);
 
   ///////////////////////////////////////////////////////////////////////
   // START GROWING!
   ///////////////////////////////////////////////////////////////////////
   float timer = millis();
   GROW();
+  // GROW();
   println("tree_list size: " + tree_list.size());
   println("tree mesh size: " + tree_meshes.get(0).getVertexCount());
   println("max depth: " + max_depth);
