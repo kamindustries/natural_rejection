@@ -8,6 +8,14 @@ import peasy.test.*;
 import peasy.org.apache.commons.math.*; 
 import peasy.*; 
 import peasy.org.apache.commons.math.geometry.*; 
+import toxi.processing.*; 
+import toxi.geom.*; 
+import toxi.geom.mesh.*; 
+import toxi.geom.mesh.subdiv.*; 
+import toxi.math.*; 
+import toxi.physics.*; 
+import toxi.physics.behaviors.*; 
+import toxi.physics.constraints.*; 
 
 import java.util.HashMap; 
 import java.util.ArrayList; 
@@ -25,7 +33,17 @@ public class treeOfLife extends PApplet {
 
 
 
+// 3D creations
 
+
+
+
+
+
+
+
+ToxiclibsSupport gfx;
+ 
 XML xml;
 
 boolean PRINT_INFO = false;
@@ -33,43 +51,54 @@ boolean PRINT_INFO = false;
 PeasyCam cam;
 ControlP5 cp5;
 PMatrix3D currCameraMatrix;
-PGraphics3D g3; 
+PGraphics3D p3d ;
 
 float [] camera_pos;
 float [] camera_lookAt;
 float[] push_back;
-float zoom;
+float halo_displ;
+
+float[] hover;
 
 int marginX = 20;
 int marginY = 20;
 
 PShader lineShader;
 PShader lineShader2;
+PShader pointShader;
+
+float extinct_pts_weight = 100;
 
 Branch root;
 Branch trunk;
 ArrayList<Branch> tree_list = new ArrayList<Branch>();
+ArrayList<Branch> extinct_branches = new ArrayList<Branch>();
 ArrayList<PShape> tree_meshes = new ArrayList<PShape>();
-// PShape tree_mesh0;
-// PShape tree_mesh1;
+PShape extinct_points;
+
+
 float branch_length = 300.0f;
 int depth;
-int [] depth_array;
-int max_depth = 123;
+// int [] depth_array;
+int max_depth = 18;
+float xml_calc_time = 0.0f;
+float geom_calc_time = 0.0f;
 
 XML[] axiom;
 
 PFont font1 = createFont("SourceSansPro-Semibold", 20, true);
 PFont font2 = createFont("monaco", 10, true);
 
-float spare_slider1 = 0;
-float spare_slider2 = 0;
-float spare_slider3 = 0;
-float spare_slider4 = 0;
-float spare_slider5 = 0;
-float spare_slider6 = 0;
-
-// Define branch class to hold all our information
+float spare_slider1 = -0.9f;
+float spare_slider2 = 1.0f;
+float spare_slider3 = 3.0f;
+float spare_slider4 = 1.0f;
+float spare_slider5 = 30.0f;
+float spare_slider6 = 3.0f;
+float spare_slider7 = -20.0f;
+///////////////////////////////////////////////////////////////////////
+// Branch class
+///////////////////////////////////////////////////////////////////////
 class Branch {
   Branch parent;
   PVector position, grow_dir;
@@ -85,10 +114,10 @@ class Branch {
   }
 }
 public void drawGUI() {
-  currCameraMatrix = new PMatrix3D(g3.camera);
+  currCameraMatrix = new PMatrix3D(p3d.camera);
   camera();
   cp5.draw(); //DRAW CONTROLS AFTER CAMERA FOR GREAT SUCCESS
-  g3.camera = currCameraMatrix;
+  p3d.camera = currCameraMatrix;
 
   // TITLE
   fill(0);
@@ -118,10 +147,17 @@ public void setupGUI() {
   // Sliders
   ///////////////////////////////////////////////////////////////////////
 
+
   cp5 = new ControlP5(this); 
   // cp5.setControlFont(fontSliders);
   // cp5.setColorLabel(textColor);
-
+  // spare_slider1 = -0.9;
+  // spare_slider2 = 1.0;
+  // spare_slider3 = 3.0;
+  // spare_slider4 = 1.0;
+  // spare_slider5 = 30.0;
+  // spare_slider6 = 3.0;
+  // spare_slider7 = -20.0;
   cp5.addSlider("spare1")
   .setPosition(marginX, marginY+20)
   .setRange(-1.f, 1.f)
@@ -148,14 +184,20 @@ public void setupGUI() {
   ;  
   cp5.addSlider("spare5")
   .setPosition(marginX, marginY+60)
-  .setRange(0.1f, 30.0f)
-  .setValue(30.0f)
+  .setRange(0.01f, 10.0f)
+  .setValue(2.25f)
   .setSize(300,9)
   ;  
   cp5.addSlider("spare6")
   .setPosition(marginX, marginY+70)
+  .setRange(0.0f, 1.0f)
+  .setValue(1.0f)
+  .setSize(300,9)
+  ;  
+  cp5.addSlider("spare7")
+  .setPosition(marginX, marginY+80)
   .setRange(-50.0f, 50.0f)
-  .setValue(3.0f)
+  .setValue(-20.0f)
   .setSize(300,9)
   ;  
   // this is important:
@@ -183,6 +225,9 @@ public void controlEvent(ControlEvent theEvent) {
   if (theEvent.isFrom(cp5.getController("spare6"))) {
     spare_slider6 = theEvent.getController().getValue();
   }
+  if (theEvent.isFrom(cp5.getController("spare7"))) {
+    spare_slider7 = theEvent.getController().getValue();
+  }
   // if (theEvent.isFrom(checkbox)) {
   //     user_toggle_table1 = (int)checkbox.getArrayValue()[0];
   //     user_toggle_table2 = (int)checkbox.getArrayValue()[1];
@@ -195,26 +240,24 @@ public void controlEvent(ControlEvent theEvent) {
   //   }
 }
 public void draw() {
-  // recalculate every frame
-  // PShape tree_mesh0;
-  // PShape tree_mesh1;
-  // tree_list = new ArrayList<Branch>();
-  // tree_meshes = new ArrayList<PShape>();
 
+  background(255);
+  
+  ///////////////////////////////////////////////////////////////////////
+  // RE DRAW EVERY  F R A M E
+  ///////////////////////////////////////////////////////////////////////
+  if (frameCount%24==0) {
+    GROW();
+  }
 
-  // if (frameCount%24==0) {
-  //   tree_list.clear();
-  //   tree_meshes.clear();
-  //   GROW();
-  // }
-
-  background(25);
   camera_pos = cam.getPosition();
   camera_lookAt = cam.getLookAt();
-  zoom = (float)cam.getDistance() * spare_slider1;
   push_back[0]=camera_pos[0]-camera_lookAt[0];
   push_back[1]=camera_pos[1]-camera_lookAt[1];
   push_back[2]=camera_pos[2]-camera_lookAt[2];
+  
+  float cam_zoom = (float)cam.getDistance();
+  halo_displ = cam_zoom * spare_slider1;
 
   // TURNS OFF CAMERA CONTROLS WHEN HOVERING OVER SLIDER
   if (cp5.window(this).isMouseOver()) {
@@ -234,75 +277,152 @@ public void draw() {
     shape(tree_meshes.get(0));
   popMatrix();
   
+  // noFill();
+  box(10); 
+  
   pushMatrix();
     if (frameCount%24==0) lineShader2 = loadShader("linefrag.glsl", "linevert.glsl");
     lineShader2.set("stroke_weight", (float)spare_slider3);
     lineShader2.set("stroke_color", 1.0f);
     shader(lineShader2, LINES);    
-    translate(push_back[0] / zoom, push_back[1] / zoom, push_back[2] / zoom);
+    translate(push_back[0]/halo_displ, push_back[1]/halo_displ, push_back[2]/halo_displ);
     shape(tree_meshes.get(1));
   popMatrix();
 
-  // for (int i = 1; i < tree_list.size(); i++){
-  //   Branch b1 = tree_list.get(i);
-  //   Branch b0 = b1.parent;
 
-  //   strokeWeight(1);
-  //   stroke(25,0,0);
-  //   // line(b0.position.x, b0.position.y, b0.position.z, b1.position.x, b1.position.y, b1.position.z);
-
-  //   strokeWeight(4);
-  //   stroke(255,0,0);
-  //   // point(b0.position.x, b0.position.y, b0.position.z);
-
-  //   fill(0);
-  //   // text(i, b0.position.x+10, b0.position.y, b0.position.z);
-  //   // println(b0.position);
-  // }
-
-  noFill();
-  box(10);
   resetShader();
 
-  
-  // if (frameCount%24==0) println(frameRate);
-  // if (frameCount%24==0) println(zoom);
+  // // Pick ray tests
+  if (extinct_branches.size()>0){
+    shape(extinct_points);
+
+    Ray3D r = PickRay(camera_pos);
+    float radius = 10.0f;
+
+    for (int i = 0; i < extinct_points.getVertexCount(); i++) {
+      PVector cen = extinct_points.getVertex(i);
+      PVector cen_orig = extinct_points.getVertex(i);
+      PVector fix_zoom = new PVector(camera_lookAt[0],camera_lookAt[1],camera_lookAt[2]);
+      fix_zoom.sub(cen);
+      fix_zoom.normalize();
+      fix_zoom.mult(sqrt(cam_zoom) * -1.0f);
+      cen.add(fix_zoom); //fix for peasycam "zoom"
+
+      ///////////////////////////////////////////////////////////////////////
+      // do intersection calculation
+      ///////////////////////////////////////////////////////////////////////
+      float f = IntersectSphere(r, cen, radius);
+
+      // If hovering, do something
+      if (f > 0.0f) {
+        hover[i] = f;
+        fill(0,255,0);
+        text("cool", cen_orig.x, cen_orig.y + 10, cen_orig.z + 5);
+      }
+      if (f <= 0.0f) hover[i] = 0.0f;
+    }
+  }
+
 
   drawGUI();
   textFont(font2);
   text(frameRate, width - 70, marginY);
+
 }
+///////////////////////////////////////////////////////////////////////
+// Return ray
+///////////////////////////////////////////////////////////////////////
+public Ray3D PickRay(float[] _cam_pos){
+
+  PMatrix3D proj = p3d.projection.get();
+  PMatrix3D modvw = p3d.modelview.get();
+  PVector cam = new PVector(_cam_pos[0],_cam_pos[1],_cam_pos[2]);
+
+  // GluLookAt  ...
+  float x = 2* ((float)mouseX) / (float)width - 1;
+  float y = 2* ((float)height - (float)mouseY) / (float)height - 1;
+  float z = 1.0f;
+  PVector vect = new PVector(x, y, z);
+  
+  PVector transformVect = new PVector();
+ 
+  proj.apply(modvw);
+  proj.invert();
+  proj.mult(vect, transformVect);
+
+  stroke(200);
+
+  Ray3D ray = new Ray3D(new Vec3D(cam.x, cam.y, cam.z), 
+                        new Vec3D(transformVect.x,transformVect.y,transformVect.z));
+
+  return ray;
+}
+
+///////////////////////////////////////////////////////////////////////
+// Picking sphere
+///////////////////////////////////////////////////////////////////////
+public float IntersectSphere(Ray3D _r, PVector _cen, float _radius){
+
+  Vec3D _d = _r.getDirection();
+  PVector d = new PVector(_d.x, _d.y, _d.z);
+  PVector o = new PVector(_r.x, _r.y, _r.z);
+
+  PVector o_c = PVector.sub(o, _cen);
+  float a = d.dot(d);
+  float b = 2.f * (d.dot(o_c));
+  float c = (o_c.dot(o_c)) - _radius * _radius;
+  float detect = b*b - 4*a*c;
+
+  if(detect > 0.0f) {
+    float t1 = (-b - sqrt(detect)) / (2.0f * a);
+    if(t1 > 0.0f) return t1;
+    float t2 = (-b + sqrt(detect)) / (2.0f * a);
+    if (t2 > 0.0f) return t2;
+  }
+  else if (detect == 0.0f) {
+    float t = -b / (2.0f * a);
+    if (t > 0.0f) return t;
+  }
+
+  return -1.0f; //we ignore negative intersections, -1 qualifies as a miss
+}
+
 public void GROW() {
+  tree_list.clear();
+  tree_meshes.clear();
+
   randomSeed(0);
   ///////////////////////////////////////////////////////////////////////
   // Trunk Geometry 
   ///////////////////////////////////////////////////////////////////////
+  float xml_timer = millis();
   PVector root_pos = new PVector(0.0f, 0.0f, 0.0f);
-  PVector trunk_pos = new PVector(0.0f, branch_length/4.0f, 0.0f);
-  PVector init_grow_dir = new PVector(0.f, 1.f, 0.f);
+  PVector trunk_pos = new PVector(0.0f, branch_length/10.0f, 0.0f);
+  PVector init_grow_dir = new PVector(0.05f, 1.f, 0.05f);
   root = new Branch(null, root_pos, init_grow_dir, 1, 0);
   trunk = new Branch(root, trunk_pos, root.grow_dir, root.children, 0);
-  tree_list.add(root);
-  tree_list.add(trunk);
+  // tree_list.add(root);
+  // tree_list.add(trunk);
 
   Branch current;
   current = new Branch(trunk, trunk.position, trunk.grow_dir, 1, trunk.depth);
 
   // Draw a trunk
   for (int i = 0; i < 1; i++) {
-    PVector new_pos = PVector.mult(root.grow_dir, branch_length/4.0f);  
+    PVector new_pos = PVector.mult(root.grow_dir, branch_length/10.0f);  
     new_pos.add(current.position);
 
     trunk = new Branch(current, new_pos, current.grow_dir, 1, current.depth);
     current = trunk;
 
-    tree_list.add(trunk.parent);
-    tree_list.add(trunk);
+    // tree_list.add(trunk.parent);
+    // tree_list.add(trunk);
     // println(trunk.position);
   }
 
+
   ///////////////////////////////////////////////////////////////////////
-  // Kick off recursion down XML file tree
+  // R E A D    X M L  
   ///////////////////////////////////////////////////////////////////////
   readChild(axiom, depth, trunk);
 
@@ -310,6 +430,16 @@ public void GROW() {
   // println("Done with readChild");
   // println("tree_list size: " + tree_list.size());
   // println("max depth: "+max_depth);
+
+  // how long it took to go through the xml file
+  xml_calc_time = (millis() - xml_timer)/1000.0f;
+
+
+  ///////////////////////////////////////////////////////////////////////
+  // G E O M E T R Y
+  ///////////////////////////////////////////////////////////////////////
+  
+  xml_timer = millis();
 
   // Calculate max depth of file
   max_depth = 0;
@@ -321,7 +451,7 @@ public void GROW() {
   }
   // println("max depth: "+max_depth);
 
-  depth_array = new int[0];
+  // depth_array = new int[0];
 
   tree_meshes.add(new PShape());
   tree_meshes.add(new PShape());
@@ -341,11 +471,18 @@ public void GROW() {
         // set up colors
         float grad0 = abs((1 - (b0.depth/(float)max_depth))) * 255;
         float grad1 = abs((1 - (b1.depth/(float)max_depth))) * 255;
-        // println(grad0);
         int c0 = color(grad0,grad0,grad0);
         int c1 = color(grad1,grad1,grad1);
         int cw = color(255,255,255);
         int cr = color(0,0,0);
+
+        if (b1.children == 0) {
+          c1 = cr; 
+        }
+        mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
+        mesh.stroke(c1);
+        mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
+        mesh.stroke(c0);
 
         // make second mesh all white
         // if (j == 1) {
@@ -354,46 +491,40 @@ public void GROW() {
         // }
 
         // specific termination color
-        if (b1.children > 0){
-          mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
-          mesh.stroke(c1);
-          mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
-          mesh.stroke(c0);
-
-          depth_array = append(depth_array, b0.children);
-          depth_array = append(depth_array, b1.children);
-        } 
-        else {
-          mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
-          mesh.stroke(cr);
-          // mesh.stroke(c1);
-          mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
-          mesh.stroke(c0);
-
-          depth_array = append(depth_array, b0.children);
-          depth_array = append(depth_array, b1.children);
-        } 
-        // }
-        // if (b0.children == 0) {
-        //   stroke(255,0,0);
+        // if (b1.children > 0){
         //   mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
+        //   mesh.stroke(c1);
+        //   mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
+        //   mesh.stroke(c0);
+        // } 
+        // else {
+        //   mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
+        //   mesh.stroke(cr);
+        //   // mesh.stroke(c1);
+        //   mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
+        //   mesh.stroke(c0);
         // }
       }
     mesh.endShape();
     tree_meshes.set(j, mesh);
   }
+  geom_calc_time = (millis() - xml_timer)/1000.0f;
 }
 public void readChild(XML[] _parent, int _depth, Branch _branch) {
   Branch branch = _branch;    //the incoming parent branch
   int current_depth = _depth;
+  int num_branches = _parent.length;
+  // if (depth == 0) num_branches = _parent[0].getInt("CHILDCOUNT");
 
-  float current_branch_length = (branch_length/PApplet.parseFloat(current_depth+1));
-  if (current_branch_length >= branch_length/4.0f){ 
-    current_branch_length = current_branch_length/4.0f;
-  }
-  if (current_branch_length <= 20){
-    current_branch_length = 20;
-  }
+  // float current_branch_length = (branch_length/float(current_depth+1));
+  float current_branch_length = branch_length*((1+max_depth-current_depth)/((float)max_depth+1.f));
+  current_branch_length *= .2f;
+  // if (current_branch_length >= branch_length/4.0){ 
+  //   current_branch_length = current_branch_length/4.0;
+  // }
+  // if (current_branch_length <= 20){
+  //   current_branch_length = 20;
+  // }
   String path = "NODES/NODE";
   String spacing = " ";
   String stars = "**********";
@@ -412,6 +543,7 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
     // println(stars + " d: " + current_depth);
   }
 
+
   ///////////////////////////////////////////////////////////////////////
   // Prep work to make vectors rotate around grow direction like a tripod
   ///////////////////////////////////////////////////////////////////////
@@ -422,7 +554,7 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
   float spread = 1/(PApplet.parseFloat(branch.children)-1);
   if (spread > 1.0f) spread = 1.0f;
   if (spread < 0.03f) spread = .03f;
-  spread = spread * spare_slider6/200.0f;
+  spread = spread * 0.015f;
 
   // Create a random vector to compare to
   PVector rand_vec = new PVector(random(-1,1), random(-1,1), random(-1,1));
@@ -435,25 +567,30 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
   // cross_p = angle(cone) tangent ("green vector")
   // tan1 = rotational tangent ("yellow vector")
 
-  // PVector cross_p = branch.grow_dir.cross(rand_vec);
   PVector perp_vector = branch.grow_dir.cross(rand_vec);
-  perp_vector.mult((spare_slider5/10.0f) * 2.0f * PI * branch.children);
   init_grow_dir.add(perp_vector);
   PVector cross_p = branch.grow_dir.cross(init_grow_dir);
-  // cross_p.normalize();
-  // cross_p.mult(spare_slider6/100.0);
+  
+  float perturb = _parent.length;
+  if (current_depth == 0) perturb = 20;
+  if (perturb >= 20) perturb = 10;
+  if (perturb <= 1) perturb = 1;
+  perturb *= perturb*0.5f;
+  // perturb = PI * perturb/20.0;
+  perturb *= pow(((max_depth-current_depth+1)/(float)max_depth),2);
+  perturb *= spare_slider5 * 10.0f;
+  
+  cross_p.mult(perturb);
 
   // add original growing dir with scaled cross product
   // PVector initial_grow_dir = PVector.add(branch.grow_dir, cross_p);
 
   // get final variables lined up to prepare to rotate around grow dir vector
   PVector tan1 = init_grow_dir.cross(cross_p);
-  // PVector tan1 = initial_grow_dir.cross(branch.grow_dir);
-  // PVector tan2 = tan1.cross(branch.grow_dir);
-  // float dot = initial_grow_dir.dot(branch.grow_dir);
   float dot = init_grow_dir.dot(branch.grow_dir);
   PVector len = PVector.mult(branch.grow_dir, dot);
-  len.mult(spare_slider4 * (1 - current_depth/(float)max_depth));
+  // len.mult(spare_slider4 * 1.0 * ((current_depth)/(float)max_depth));
+  len.mult(spare_slider4 * 1.0f * (max_depth-current_depth)/(float)max_depth);
 
   Branch p = branch.parent;
   int offset_scale = current_depth;
@@ -484,8 +621,15 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
   //     }
   //   }
   // }
+  
+  // String base_name = new String();
+  // if (depth == 0) {
+  //   XML _base_name = _parent[0].getChild("NAME");  
+  //   base_name = _base_name.getContent();
+  //   println(base_name + ", " + _parent[0].getInt("CHILDCOUNT"));
+  // }
 
-
+  
   ///////////////////////////////////////////////////////////////////////
   // Begin calculating new branches
   ///////////////////////////////////////////////////////////////////////
@@ -493,8 +637,7 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
   for (int i = 0; i < _parent.length; i++) {
 
     ///////////////////////////////////////////////////////////////////////
-    // XML stuff to debug. Gets data of all immediate children
-    // Not necessary to draw tree
+    // XML stuff Gets data of all immediate children
     ///////////////////////////////////////////////////////////////////////
     XML[] children =  _parent[i].getChildren(path);
     int id = _parent[i].getInt("ID");
@@ -512,12 +655,13 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
     ///////////////////////////////////////////////////////////////////////
     
     // float rot = cos(spare_slider6*PI*i/(float)_parent.length);
-    float angle = PI * i/(float)_parent.length;
+    float angle = (2 * PI * (i/(float)_parent.length));
     // PVector tan2_rotate = PVector.mult(tan2,rot);
     float rand_scale = .25f;
     PVector rot_cos = PVector.mult(tan1, cos(angle + random(-rand_scale, rand_scale)));
     PVector rot_sin = PVector.mult(cross_p, sin(angle + random(-rand_scale, rand_scale)));
     PVector new_grow_dir = PVector.add(rot_cos, rot_sin);
+    // len.mult(perturb);
     new_grow_dir.add(len);
     new_grow_dir.normalize();
     
@@ -531,10 +675,20 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
 
     Branch next_branch = new Branch(_branch, new_pos, new_grow_dir, children.length, current_depth);
     
-
     tree_list.add(branch);
     tree_list.add(next_branch);
     
+    // if (children.length == 0 && extinct != 0){
+    if (extinct != 0){
+      // tree_list.add(branch);
+      // tree_list.add(next_branch);
+
+      extinct_branches.add(next_branch);
+    }
+    // if (children.length > 0){
+    //   tree_list.add(branch);
+    //   tree_list.add(next_branch);
+    // }
 
     ///////////////////////////////////////////////////////////////////////
     // Burrow deeper into the tree
@@ -567,9 +721,9 @@ public void readChild(XML[] _parent, int _depth, Branch _branch) {
 }
 public void setup() {
   // size(1280,800,P3D);
-  size(640,400,P3D);
+  size(960,560,P3D);
 
-  //setting up the camera
+  // Setting up the camera
   cam= new PeasyCam(this,0,0,100,600);       
   cam.setMinimumDistance(5);
   cam.setMaximumDistance(4000);
@@ -578,15 +732,24 @@ public void setup() {
   camera_lookAt = cam.getLookAt();
   perspective(PI/3.0f, PApplet.parseFloat(width)/PApplet.parseFloat(height), 1/10.0f, 10000.0f);
   push_back = new float[3];
-  zoom = (float)cam.getDistance();
+  halo_displ = (float)cam.getDistance();
   
-  //control P5 stuff      
-  g3 = (PGraphics3D)g;
+  // Control P5 stuff      
   setupGUI();
-  
+
+  // Graphics
+  gfx = new ToxiclibsSupport(this);
+  p3d = (PGraphics3D)g;
+
+  println("gathering shaders...");
   lineShader = loadShader("linefrag.glsl", "linevert.glsl");
   lineShader2 = loadShader("linefrag.glsl", "linevert.glsl");
-  
+
+  pointShader = new PShader(this, "point_vert.glsl", "point_frag.glsl");
+  pointShader.set("weight", extinct_pts_weight);
+  pointShader.set("sprite", loadImage("particle.png"));
+  println("loaded shaders.");
+ 
   // Sets random seed so we get same results each time
   randomSeed(0);
 
@@ -594,8 +757,8 @@ public void setup() {
   // Read XML
   ///////////////////////////////////////////////////////////////////////
   
-  xml = loadXML("tree_of_life_complete.xml");
-  // xml = loadXML("harpalinae.xml");
+  // xml = loadXML("tree_of_life_complete.xml");
+  xml = loadXML("harpalinae.xml");
   // xml = loadXML("test3.xml");
   // xml = loadXML("test4.xml");
   axiom = xml.getChildren("NODE");
@@ -604,100 +767,47 @@ public void setup() {
   ///////////////////////////////////////////////////////////////////////
   // START GROWING!
   ///////////////////////////////////////////////////////////////////////
-  int timer = millis();
+  float timer = millis();
   GROW();
+  println("tree_list size: " + tree_list.size());
+  println("tree mesh size: " + tree_meshes.get(0).getVertexCount());
   println("max depth: " + max_depth);
-  println("processing time: " + (millis()-timer)/1000.0f);
+  println("xml processing time: " + xml_calc_time);
+  println("geom processing time: " + geom_calc_time);
+  println("total processing time: " + (millis()-timer)/1000.0f);
+  println("num extinct species: " + extinct_branches.size());
 
+  float extinct_timer = millis();
+  println(extinct_timer);
 
-  // int timer = millis();
-  // readChild(axiom, depth, trunk);
+  if (extinct_branches.size()>0){
+    Branch p = extinct_branches.get(400);
+    int num_extinct_points = extinct_branches.size();
+    float scatter = 300.0f;
+    
+    extinct_points = createShape();
+    extinct_points.beginShape(POINTS);
+      extinct_points.strokeWeight(8);
+      extinct_points.stroke(255,0,0);
+      // while (p != null) {
+      //   if (p.parent == null) break;
+      //   else {
+      //     extinct_points.vertex(p.position.x, p.position.y, p.position.z);
+      //     extinct_points.vertex(p.parent.position.x, p.parent.position.y, p.parent.position.z);
+      //     p = p.parent;
+      //   }
+      // }
+      for (int i = 0; i < num_extinct_points; i++){
+        Branch ex = extinct_branches.get(i);
+        extinct_points.vertex(ex.position.x, ex.position.y, ex.position.z); 
+      }
+    extinct_points.endShape();
+    println(millis());
+    println("extinct processing time: "+(extinct_timer-millis())/1000.0f);
 
-  // // Print results
-  // println("Done with readChild");
-  // println("tree_list size: " + tree_list.size());
-  // // println("max depth: "+max_depth);
-  // max_depth = 2;
-  // for (int i = 0; i < tree_list.size(); i++) {
-  //   Branch b0 = tree_list.get(i);
-  //   if (max_depth<=b0.depth) {
-  //     max_depth = b0.depth;
-  //   }
-  // }
-  // println("max depth: "+max_depth);
-
-  // depth_array = new int[0];
-
-  // tree_meshes.add(new PShape());
-  // tree_meshes.add(new PShape());
-
-  // // load meshes with vertex info.
-  // // need to do some smart coloration based on age
-  // for(int j = 1; j < tree_meshes.size(); j++) {
-
-  //   PShape mesh = tree_meshes.get(j);
-  //   mesh = createShape();
-  //   mesh.beginShape(LINES);
-
-  //     for (int i = 0; i < tree_list.size()-2; i+=2){
-  //       Branch b0 = tree_list.get(i);
-  //       Branch b1 = tree_list.get(i+1);
-
-  //       // set up colors
-  //       float grad0 = b0.depth/float(max_depth)*255.0;
-  //       float grad1 = b1.depth/float(max_depth)*255.0;
-  //       color c0 = color(grad0,grad0,grad0);
-  //       color c1 = color(grad1,grad1,grad1);
-  //       color cw = color(255,255,255);
-  //       color cr = color(255,0,0);
-
-  //       // make second mesh all white
-  //       if (j == 1) {
-  //         c0 = cw;
-  //         c1 = cw;
-  //       }
-
-  //       if (b1.children > 0){
-  //         mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
-  //         mesh.stroke(c1);
-  //         mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
-  //         mesh.stroke(c0);
-
-  //         depth_array = append(depth_array, b0.children);
-  //         depth_array = append(depth_array, b1.children);
-  //       } 
-  //       else {
-  //         mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
-  //         mesh.stroke(cr);
-  //         mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
-  //         mesh.stroke(c0);
-
-  //         depth_array = append(depth_array, b0.children);
-  //         depth_array = append(depth_array, b1.children);
-  //       } 
-  //       // }
-  //       // if (b0.children == 0) {
-  //       //   stroke(255,0,0);
-  //       //   mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
-  //       // }
-  //     }
-  //   mesh.endShape();
-  //   tree_meshes.set(j, mesh);
-  // }
-  // println("MESH CALC TIME: " + (millis()-timer)/1000.0);
-
-  // int mesh_size = tree_meshes.get(0).getVertexCount();
-  // println("mesh size: "+mesh_size);
-  // XML[] test = axiom[0].getChildren("NODES/NODE/NODES/NODE");
-  // for (int i = 0; i < test.length; i++) {
-  //   XML name = test[i].getChild("NAME");
-  //   String _name = name.getContent();
-  //   if (_name == "") _name = "[no name]";
-  //   println(_name);
-  // }
-  // println(test.length);
-  // println(axiom[0].getInt("CHILDCOUNT"));
-
+    hover = new float[num_extinct_points];
+  }
+  drawGUI();
 
 }
   static public void main(String[] passedArgs) {

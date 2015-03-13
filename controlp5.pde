@@ -1,8 +1,8 @@
 void drawGUI() {
-  currCameraMatrix = new PMatrix3D(g3.camera);
+  currCameraMatrix = new PMatrix3D(p3d.camera);
   camera();
   cp5.draw(); //DRAW CONTROLS AFTER CAMERA FOR GREAT SUCCESS
-  g3.camera = currCameraMatrix;
+  p3d.camera = currCameraMatrix;
 
   // TITLE
   fill(0);
@@ -32,10 +32,17 @@ void setupGUI() {
   // Sliders
   ///////////////////////////////////////////////////////////////////////
 
+
   cp5 = new ControlP5(this); 
   // cp5.setControlFont(fontSliders);
   // cp5.setColorLabel(textColor);
-
+  // spare_slider1 = -0.9;
+  // spare_slider2 = 1.0;
+  // spare_slider3 = 3.0;
+  // spare_slider4 = 1.0;
+  // spare_slider5 = 30.0;
+  // spare_slider6 = 3.0;
+  // spare_slider7 = -20.0;
   cp5.addSlider("spare1")
   .setPosition(marginX, marginY+20)
   .setRange(-1.f, 1.f)
@@ -62,14 +69,20 @@ void setupGUI() {
   ;  
   cp5.addSlider("spare5")
   .setPosition(marginX, marginY+60)
-  .setRange(0.1, 30.0)
-  .setValue(30.0)
+  .setRange(0.01, 10.0)
+  .setValue(2.25)
   .setSize(300,9)
   ;  
   cp5.addSlider("spare6")
   .setPosition(marginX, marginY+70)
+  .setRange(0.0, 1.0)
+  .setValue(1.0)
+  .setSize(300,9)
+  ;  
+  cp5.addSlider("spare7")
+  .setPosition(marginX, marginY+80)
   .setRange(-50.0, 50.0)
-  .setValue(3.0)
+  .setValue(-20.0)
   .setSize(300,9)
   ;  
   // this is important:
@@ -96,6 +109,9 @@ void controlEvent(ControlEvent theEvent) {
   }  
   if (theEvent.isFrom(cp5.getController("spare6"))) {
     spare_slider6 = theEvent.getController().getValue();
+  }
+  if (theEvent.isFrom(cp5.getController("spare7"))) {
+    spare_slider7 = theEvent.getController().getValue();
   }
   // if (theEvent.isFrom(checkbox)) {
   //     user_toggle_table1 = (int)checkbox.getArrayValue()[0];

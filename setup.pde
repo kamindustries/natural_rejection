@@ -1,8 +1,8 @@
 void setup() {
   // size(1280,800,P3D);
-  size(640,400,P3D);
+  size(960,560,P3D);
 
-  //setting up the camera
+  // Setting up the camera
   cam= new PeasyCam(this,0,0,100,600);       
   cam.setMinimumDistance(5);
   cam.setMaximumDistance(4000);
@@ -11,15 +11,24 @@ void setup() {
   camera_lookAt = cam.getLookAt();
   perspective(PI/3.0, float(width)/float(height), 1/10.0, 10000.0);
   push_back = new float[3];
-  zoom = (float)cam.getDistance();
+  halo_displ = (float)cam.getDistance();
   
-  //control P5 stuff      
-  g3 = (PGraphics3D)g;
+  // Control P5 stuff      
   setupGUI();
-  
+
+  // Graphics
+  gfx = new ToxiclibsSupport(this);
+  p3d = (PGraphics3D)g;
+
+  println("gathering shaders...");
   lineShader = loadShader("linefrag.glsl", "linevert.glsl");
   lineShader2 = loadShader("linefrag.glsl", "linevert.glsl");
-  
+
+  pointShader = new PShader(this, "point_vert.glsl", "point_frag.glsl");
+  pointShader.set("weight", extinct_pts_weight);
+  pointShader.set("sprite", loadImage("particle.png"));
+  println("loaded shaders.");
+ 
   // Sets random seed so we get same results each time
   randomSeed(0);
 
@@ -37,99 +46,46 @@ void setup() {
   ///////////////////////////////////////////////////////////////////////
   // START GROWING!
   ///////////////////////////////////////////////////////////////////////
-  int timer = millis();
+  float timer = millis();
   GROW();
+  println("tree_list size: " + tree_list.size());
+  println("tree mesh size: " + tree_meshes.get(0).getVertexCount());
   println("max depth: " + max_depth);
-  println("processing time: " + (millis()-timer)/1000.0);
+  println("xml processing time: " + xml_calc_time);
+  println("geom processing time: " + geom_calc_time);
+  println("total processing time: " + (millis()-timer)/1000.0);
+  println("num extinct species: " + extinct_branches.size());
 
+  float extinct_timer = millis();
+  println(extinct_timer);
 
-  // int timer = millis();
-  // readChild(axiom, depth, trunk);
+  if (extinct_branches.size()>0){
+    Branch p = extinct_branches.get(400);
+    int num_extinct_points = extinct_branches.size();
+    float scatter = 300.0;
+    
+    extinct_points = createShape();
+    extinct_points.beginShape(POINTS);
+      extinct_points.strokeWeight(8);
+      extinct_points.stroke(255,0,0);
+      // while (p != null) {
+      //   if (p.parent == null) break;
+      //   else {
+      //     extinct_points.vertex(p.position.x, p.position.y, p.position.z);
+      //     extinct_points.vertex(p.parent.position.x, p.parent.position.y, p.parent.position.z);
+      //     p = p.parent;
+      //   }
+      // }
+      for (int i = 0; i < num_extinct_points; i++){
+        Branch ex = extinct_branches.get(i);
+        extinct_points.vertex(ex.position.x, ex.position.y, ex.position.z); 
+      }
+    extinct_points.endShape();
+    println(millis());
+    println("extinct processing time: "+(extinct_timer-millis())/1000.0);
 
-  // // Print results
-  // println("Done with readChild");
-  // println("tree_list size: " + tree_list.size());
-  // // println("max depth: "+max_depth);
-  // max_depth = 2;
-  // for (int i = 0; i < tree_list.size(); i++) {
-  //   Branch b0 = tree_list.get(i);
-  //   if (max_depth<=b0.depth) {
-  //     max_depth = b0.depth;
-  //   }
-  // }
-  // println("max depth: "+max_depth);
-
-  // depth_array = new int[0];
-
-  // tree_meshes.add(new PShape());
-  // tree_meshes.add(new PShape());
-
-  // // load meshes with vertex info.
-  // // need to do some smart coloration based on age
-  // for(int j = 1; j < tree_meshes.size(); j++) {
-
-  //   PShape mesh = tree_meshes.get(j);
-  //   mesh = createShape();
-  //   mesh.beginShape(LINES);
-
-  //     for (int i = 0; i < tree_list.size()-2; i+=2){
-  //       Branch b0 = tree_list.get(i);
-  //       Branch b1 = tree_list.get(i+1);
-
-  //       // set up colors
-  //       float grad0 = b0.depth/float(max_depth)*255.0;
-  //       float grad1 = b1.depth/float(max_depth)*255.0;
-  //       color c0 = color(grad0,grad0,grad0);
-  //       color c1 = color(grad1,grad1,grad1);
-  //       color cw = color(255,255,255);
-  //       color cr = color(255,0,0);
-
-  //       // make second mesh all white
-  //       if (j == 1) {
-  //         c0 = cw;
-  //         c1 = cw;
-  //       }
-
-  //       if (b1.children > 0){
-  //         mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
-  //         mesh.stroke(c1);
-  //         mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
-  //         mesh.stroke(c0);
-
-  //         depth_array = append(depth_array, b0.children);
-  //         depth_array = append(depth_array, b1.children);
-  //       } 
-  //       else {
-  //         mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
-  //         mesh.stroke(cr);
-  //         mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
-  //         mesh.stroke(c0);
-
-  //         depth_array = append(depth_array, b0.children);
-  //         depth_array = append(depth_array, b1.children);
-  //       } 
-  //       // }
-  //       // if (b0.children == 0) {
-  //       //   stroke(255,0,0);
-  //       //   mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
-  //       // }
-  //     }
-  //   mesh.endShape();
-  //   tree_meshes.set(j, mesh);
-  // }
-  // println("MESH CALC TIME: " + (millis()-timer)/1000.0);
-
-  // int mesh_size = tree_meshes.get(0).getVertexCount();
-  // println("mesh size: "+mesh_size);
-  // XML[] test = axiom[0].getChildren("NODES/NODE/NODES/NODE");
-  // for (int i = 0; i < test.length; i++) {
-  //   XML name = test[i].getChild("NAME");
-  //   String _name = name.getContent();
-  //   if (_name == "") _name = "[no name]";
-  //   println(_name);
-  // }
-  // println(test.length);
-  // println(axiom[0].getInt("CHILDCOUNT"));
-
+    hover = new float[num_extinct_points];
+  }
+  drawGUI();
 
 }

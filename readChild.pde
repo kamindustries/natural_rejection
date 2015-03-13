@@ -1,14 +1,18 @@
 void readChild(XML[] _parent, int _depth, Branch _branch) {
   Branch branch = _branch;    //the incoming parent branch
   int current_depth = _depth;
+  int num_branches = _parent.length;
+  // if (depth == 0) num_branches = _parent[0].getInt("CHILDCOUNT");
 
-  float current_branch_length = (branch_length/float(current_depth+1));
-  if (current_branch_length >= branch_length/4.0){ 
-    current_branch_length = current_branch_length/4.0;
-  }
-  if (current_branch_length <= 20){
-    current_branch_length = 20;
-  }
+  // float current_branch_length = (branch_length/float(current_depth+1));
+  float current_branch_length = branch_length*((1+max_depth-current_depth)/((float)max_depth+1.));
+  current_branch_length *= .2;
+  // if (current_branch_length >= branch_length/4.0){ 
+  //   current_branch_length = current_branch_length/4.0;
+  // }
+  // if (current_branch_length <= 20){
+  //   current_branch_length = 20;
+  // }
   String path = "NODES/NODE";
   String spacing = " ";
   String stars = "**********";
@@ -27,6 +31,7 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
     // println(stars + " d: " + current_depth);
   }
 
+
   ///////////////////////////////////////////////////////////////////////
   // Prep work to make vectors rotate around grow direction like a tripod
   ///////////////////////////////////////////////////////////////////////
@@ -37,7 +42,7 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
   float spread = 1/(float(branch.children)-1);
   if (spread > 1.0) spread = 1.0;
   if (spread < 0.03) spread = .03;
-  spread = spread * spare_slider6/200.0;
+  spread = spread * 0.015;
 
   // Create a random vector to compare to
   PVector rand_vec = new PVector(random(-1,1), random(-1,1), random(-1,1));
@@ -50,25 +55,30 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
   // cross_p = angle(cone) tangent ("green vector")
   // tan1 = rotational tangent ("yellow vector")
 
-  // PVector cross_p = branch.grow_dir.cross(rand_vec);
   PVector perp_vector = branch.grow_dir.cross(rand_vec);
-  perp_vector.mult((spare_slider5/10.0) * 2.0 * PI * branch.children);
   init_grow_dir.add(perp_vector);
   PVector cross_p = branch.grow_dir.cross(init_grow_dir);
-  // cross_p.normalize();
-  // cross_p.mult(spare_slider6/100.0);
+  
+  float perturb = _parent.length;
+  if (current_depth == 0) perturb = 20;
+  if (perturb >= 20) perturb = 10;
+  if (perturb <= 1) perturb = 1;
+  perturb *= perturb*0.5;
+  // perturb = PI * perturb/20.0;
+  perturb *= pow(((max_depth-current_depth+1)/(float)max_depth),2);
+  perturb *= spare_slider5 * 10.0;
+  
+  cross_p.mult(perturb);
 
   // add original growing dir with scaled cross product
   // PVector initial_grow_dir = PVector.add(branch.grow_dir, cross_p);
 
   // get final variables lined up to prepare to rotate around grow dir vector
   PVector tan1 = init_grow_dir.cross(cross_p);
-  // PVector tan1 = initial_grow_dir.cross(branch.grow_dir);
-  // PVector tan2 = tan1.cross(branch.grow_dir);
-  // float dot = initial_grow_dir.dot(branch.grow_dir);
   float dot = init_grow_dir.dot(branch.grow_dir);
   PVector len = PVector.mult(branch.grow_dir, dot);
-  len.mult(spare_slider4 * (1 - current_depth/(float)max_depth));
+  // len.mult(spare_slider4 * 1.0 * ((current_depth)/(float)max_depth));
+  len.mult(spare_slider4 * 1.0 * (max_depth-current_depth)/(float)max_depth);
 
   Branch p = branch.parent;
   int offset_scale = current_depth;
@@ -99,8 +109,15 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
   //     }
   //   }
   // }
+  
+  // String base_name = new String();
+  // if (depth == 0) {
+  //   XML _base_name = _parent[0].getChild("NAME");  
+  //   base_name = _base_name.getContent();
+  //   println(base_name + ", " + _parent[0].getInt("CHILDCOUNT"));
+  // }
 
-
+  
   ///////////////////////////////////////////////////////////////////////
   // Begin calculating new branches
   ///////////////////////////////////////////////////////////////////////
@@ -108,8 +125,7 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
   for (int i = 0; i < _parent.length; i++) {
 
     ///////////////////////////////////////////////////////////////////////
-    // XML stuff to debug. Gets data of all immediate children
-    // Not necessary to draw tree
+    // XML stuff Gets data of all immediate children
     ///////////////////////////////////////////////////////////////////////
     XML[] children =  _parent[i].getChildren(path);
     int id = _parent[i].getInt("ID");
@@ -127,12 +143,13 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
     ///////////////////////////////////////////////////////////////////////
     
     // float rot = cos(spare_slider6*PI*i/(float)_parent.length);
-    float angle = PI * i/(float)_parent.length;
+    float angle = (2 * PI * (i/(float)_parent.length));
     // PVector tan2_rotate = PVector.mult(tan2,rot);
     float rand_scale = .25;
     PVector rot_cos = PVector.mult(tan1, cos(angle + random(-rand_scale, rand_scale)));
     PVector rot_sin = PVector.mult(cross_p, sin(angle + random(-rand_scale, rand_scale)));
     PVector new_grow_dir = PVector.add(rot_cos, rot_sin);
+    // len.mult(perturb);
     new_grow_dir.add(len);
     new_grow_dir.normalize();
     
@@ -146,10 +163,20 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
 
     Branch next_branch = new Branch(_branch, new_pos, new_grow_dir, children.length, current_depth);
     
-
     tree_list.add(branch);
     tree_list.add(next_branch);
     
+    // if (children.length == 0 && extinct != 0){
+    if (extinct != 0){
+      // tree_list.add(branch);
+      // tree_list.add(next_branch);
+
+      extinct_branches.add(next_branch);
+    }
+    // if (children.length > 0){
+    //   tree_list.add(branch);
+    //   tree_list.add(next_branch);
+    // }
 
     ///////////////////////////////////////////////////////////////////////
     // Burrow deeper into the tree
