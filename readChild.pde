@@ -164,7 +164,7 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
     new_pos.add(branch.position);
     // println("newpos:"+new_pos);
 
-    Branch next_branch = new Branch(_branch, new_pos, new_grow_dir, children.length, current_depth);
+    Branch next_branch = new Branch(_branch, new_pos, new_grow_dir, children.length, current_depth, name);
     
     tree_list.add(branch);
     tree_list.add(next_branch);

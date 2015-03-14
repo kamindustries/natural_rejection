@@ -20,6 +20,9 @@ void setup() {
   gfx = new ToxiclibsSupport(this);
   p3d = (PGraphics3D)g;
 
+  buffer = createGraphics(width, height, P3D);
+
+  // Shaders
   println("gathering shaders...");
   lineShader = loadShader("linefrag.glsl", "linevert.glsl");
   lineShader2 = loadShader("linefrag.glsl", "linevert.glsl");
@@ -36,7 +39,7 @@ void setup() {
   pointShader.set("weight", extinct_pts_weight);
   pointShader.set("sprite", loadImage("particle.png"));
   println("loaded shaders.");
- 
+
   // Sets random seed so we get same results each time
   randomSeed(0);
 
@@ -46,11 +49,8 @@ void setup() {
   
   // xml = loadXML("tree_of_life_complete.xml");
   if (FULL_TREE==true) xml = loadXML("tree_of_life_complete.xml");
-  else {
-    xml = loadXML("harpalinae.xml");
-    // xml = loadXML("test3.xml");
-    // xml = loadXML("test4.xml");
-  }
+  else xml = loadXML("harpalinae.xml");
+
   axiom = xml.getChildren("NODE");
   depth = 0;
   println("init max depth: " + max_depth);

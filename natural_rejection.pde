@@ -16,11 +16,15 @@ ToxiclibsSupport gfx;
  
 XML xml;
 
-boolean FULL_TREE = false;
+boolean FULL_TREE = true;
 boolean DRAW_SKELETON = false;
 boolean PRINT_INFO = false;
 boolean show_hud = true;
 boolean show_fps = true;
+boolean update_cubes = true;
+
+PGraphics buffer;   // buffer
+Cube[] cubes;       // cubes
 
 PeasyCam cam;
 ControlP5 cp5;
@@ -33,8 +37,9 @@ float[] push_back;
 float halo_displ;
 
 float s = 0.0;
-boolean rev = false;
-float[] hover;
+int[] extinct_picked;
+String[] extinct_names;
+String display_name;
 
 int marginX = 20;
 int marginY = 20;
@@ -56,6 +61,7 @@ PShape extinct_points;
 float[] stroke_black = {0.0, 0.0, 0.0};
 float[] stroke_white = {1.0, 1.0, 1.0};
 float[] stroke_red = {1.0, 0.0, 0.0};
+float[] stroke_green = {0.0, 1.0, 0.0};
 
 float branch_length = 300.0;
 int depth;
@@ -70,8 +76,8 @@ PFont font1 = createFont("SourceSansPro-Semibold", 20, true);
 PFont font2 = createFont("monaco", 10, true);
 
 float spare_slider1 = 0.1;
-float spare_slider2 = 3.2;
-float spare_slider3 = 7.0;
+float spare_slider2 = 1.5;
+float spare_slider3 = 5.0;
 float spare_slider4 = .18;
 float spare_slider5 = 2.5;
 float spare_slider6 = 1.0;

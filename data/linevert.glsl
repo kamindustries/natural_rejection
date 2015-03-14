@@ -36,10 +36,11 @@ void main() {
   vec4 clip0 = transform * vertex;
   vec4 clip1 = clip0 + transform * vec4(direction.xyz, 0);
   
-  float thickness_mod = color.r;
-  if (thickness_mod<=0.15) thickness_mod = 0.15;
-  thickness_mod = thickness_mod;
-  float thickness = direction.w * stroke_weight * thickness_mod * 2.0;
+  // float thickness_mod = color.r;
+  // if (thickness_mod<=0.15) thickness_mod = 0.15;
+  // thickness_mod = thickness_mod;
+  // float thickness = direction.w * stroke_weight * thickness_mod * 2.0;
+  float thickness = direction.w * stroke_weight * 1.0 * 2.0;
 
   vec3 win0 = clipToWindow(clip0, viewport); 
   vec3 win1 = clipToWindow(clip1, viewport); 

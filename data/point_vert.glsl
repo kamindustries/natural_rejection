@@ -12,6 +12,9 @@ void main() {
   vec4 pos = modelview * vertex;
   vec4 clip = projection * pos;
   gl_Position = clip + projection * vec4(offset, 0, 0);
-  texCoord = (vec2(0.5) + offset / weight);
-  vertColor = color;
+  texCoord = (vec2(0.5) + offset / (weight * 100.));
+
+  vec4 out_color = color;
+  // out_color.g = 1.0;
+  vertColor = out_color;
 }

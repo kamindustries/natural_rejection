@@ -5,7 +5,8 @@ void GROW() {
   extinct_meshes.clear();
 
   randomSeed(0);
-  
+
+
   ///////////////////////////////////////////////////////////////////////
   // T R U N K 
   ///////////////////////////////////////////////////////////////////////
@@ -14,20 +15,20 @@ void GROW() {
   PVector root_pos = new PVector(0.0, 0.0, 0.0);
   PVector trunk_pos = new PVector(0.0, branch_length/10.0, 0.0);
   PVector init_grow_dir = new PVector(0.05, 1., 0.05);
-  root = new Branch(null, root_pos, init_grow_dir, 1, 0);
-  trunk = new Branch(null, trunk_pos, root.grow_dir, root.children, 0);
+  root = new Branch(null, root_pos, init_grow_dir, 1, 0, "root");
+  trunk = new Branch(null, trunk_pos, root.grow_dir, root.children, 0, "trunk");
   // tree_list.add(root);
   // tree_list.add(trunk);
 
   Branch current;
-  current = new Branch(null, trunk.position, trunk.grow_dir, 1, trunk.depth);
+  current = new Branch(null, trunk.position, trunk.grow_dir, 1, trunk.depth, "trunk");
 
   // Draw a trunk
   for (int i = 0; i < 1; i++) {
     PVector new_pos = PVector.mult(root.grow_dir, branch_length/10.0);  
     new_pos.add(current.position);
 
-    trunk = new Branch(null, new_pos, current.grow_dir, 1, current.depth);
+    trunk = new Branch(null, new_pos, current.grow_dir, 1, current.depth, "trunk");
     current = trunk;
 
     // tree_list.add(trunk.parent);
@@ -103,21 +104,30 @@ void GROW() {
   // mesh containing extinct species as vertex pts
   // also loads extinct arraylist containing appropriate number of pshapes
   ///////////////////////////////////////////////////////////////////////
+  display_name = "";
+
   if (extinct_branches.size()>0){
-    Branch p = extinct_branches.get(400);
     int num_extinct_points = extinct_branches.size();
-    float scatter = 300.0;
-    
+    cubes = new Cube[num_extinct_points];
+    extinct_names = new String[num_extinct_points];
+    extinct_picked = new int[num_extinct_points];
+
     extinct_points = createShape();
     extinct_points.beginShape(POINTS);
-      extinct_points.strokeWeight(8);
-      extinct_points.stroke(255,0,0);
+    extinct_points.strokeWeight(10);
+      // extinct_points.stroke(255,0,0);
+
       for (int i = 0; i < num_extinct_points; i++){
-        Branch ex = extinct_branches.get(i);
-        extinct_points.vertex(ex.position.x, ex.position.y, ex.position.z); 
+        Branch p = extinct_branches.get(i);
+        extinct_points.vertex(p.position.x, p.position.y, p.position.z); 
+        extinct_points.stroke(255,0,0);
+        extinct_names[i] = p.name;
+        extinct_picked[i] = 0;
+
+        cubes[i] = new Cube(i, p.position.x, p.position.y, p.position.z, 5 + (int)random(15), true);
       }
+
     extinct_points.endShape();
-    hover = new float[num_extinct_points];
 
     for (int i = 0; i < extinct_points.getVertexCount(); i++) {
       extinct_meshes.add(new PShape());
@@ -145,7 +155,7 @@ void GROW() {
     mesh.beginShape();
     mesh.noFill();
     // mesh.curveTightness(spare_slider9);
-    mesh.curveTightness(-.25);
+    // extinct_points.strokeWeight(10);
 
     mesh.curveVertex(p.position.x, p.position.y, p.position.z);
     mesh.stroke(c0);

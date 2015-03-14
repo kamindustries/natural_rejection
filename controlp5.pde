@@ -12,6 +12,7 @@ void drawGUI() {
     textFont(font1);
     textAlign(LEFT);
     text("Natural Rejection", marginX, marginY + 10);
+    text(display_name, marginX + 300, marginY + 10);
   }
   // textFont(fontHeader2);
   // text("Comparing Seattle's Interests in Fiction and Non-fiction", 
@@ -55,13 +56,13 @@ void setupGUI() {
   cp5.addSlider("spare2")
   .setPosition(marginX, marginY+30)
   .setRange(0.1, 10.0)
-  .setValue(3.2)
+  .setValue(1.5)
   .setSize(300,9)
   ;
   cp5.addSlider("spare3")
   .setPosition(marginX, marginY+40)
   .setRange(0.1, 10.0)
-  .setValue(7.0)
+  .setValue(5.0)
   .setSize(300,9)
   ;
   cp5.addSlider("spare4")
