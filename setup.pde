@@ -26,9 +26,11 @@ void setup() {
 
   lineShader.set("stroke_weight", (float)spare_slider2);
   lineShader.set("stroke_color", stroke_red);
+  lineShader.set("render_solid", 0);
   lineShader2.set("stroke_weight", (float)spare_slider3);
   lineShader2.set("stroke_color", stroke_white);
   lineShader2.set("push", spare_slider1);
+  lineShader2.set("render_solid", 1);
   
   pointShader = new PShader(this, "point_vert.glsl", "point_frag.glsl");
   pointShader.set("weight", extinct_pts_weight);

@@ -61,19 +61,19 @@ void setupGUI() {
   cp5.addSlider("spare3")
   .setPosition(marginX, marginY+40)
   .setRange(0.1, 10.0)
-  .setValue(3.7)
+  .setValue(7.0)
   .setSize(300,9)
   ;
   cp5.addSlider("spare4")
   .setPosition(marginX, marginY+50)
   .setRange(0.01, 2.0)
-  .setValue(.37)
+  .setValue(.18)
   .setSize(300,9)
   ;  
   cp5.addSlider("spare5")
   .setPosition(marginX, marginY+60)
   .setRange(0.01, 10.0)
-  .setValue(3.2)
+  .setValue(2.5)
   .setSize(300,9)
   ;  
   cp5.addSlider("spare6")

@@ -174,7 +174,7 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
         extinct_branches.add(next_branch);
       }
     }
-    else if (children.length == 0 && random(0.,1.)<0.5){
+    else if (children.length == 0 && random(0.,1.)<1.){
       extinct_branches.add(next_branch);
     }
     // if (children.length > 0){

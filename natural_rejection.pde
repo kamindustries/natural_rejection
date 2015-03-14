@@ -16,7 +16,8 @@ ToxiclibsSupport gfx;
  
 XML xml;
 
-boolean FULL_TREE = true;
+boolean FULL_TREE = false;
+boolean DRAW_SKELETON = false;
 boolean PRINT_INFO = false;
 boolean show_hud = true;
 boolean show_fps = true;
@@ -31,6 +32,8 @@ float [] camera_lookAt;
 float[] push_back;
 float halo_displ;
 
+float s = 0.0;
+boolean rev = false;
 float[] hover;
 
 int marginX = 20;
@@ -68,9 +71,9 @@ PFont font2 = createFont("monaco", 10, true);
 
 float spare_slider1 = 0.1;
 float spare_slider2 = 3.2;
-float spare_slider3 = 3.7;
-float spare_slider4 = .37;
-float spare_slider5 = 3.2;
+float spare_slider3 = 7.0;
+float spare_slider4 = .18;
+float spare_slider5 = 2.5;
 float spare_slider6 = 1.0;
 float spare_slider7 = 10.0;
 float spare_slider8 = 0.14;

@@ -53,8 +53,14 @@ float IntersectSphere(Ray3D _r, PVector _cen, float _radius){
     if (t > 0.0) return t;
   }
 
-  return -1.0; //we ignore negative intersections, -1 qualifies as a miss
+  return 0.; //we ignore negative intersections, -1 qualifies as a miss
 }
+
+// float LerpVal(float _value, float _dur){
+//   int start = frameCount;
+//   int finish = start + _dur;
+//   float x = finish - 1
+// }
 
 ///////////////////////////////////////////////////////////////////////
 // K E Y B O A R D
@@ -68,5 +74,19 @@ void keyPressed() {
   if (key == 'H'){
     if (show_fps==true) show_fps=false;
     else if (show_fps==false) show_fps=true;
+  }
+  if (key == ' '){
+    camera_pos = cam.getPosition();
+    camera_lookAt = cam.getLookAt();
+    float cam_zoom = (float)cam.getDistance();
+  
+    PVector fix_zoom = new PVector(camera_lookAt[0],camera_lookAt[1],camera_lookAt[2]);
+    PVector cam_pv = new PVector(camera_pos[0],camera_pos[1],camera_pos[2]);
+  
+    println("**************");
+    println("cam pos: "+camera_pos[0]+", "+camera_pos[1]+", "+camera_pos[2]);
+    println("lookat: "+camera_lookAt[0]+", "+camera_lookAt[1]+", "+camera_lookAt[2]);
+    println("zoom: "+cam_zoom);
+    println("");
   }
 }

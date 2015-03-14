@@ -71,33 +71,38 @@ void GROW() {
     PShape mesh = tree_meshes.get(j);
     mesh = createShape();
     mesh.beginShape(LINES);
+    if (DRAW_SKELETON==true){
+      for (int i = 0; i < tree_list.size()-2; i+=2){
+        Branch b0 = tree_list.get(i);
+        Branch b1 = tree_list.get(i+1);
 
-      // for (int i = 0; i < tree_list.size()-2; i+=2){
-      //   Branch b0 = tree_list.get(i);
-      //   Branch b1 = tree_list.get(i+1);
+        // set up colors
+        float grad0 = abs((1 - (b0.depth/(float)max_depth))) * 255;
+        float grad1 = abs((1 - (b1.depth/(float)max_depth))) * 255;
+        color c0 = color(grad0,grad0,grad0);
+        color c1 = color(grad1,grad1,grad1);
+        color cw = color(255,255,255);
+        color cr = color(0,0,0);
 
-      //   // set up colors
-      //   float grad0 = abs((1 - (b0.depth/(float)max_depth))) * 255;
-      //   float grad1 = abs((1 - (b1.depth/(float)max_depth))) * 255;
-      //   color c0 = color(grad0,grad0,grad0);
-      //   color c1 = color(grad1,grad1,grad1);
-      //   color cw = color(255,255,255);
-      //   color cr = color(0,0,0);
-
-      //   if (b1.children == 0) {
-      //     c1 = cr; 
-      //   }
-      //   mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
-      //   mesh.stroke(c1);
-      //   mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
-      //   mesh.stroke(c0);
-      // }
+        if (b1.children == 0) {
+          c1 = cr; 
+        }
+        mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
+        mesh.stroke(c1);
+        mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
+        mesh.stroke(c0);
+      }
+    }
 
     mesh.endShape();
     tree_meshes.set(j, mesh);
   }
   geom_calc_time = (millis() - xml_timer)/1000.0;
 
+  ///////////////////////////////////////////////////////////////////////
+  // mesh containing extinct species as vertex pts
+  // also loads extinct arraylist containing appropriate number of pshapes
+  ///////////////////////////////////////////////////////////////////////
   if (extinct_branches.size()>0){
     Branch p = extinct_branches.get(400);
     int num_extinct_points = extinct_branches.size();
@@ -160,10 +165,12 @@ void GROW() {
           r.mult(40.);
           o.add(r);
           // o.add(perp_vector);
+
           mesh.curveVertex(o.x, o.y, o.z);
           mesh.stroke(c0);
           mesh.curveVertex(o.x, o.y, o.z);
           mesh.stroke(c0);
+
           break;
         }
         else {
@@ -171,6 +178,7 @@ void GROW() {
           perp_vector.mult(j * spare_slider7);
           o.add(r);
           o.add(perp_vector);
+          
           mesh.curveVertex(o.x, o.y, o.z);
           mesh.stroke(c0);
           
@@ -180,6 +188,5 @@ void GROW() {
       }
     mesh.endShape();
     extinct_meshes.set(i, mesh);
-    // println(j);
   }
 }
