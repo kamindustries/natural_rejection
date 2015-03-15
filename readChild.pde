@@ -2,17 +2,10 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
   Branch branch = _branch;    //the incoming parent branch
   int current_depth = _depth;
   int num_branches = _parent.length;
-  // if (depth == 0) num_branches = _parent[0].getInt("CHILDCOUNT");
 
-  // float current_branch_length = (branch_length/float(current_depth+1));
   float current_branch_length = branch_length*((1+max_depth-current_depth)/((float)max_depth+1.));
   current_branch_length *= .2;
-  // if (current_branch_length >= branch_length/4.0){ 
-  //   current_branch_length = current_branch_length/4.0;
-  // }
-  // if (current_branch_length <= 20){
-  //   current_branch_length = 20;
-  // }
+
   String path = "NODES/NODE";
   String spacing = " ";
   String stars = "**********";

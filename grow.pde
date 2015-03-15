@@ -73,7 +73,7 @@ void GROW() {
     PShape mesh = tree_meshes.get(j);
     mesh = createShape();
     mesh.beginShape(LINES);
-    if (DRAW_SKELETON==true){
+    // if (DRAW_SKELETON==true){
       for (int i = 0; i < tree_list.size()-2; i+=2){
         Branch b0 = tree_list.get(i);
         Branch b1 = tree_list.get(i+1);
@@ -94,7 +94,7 @@ void GROW() {
         mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
         mesh.stroke(c0);
       }
-    }
+    // }
 
     mesh.endShape();
     tree_meshes.set(j, mesh);

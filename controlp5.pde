@@ -5,28 +5,101 @@ void drawGUI() {
     cp5.draw(); //DRAW CONTROLS AFTER CAMERA FOR GREAT SUCCESS
   }
   p3d.camera = currCameraMatrix;
+  
 
   // TITLE
+  textFont(font1);
   if (show_text==true){
-    fill(0);
-    textFont(font1);
-    textAlign(LEFT);
-    text("Natural Rejection", marginX, marginY + 10);
-    text(display_name, marginX + 300, marginY + 10);
-  }
-  // textFont(fontHeader2);
-  // text("Comparing Seattle's Interests in Fiction and Non-fiction", 
-  //       marginX, marginY + 58);
+    if (selected_branch.name != "trunk"&&selected_branch.name != null) {
+      
+      if (display_name != selected_branch.name){
 
-  // // LABELS
-  // textFont(fontLabelTitle);
-  // text("MOST CHECKED OUT TITLES", marginX, marginY+130);
-  // textFont(fontSliders);
-  // text("ENTIRE LIBRARY", marginX+25, marginY+154);
-  // text("WITHIN DEWEY", marginX+25, marginY+175);
-  // text("FLIP LABELS", marginX+25, marginY+259);
-  // text("TOGGLE LABELS", marginX+25, marginY+279);
-  // text("* One block = one week", marginX, marginY+680);
+          fade_text.clear();
+          fade_text_rand.clear();
+          text_names_list.clear();
+          display_name = selected_branch.name;
+          Branch b = selected_branch;
+
+          if (b.parent != null){
+            // starting with 6 names...
+            for (int i = 0; i < 6; i++) {
+              text_names_list.add(new String());
+              text_names_list.set(i, b.name);
+              int name_length = b.name.length();
+              fade_text.add(new float[name_length]);
+              fade_text_rand.add(new float[name_length]);
+              // print(text_names_array[i]+","+name_length+"; ");
+              
+              b = b.parent;
+
+              if (b.name == "trunk"||b.name=="null"||b.name==null) {
+                // println("");
+                // println("null parent at: "+i);
+                // println("text names list size: "+text_names_list.size());
+                text_names_list.remove(i);
+                break;
+              }
+
+            }
+            // println("text names list size: "+text_names_list.size());
+            // println();
+            for (int i = 0; i < text_names_list.size(); i++) {
+              // println("1) "+i);
+              int name_length = text_names_list.get(i).length();
+              float[] start_col = new float[name_length];
+              // println("2) "+i);
+              float[] rand_col = new float[name_length];
+              // println("3) "+i);
+
+              for (int j = 0; j < name_length; j++){
+                start_col[j] = 255 + (j * 10); //give new letters slower anim speed
+                rand_col[j] = random(.3,1); 
+              }
+              // println("4) "+i);
+              fade_text_rand.set(i, rand_col);
+              // println("5) "+i);
+              fade_text.set(i, start_col);
+              // println("6) "+i);
+            }
+
+          }
+        } 
+        //trigger animation
+        for (int i = 0; i < text_names_list.size(); i++){
+          String current_name = text_names_list.get(i);
+          float[] current_fades = fade_text.get(i);
+          float[] current_fades_rand = fade_text_rand.get(i);
+          // set text size for each row
+          if (i == 0) textSize(14-(i*1.5));
+          float text_size = 11-(i*.5);
+          if (text_size <= 6) text_size = 6;
+          textSize(text_size);
+          String word = new String();
+          word = "";
+
+          for (int j = 0; j<current_name.length(); j++){
+            char c0 = current_name.charAt(j);
+            String ch = new String();
+            ch += c0;
+            if (i == 0) ch = ch.toUpperCase();
+            float speed_mod = text_fade_speed * current_fades_rand[j] ;
+            current_fades[j] += EaseIn(current_fades[j], 128 + (i * 5), speed_mod);
+            float ease_out_color = current_fades[j];
+            fill(ease_out_color);
+            text(ch, (marginX*2) + textWidth(word) + ((j*15)/(i+1)), marginY*2 + (i * 20));
+            word += ch;
+            if (c0 == ' ') word += " ";
+          }
+          fade_text.set(i, current_fades);
+          fade_text_rand.set(i, current_fades_rand);
+        }
+    }
+
+    fill(0);
+    textAlign(LEFT);
+    // text(out_name, marginX + 300, marginY + 10);
+  }
+  
 
 }
 

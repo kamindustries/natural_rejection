@@ -77,8 +77,16 @@ int getId(color c) {
 
 void keyPressed() {
   if (key == '1'){
+    if (DRAW_MAIN==true) DRAW_MAIN=false;
+    else if (DRAW_MAIN==false) DRAW_MAIN=true;
+  }
+  if (key == '2'){
     if (DRAW_HALO==true) DRAW_HALO=false;
     else if (DRAW_HALO==false) DRAW_HALO=true;
+  }
+  if (key == '3'){
+    if (DRAW_SKELETON==true) DRAW_SKELETON=false;
+    else if (DRAW_SKELETON==false) DRAW_SKELETON=true;
   }
   if (key == 'H'){
     if (show_hud==true) show_hud=false;
@@ -137,7 +145,6 @@ void mouseMoved() {
   // if id > 0 (background id = -1)
   if (hover_id >= 0 && lock_selection==false) {
     selected_branch = extinct_branches.get(hover_id);
-    display_name = selected_branch.name;
     extinct_picked[hover_id] = 1; //main control for hover
 
     if (cubes[hover_id].update == true) {
@@ -189,9 +196,9 @@ float EaseIn(float _value, float _target, float _speed){
   x = d * _speed;
   return x;
 }
-float EaseOut(float _value, float _target, float _speed){
+float EaseIn2(float _value, float _target, float _speed){
   float x = _value;
-  float d = _target + _value;
+  float d = abs(_target - _value);
   x = d * _speed;
   return x;
 }

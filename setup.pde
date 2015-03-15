@@ -16,6 +16,7 @@ void setup() {
   
   // Control P5 stuff      
   setupGUI();
+ 
 
   // Graphics
   gfx = new ToxiclibsSupport(this);
@@ -53,8 +54,11 @@ void setup() {
   ///////////////////////////////////////////////////////////////////////
   
   // xml = loadXML("tree_of_life_complete.xml");
-  if (FULL_TREE==true) xml = loadXML("tree_of_life_complete.xml");
-  else xml = loadXML("harpalinae.xml");
+  String file = "harpalinae.xml";
+  if (FULL_TREE==true) file = "tree_of_life_complete.xml";
+  xml = loadXML(file);
+  println("Loaded "+file);
+  println("");
 
   axiom = xml.getChildren("NODE");
   depth = 0;
@@ -63,18 +67,29 @@ void setup() {
   ///////////////////////////////////////////////////////////////////////
   // START GROWING!
   ///////////////////////////////////////////////////////////////////////
-  float timer = millis();
+  float startup_timer = millis();
   GROW();
-  GROW();
+  println("First growth complete.");
+  //grow a second time to get accurate max depth for smaller trees
+  if (FULL_TREE==false) GROW(); 
+  int num_extinct_cvs = 0;
+  for (int i=0; i<extinct_meshes.size(); i++){
+    num_extinct_cvs += extinct_meshes.get(i).getVertexCount();
+  }
   println("tree_list size: " + tree_list.size());
   println("tree mesh size: " + tree_meshes.get(0).getVertexCount());
+  println("num extinct species: " + extinct_branches.size());
+  println("num extinct curve vertices: " + num_extinct_cvs);
   println("max depth: " + max_depth);
   println("xml processing time: " + xml_calc_time);
   println("geom processing time: " + geom_calc_time);
-  println("total processing time: " + (millis()-timer)/1000.0);
-  println("num extinct species: " + extinct_branches.size());
+  println("total processing time: " + (millis()-startup_timer)/1000.0);
 
 
+  // Array lists for text fading
+  ArrayList<float[]> fade_text = new ArrayList<float[]>();
+  ArrayList<float[]> fade_text_rand = new ArrayList<float[]>();
+  ArrayList<String> text_names_list = new ArrayList<String>();
 
   drawGUI();
 

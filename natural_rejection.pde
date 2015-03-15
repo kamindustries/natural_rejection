@@ -16,11 +16,12 @@ ToxiclibsSupport gfx;
  
 XML xml;
 
-boolean FULL_TREE = false;
-boolean DRAW_SKELETON = false;
+boolean FULL_TREE = true;
+boolean DRAW_MAIN = true;
 boolean DRAW_HALO = false;
+boolean DRAW_SKELETON = false;
 boolean PRINT_INFO = false;
-boolean show_hud = true;
+boolean show_hud = false;
 boolean show_text = true;
 boolean update_cubes = true;
 
@@ -52,6 +53,15 @@ float ease_speed = 0.05;
 int hover_id = -1;
 boolean lock_selection = false;
 boolean mouse_drag = false;
+boolean update_text = true;
+// float [][] fade_text;
+// float [][] fade_text_rand;
+float text_fade_speed = .03;
+ArrayList<float[]> fade_text = new ArrayList<float[]>();
+ArrayList<float[]> fade_text_rand = new ArrayList<float[]>();
+ArrayList<String> text_names_list = new ArrayList<String>();
+// ArrayList<float[]> fade_text;
+// ArrayList<float[]> fade_text_rand;
 
 int marginX = 20;
 int marginY = 20;
@@ -87,7 +97,7 @@ float geom_calc_time = 0.0;
 
 XML[] axiom;
 
-PFont font1 = createFont("SourceSansPro-Semibold", 20, true);
+PFont font1 = createFont("Verdana", 14, true);
 PFont font2 = createFont("monaco", 10, true);
 
 int hud_offset = 400;

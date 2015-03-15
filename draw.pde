@@ -30,14 +30,15 @@ void draw() {
     cam.setActive(true);
   }
 
-  textFont(font1);
+  // textFont(font1);
 
   s+=0.02;
 
   if (FULL_TREE==false){
-
     if (frameCount%24==0) lineShader = loadShader("linefrag.glsl", "linevert.glsl");
     if (frameCount%24==0) pointShader = new PShader(this, "point_vert.glsl", "point_frag.glsl");
+  }
+  if (DRAW_MAIN){
     lineShader.set("stroke_weight", (float)spare_slider2);
     lineShader.set("stroke_color", clr_black);
     lineShader.set("push", 0);
@@ -92,7 +93,7 @@ void draw() {
         lineShader.set("alpha", fade_val_a[i]);
       }
       else {
-
+        // FADE OUT
         if (fade_val[i] > 0) {
           fade_val[i] += EaseIn(fade_val[i], 0., ease_speed);
         }
@@ -130,6 +131,7 @@ void draw() {
       // shader(pointShader, POINTS);
       // point(extinct_vertex.x,extinct_vertex.y,extinct_vertex.z);
     }
+  }
     if (DRAW_SKELETON == true){
       shape(tree_meshes.get(0));
     }
@@ -140,40 +142,41 @@ void draw() {
         shape(extinct_meshes.get(i));
       }
     }
-  }
-  else {
+  
+  // DRAW FULL TREE
+  // else {
 
-    lineShader.set("stroke_weight", (float)spare_slider2);
-    shader(lineShader, LINES);
-    for (int i = 0; i < extinct_meshes.size(); i++) {
+  //   lineShader.set("stroke_weight", (float)spare_slider2);
+  //   shader(lineShader, LINES);
+  //   for (int i = 0; i < extinct_meshes.size(); i++) {
 
-      // AMBIENT COLOR CYCLING
-      float f = i/(float)extinct_meshes.size();
-      float c = (sin(s + (f * PI * 2.)) + 1.) * 0.5  ;
-      if (c <= 0.05) c = 0.05;
-      c = c*c;
-      clr_red[0] = c;
-      lineShader.set("stroke_color", clr_red);
+  //     // AMBIENT COLOR CYCLING
+  //     float f = i/(float)extinct_meshes.size();
+  //     float c = (sin(s + (f * PI * 2.)) + 1.) * 0.5  ;
+  //     if (c <= 0.05) c = 0.05;
+  //     c = c*c;
+  //     clr_red[0] = c;
+  //     lineShader.set("stroke_color", clr_red);
 
-      // HOVER MODS
-      if (extinct_picked[i] == 1) {
-        lineShader.set("stroke_color", clr_green);
-        lineShader.set("stroke_weight", 2.);
+  //     // HOVER MODS
+  //     if (extinct_picked[i] == 1) {
+  //       lineShader.set("stroke_color", clr_green);
+  //       lineShader.set("stroke_weight", 2.);
 
-        pointShader.set("stroke_color", clr_green);
-      }
-      else {
-        lineShader.set("stroke_weight", (float)spare_slider2);
-      }
-      shape(extinct_meshes.get(i));
-    }
+  //       pointShader.set("stroke_color", clr_green);
+  //     }
+  //     else {
+  //       lineShader.set("stroke_weight", (float)spare_slider2);
+  //     }
+  //     shape(extinct_meshes.get(i));
+  //   }
 
-    // lineShader2.set("stroke_weight", (float)spare_slider3);
-    // shader(lineShader2, LINES);
-    // for (int i = 0; i < extinct_meshes.size(); i++) {
-    //   shape(extinct_meshes.get(i));
-    // }
-  }
+  //   // lineShader2.set("stroke_weight", (float)spare_slider3);
+  //   // shader(lineShader2, LINES);
+  //   // for (int i = 0; i < extinct_meshes.size(); i++) {
+  //   //   shape(extinct_meshes.get(i));
+  //   // }
+  // }
 
   // pushMatrix();
   //   lineShader.set("stroke_weight", (float)spare_slider2);
@@ -279,13 +282,8 @@ void draw() {
   resetShader(LINES);
   resetShader(POINTS);
 
-  box(10); 
-
-  // pushMatrix();
-  //   noFill();
-  //   translate(camera_lookAt[0],camera_lookAt[1],camera_lookAt[2]);
-  //   box(5);
-  // popMatrix();
+  // box at orgin...for debugging stuff
+  // box(10); 
 
   drawGUI();
   
