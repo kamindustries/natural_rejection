@@ -76,13 +76,21 @@ int getId(color c) {
 ///////////////////////////////////////////////////////////////////////
 
 void keyPressed() {
-  if (key == 'h'){
+  if (key == '1'){
+    if (DRAW_HALO==true) DRAW_HALO=false;
+    else if (DRAW_HALO==false) DRAW_HALO=true;
+  }
+  if (key == 'H'){
     if (show_hud==true) show_hud=false;
     else if (show_hud==false) show_hud=true;
   }
-  if (key == 'H'){
-    if (show_fps==true) show_fps=false;
-    else if (show_fps==false) show_fps=true;
+  if (key == 'h'){
+    if (show_text==true) {
+      show_text=false;
+    }
+    else if (show_text==false) {
+      show_text=true;
+    }
   }
   if (key == ' '){
     camera_pos = cam.getPosition();
@@ -101,45 +109,89 @@ void keyPressed() {
 }
 
 void mouseMoved() {
+  ///////////////////////////////////////////////////////////////////////
+  // P I C K I N G
+  ///////////////////////////////////////////////////////////////////////
   // draw the scene in the buffer
-  if (frameCount%1==0){
-    buffer.beginDraw();
-    buffer.background(getColor(-1)); // since background is not an object, its id is -1
-    buffer.noFill();
-    buffer.strokeWeight(10);
-    buffer.setMatrix(p3d.camera);
-    for (int i = 0; i < cubes.length; i++) {
-      cubes[i].drawBuffer(buffer);
-    }
-    buffer.endDraw();
-    // get the pixel color under the mouse
-    color pick = buffer.get(mouseX, mouseY);
-    // get object id
-    int id = getId(pick);
-    // if id > 0 (background id = -1)
-    if (id >= 0) {
-      Branch p = extinct_branches.get(id);
-      display_name = p.name;
-      extinct_picked[id] = 1;
-      if (cubes[id].update == true) {
-        println("got " + id);
-        cubes[id].changeColor();
-        update_cubes = true;
-      }
 
-    } else if (update_cubes == true) {
-      for (int j = 0; j < cubes.length; j++) {
-        if(cubes[j].update == true){ 
-          cubes[j].resetColor();
-          extinct_picked[j] = 0;
-        }
-        update_cubes = false;
+  PVector cam_mouse = new PVector(cam.getPosition()[0],cam.getPosition()[1],cam.getPosition()[2]);
+  buffer.beginDraw();
+  buffer.background(getColor(-1)); // since background is not an object, its id is -1
+  // buffer.noFill();
+  buffer.stroke(0,0,255);
+  buffer.setMatrix(p3d.camera);
+  for (int i = 0; i < cubes.length; i++) {
+    PVector pos = new PVector(cubes[i].x, cubes[i].y, cubes[i].z);
+    pos.sub(cam_mouse);
+    float cam_stroke =  (1./pos.mag());
+    cam_stroke *= 10000.;
+    buffer.strokeWeight(cam_stroke);
+    cubes[i].drawBuffer(buffer);
+  }
+
+  buffer.endDraw();
+  // get the pixel color under the mouse
+  color pick = buffer.get(mouseX, mouseY);
+  // get object id
+  hover_id = getId(pick);
+  // if id > 0 (background id = -1)
+  if (hover_id >= 0 && lock_selection==false) {
+    selected_branch = extinct_branches.get(hover_id);
+    display_name = selected_branch.name;
+    extinct_picked[hover_id] = 1; //main control for hover
+
+    if (cubes[hover_id].update == true) {
+      // println("got " + hover_id);
+      cubes[hover_id].changeColor();
+      update_cubes = true;
+    }
+  } else if (update_cubes == true && lock_selection==false) {
+    for (int j = 0; j < cubes.length; j++) {
+      if(cubes[j].update == true){ 
+        cubes[j].resetColor();
+        extinct_picked[j] = 0; //main control for hover
       }
+      update_cubes = false;
     }
   }
 }
+void mousePressed(MouseEvent e) {
+  if (e.getClickCount()==1 && hover_id >= 0){
+    if (lock_selection==true) lock_selection=false;
+    else if (lock_selection==false) lock_selection=true;
+  }
+  if (e.getClickCount()==2){
+    Branch b = selected_branch;
+    cam.lookAt(b.position.x,b.position.y,b.position.z);
+    cam.setDistance(100);
+    if (lock_selection==true) lock_selection=false;
+    else if (lock_selection==false) lock_selection=true;
+  }
 
-float LerpVal(){
-  float x = 255 * random(0,frameCount)/(float)frameCount;
+}
+void mouseDragged(){
+  mouse_drag = true;
+}
+void mouseReleased(){
+  if (mouse_drag==false && hover_id==-1){
+    lock_selection=false;
+  }
+  mouse_drag = false;
+}
+// float LerpVal(){
+//   float x = 255 * random(0,frameCount)/(float)frameCount;
+//   return x;
+// }
+
+float EaseIn(float _value, float _target, float _speed){
+  float x = _value;
+  float d = _target - _value;
+  x = d * _speed;
+  return x;
+}
+float EaseOut(float _value, float _target, float _speed){
+  float x = _value;
+  float d = _target + _value;
+  x = d * _speed;
   return x;
 }

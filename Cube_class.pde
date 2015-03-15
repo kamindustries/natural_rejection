@@ -1,3 +1,7 @@
+// This class originally created a cube as the basis to do color picking
+// I've changed it to work as a single vertex point
+// But haven't updated the name
+
 class Cube {
   // variables
   int id;          // id
@@ -12,7 +16,8 @@ class Cube {
     this.z = z;
     this.w = w;
     this.update = _update;
-    c = color(random(255), 250, 50);
+    // c = color(random(255), 250, 50);
+    c = color(random(255), random(255), random(255));
   }
   // make the color change
   public void changeColor() {
@@ -21,10 +26,8 @@ class Cube {
     // int b = (int)blue(c);
     // c = color(r, 255 - g, b);
     // c = color(255,0,0);
-    float r = LerpVal();
-    float g = LerpVal();
-    float b = LerpVal();
-    c = color(r,g,b);
+
+    c = color(255,255,255);
     update = false;
   }
   public void resetColor() {
@@ -38,6 +41,7 @@ class Cube {
   // display the cube on screen
   public void display(PGraphics ecran) {
     // ecran.fill(c);
+    ecran.strokeWeight(10);
     ecran.stroke(c);
     drawCube(ecran);
   }
@@ -49,13 +53,12 @@ class Cube {
     drawCube(buffer);
   }
   private void drawCube(PGraphics g) {
-    g.strokeWeight(10);
     g.pushMatrix();
-    g.translate(x, y, z);
-    // ellipse(0,0,w,w);
-    // g.box(w);
-    g.point(0,0,0);
-    // sphere(w);
+      g.translate(x, y, z);
+      g.point(0,0,0);
+      // ellipse(0,0,w,w);
+      // g.box(w);
+      // sphere(w);
     g.popMatrix();
     update = true;
   }

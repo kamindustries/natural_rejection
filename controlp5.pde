@@ -7,7 +7,7 @@ void drawGUI() {
   p3d.camera = currCameraMatrix;
 
   // TITLE
-  if (show_hud==true){
+  if (show_text==true){
     fill(0);
     textFont(font1);
     textAlign(LEFT);
@@ -39,68 +39,76 @@ void setupGUI() {
 
   cp5 = new ControlP5(this); 
   // cp5.setControlFont(fontSliders);
-  // cp5.setColorLabel(textColor);
-  // spare_slider1 = -0.9;
-  // spare_slider2 = 1.0;
-  // spare_slider3 = 3.0;
-  // spare_slider4 = 1.0;
-  // spare_slider5 = 30.0;
-  // spare_slider6 = 3.0;
-  // spare_slider7 = -20.0;
-  cp5.addSlider("spare1")
-  .setPosition(marginX, marginY+20)
+  color invert_bg = color(255-red(bg_color),255-green(bg_color),255-blue(bg_color));
+  cp5.setColorLabel(invert_bg);
+
+  cp5.addSlider("halo displace")
+  .setPosition(marginX, marginY+(2*hud_spacing)+hud_offset)
   .setRange(-1.f, 1.f)
   .setValue(0.1)
   .setSize(300,9)
+  .setLabelVisible(true)
   ;
-  cp5.addSlider("spare2")
-  .setPosition(marginX, marginY+30)
+  cp5.addSlider("main stroke w")
+  .setPosition(marginX, marginY+(3*hud_spacing)+hud_offset)
   .setRange(0.1, 10.0)
-  .setValue(1.5)
+  .setValue(.7)
   .setSize(300,9)
   ;
-  cp5.addSlider("spare3")
-  .setPosition(marginX, marginY+40)
+  cp5.addSlider("halo stroke w")
+  .setPosition(marginX, marginY+(4*hud_spacing)+hud_offset)
   .setRange(0.1, 10.0)
-  .setValue(5.0)
+  .setValue(2.0)
   .setSize(300,9)
   ;
-  cp5.addSlider("spare4")
-  .setPosition(marginX, marginY+50)
+  cp5.addSlider("grow dir mult")
+  .setPosition(marginX, marginY+(5*hud_spacing)+hud_offset)
   .setRange(0.01, 2.0)
   .setValue(.18)
   .setSize(300,9)
   ;  
-  cp5.addSlider("spare5")
-  .setPosition(marginX, marginY+60)
+  cp5.addSlider("perturb mult")
+  .setPosition(marginX, marginY+(6*hud_spacing)+hud_offset)
   .setRange(0.01, 10.0)
   .setValue(2.5)
   .setSize(300,9)
   ;  
-  cp5.addSlider("spare6")
-  .setPosition(marginX, marginY+70)
-  .setRange(0.0, 1.0)
-  .setValue(1.0)
-  .setSize(300,9)
-  ;  
-  cp5.addSlider("spare7")
-  .setPosition(marginX, marginY+80)
-  .setRange(0.0, 20.0)
+  cp5.addSlider("thickness offset")
+  .setPosition(marginX, marginY+(7*hud_spacing)+hud_offset)
+  .setRange(0.0, 10.0)
   .setValue(10.0)
   .setSize(300,9)
   ;  
-  cp5.addSlider("spare8")
-  .setPosition(marginX, marginY+90)
-  .setRange(0, 1.0)
-  .setValue(0.14)
+  cp5.addSlider("thickness random")
+  .setPosition(marginX, marginY+(8*hud_spacing)+hud_offset)
+  .setRange(0.0, 1.0)
+  .setValue(.14)
   .setSize(300,9)
   ;  
-  cp5.addSlider("spare9")
-  .setPosition(marginX, marginY+100)
-  .setRange(-1., 1.0)
-  .setValue(0.0)
+  cp5.addSlider("color r")
+  .setPosition(marginX, marginY+(9*hud_spacing)+hud_offset)
+  .setRange(0, 1.0)
+  .setValue(0.9)
+  .setSize(300,9)
+  ;  
+  cp5.addSlider("color g")
+  .setPosition(marginX, marginY+(10*hud_spacing)+hud_offset)
+  .setRange(0, 1.0)
+  .setValue(0.1)
   .setSize(300,9)
   ; 
+  cp5.addSlider("color b")
+  .setPosition(marginX, marginY+(11*hud_spacing)+hud_offset)
+  .setRange(0, 1.0)
+  .setValue(0.1)
+  .setSize(300,9)
+  ;
+  cp5.addSlider("color rand")
+  .setPosition(marginX, marginY+(12*hud_spacing)+hud_offset)
+  .setRange(0, 1.0)
+  .setValue(.1)
+  .setSize(300,9)
+  ;
   // this is important:
   cp5.setAutoDraw(false);
 
@@ -108,32 +116,38 @@ void setupGUI() {
 
 void controlEvent(ControlEvent theEvent) {
 
-  if (theEvent.isFrom(cp5.getController("spare1"))) {
+  if (theEvent.isFrom(cp5.getController("halo displace"))) {
     spare_slider1 = theEvent.getController().getValue();
   }
-  if (theEvent.isFrom(cp5.getController("spare2"))) {
+  if (theEvent.isFrom(cp5.getController("main stroke w"))) {
     spare_slider2 = theEvent.getController().getValue();
   }
-    if (theEvent.isFrom(cp5.getController("spare3"))) {
+    if (theEvent.isFrom(cp5.getController("halo stroke w"))) {
     spare_slider3 = theEvent.getController().getValue();
   }
-  if (theEvent.isFrom(cp5.getController("spare4"))) {
+  if (theEvent.isFrom(cp5.getController("grow dir mult"))) {
     spare_slider4 = theEvent.getController().getValue();
   }
-  if (theEvent.isFrom(cp5.getController("spare5"))) {
+  if (theEvent.isFrom(cp5.getController("perturb mult"))) {
     spare_slider5 = theEvent.getController().getValue();
   }  
-  if (theEvent.isFrom(cp5.getController("spare6"))) {
+  if (theEvent.isFrom(cp5.getController("thickness offset"))) {
     spare_slider6 = theEvent.getController().getValue();
   }
-  if (theEvent.isFrom(cp5.getController("spare7"))) {
+  if (theEvent.isFrom(cp5.getController("thickness random"))) {
     spare_slider7 = theEvent.getController().getValue();
   }
-  if (theEvent.isFrom(cp5.getController("spare8"))) {
+  if (theEvent.isFrom(cp5.getController("color r"))) {
     spare_slider8 = theEvent.getController().getValue();
   }  
-  if (theEvent.isFrom(cp5.getController("spare9"))) {
+  if (theEvent.isFrom(cp5.getController("color g"))) {
     spare_slider9 = theEvent.getController().getValue();
+  }
+  if (theEvent.isFrom(cp5.getController("color b"))) {
+    spare_slider10 = theEvent.getController().getValue();
+  }
+  if (theEvent.isFrom(cp5.getController("color rand"))) {
+    spare_slider11 = theEvent.getController().getValue();
   }
   // if (theEvent.isFrom(checkbox)) {
   //     user_toggle_table1 = (int)checkbox.getArrayValue()[0];

@@ -35,6 +35,7 @@ void GROW() {
     // tree_list.add(trunk);
     // println(trunk.position);
   }
+  selected_branch = trunk;
 
 
   ///////////////////////////////////////////////////////////////////////
@@ -111,6 +112,9 @@ void GROW() {
     cubes = new Cube[num_extinct_points];
     extinct_names = new String[num_extinct_points];
     extinct_picked = new int[num_extinct_points];
+    fade_val = new float[num_extinct_points];
+    fade_val_a = new float[num_extinct_points];
+    extinct_rand_vec3 = new PVector[num_extinct_points];
 
     extinct_points = createShape();
     extinct_points.beginShape(POINTS);
@@ -123,7 +127,10 @@ void GROW() {
         extinct_points.stroke(255,0,0);
         extinct_names[i] = p.name;
         extinct_picked[i] = 0;
-
+        fade_val[i] = 0.0;
+        fade_val_a[i] = 0.1;
+        extinct_rand_vec3[i] = new PVector(random(0.,1.),random(0.,1.),random(0.,1.)) ;
+        
         cubes[i] = new Cube(i, p.position.x, p.position.y, p.position.z, 5 + (int)random(15), true);
       }
 
@@ -138,7 +145,8 @@ void GROW() {
   // D R A W   E X T I N C T   C U R V E S
   ///////////////////////////////////////////////////////////////////////
   for (int i = 0; i < extinct_meshes.size(); i++){
-    float j = 1;
+    float j = 3;
+    if (j >= max_depth) j = max_depth;
     
     Branch p = extinct_branches.get(i);
     
@@ -161,17 +169,16 @@ void GROW() {
     mesh.stroke(c0);
 
       while (p != null) {
-
         j = (max_depth - j) / (float)max_depth;
         j *= 10.;
 
         PVector o = p.position;
         PVector r = new PVector(random(-1.,1.), random(-1.,1.), random(-1.,1.));
-        r.mult(j * spare_slider8 / 100.0);
+        r.mult(j * spare_slider7 / 100.0);
 
         if (p.parent == null) {
           PVector perp_vector = p.grow_dir.cross(r);
-          perp_vector.mult(j * spare_slider7 * 0.2);
+          perp_vector.mult(j * spare_slider6 * 0.2);
           r.mult(40.);
           o.add(r);
           // o.add(perp_vector);
@@ -180,12 +187,11 @@ void GROW() {
           mesh.stroke(c0);
           mesh.curveVertex(o.x, o.y, o.z);
           mesh.stroke(c0);
-
           break;
         }
         else {
           PVector perp_vector = p.grow_dir.cross(r);
-          perp_vector.mult(j * spare_slider7);
+          perp_vector.mult(j * spare_slider6);
           o.add(r);
           o.add(perp_vector);
           

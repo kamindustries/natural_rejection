@@ -8,5 +8,6 @@ varying vec4 vertColor;
 varying vec2 texCoord;
 
 void main() {
-    gl_FragColor = texture2D(sprite, texCoord) * vertColor;
+    // gl_FragColor = texture2D(sprite, texCoord) * vertColor;
+    gl_FragColor = vertColor;
 }

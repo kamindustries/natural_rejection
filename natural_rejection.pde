@@ -16,11 +16,12 @@ ToxiclibsSupport gfx;
  
 XML xml;
 
-boolean FULL_TREE = true;
+boolean FULL_TREE = false;
 boolean DRAW_SKELETON = false;
+boolean DRAW_HALO = false;
 boolean PRINT_INFO = false;
 boolean show_hud = true;
-boolean show_fps = true;
+boolean show_text = true;
 boolean update_cubes = true;
 
 PGraphics buffer;   // buffer
@@ -33,13 +34,24 @@ PGraphics3D p3d ;
 
 float [] camera_pos;
 float [] camera_lookAt;
-float[] push_back;
+float [] push_back;
+float [] mouseXY = {0.,0.};
 float halo_displ;
+
+color bg_color = color(255,255,255);
 
 float s = 0.0;
 int[] extinct_picked;
 String[] extinct_names;
 String display_name;
+float [] fade_val;
+float [] fade_val_a;
+PVector [] extinct_rand_vec3;
+float hover_max = 2.0;
+float ease_speed = 0.05;
+int hover_id = -1;
+boolean lock_selection = false;
+boolean mouse_drag = false;
 
 int marginX = 20;
 int marginY = 20;
@@ -52,16 +64,19 @@ float extinct_pts_weight = 100;
 
 Branch root;
 Branch trunk;
+Branch selected_branch;
 ArrayList<Branch> tree_list = new ArrayList<Branch>();
 ArrayList<Branch> extinct_branches = new ArrayList<Branch>();
 ArrayList<PShape> tree_meshes = new ArrayList<PShape>();
 ArrayList<PShape> extinct_meshes = new ArrayList<PShape>();
 PShape extinct_points;
 
-float[] stroke_black = {0.0, 0.0, 0.0};
-float[] stroke_white = {1.0, 1.0, 1.0};
-float[] stroke_red = {1.0, 0.0, 0.0};
-float[] stroke_green = {0.0, 1.0, 0.0};
+float[] clr_black = {0.0, 0.0, 0.0};
+float[] clr_white = {1.0, 1.0, 1.0};
+float[] clr_red = {1.0, 0.0, 0.0};
+float[] clr_green = {0.0, 1.0, 0.0};
+float[] clr_pt_hover = {0.0, 0.0, 0.0};
+float[] clr_halo;
 
 float branch_length = 300.0;
 int depth;
@@ -75,12 +90,16 @@ XML[] axiom;
 PFont font1 = createFont("SourceSansPro-Semibold", 20, true);
 PFont font2 = createFont("monaco", 10, true);
 
+int hud_offset = 400;
+int hud_spacing = 10;
 float spare_slider1 = 0.1;
-float spare_slider2 = 1.5;
-float spare_slider3 = 5.0;
+float spare_slider2 = .7;
+float spare_slider3 = 2.0;
 float spare_slider4 = .18;
 float spare_slider5 = 2.5;
-float spare_slider6 = 1.0;
-float spare_slider7 = 10.0;
-float spare_slider8 = 0.14;
-float spare_slider9 = 0.05;
+float spare_slider6 = 10.0;
+float spare_slider7 = .14;
+float spare_slider8 = .9;
+float spare_slider9 = 0.1;
+float spare_slider10 = 0.1;
+float spare_slider11 = .1;

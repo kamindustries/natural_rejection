@@ -4,9 +4,10 @@ void setup() {
 
   // Setting up the camera
   cam= new PeasyCam(this,0,0,100,600);       
-  cam.setMinimumDistance(5);
+  cam.setMinimumDistance(90);
   cam.setMaximumDistance(4000);
   cam.setSuppressRollRotationMode();
+  cam.setResetOnDoubleClick(false);
   camera_pos = cam.getPosition();
   camera_lookAt = cam.getLookAt();
   perspective(PI/3.0, float(width)/float(height), 1/10.0, 10000.0);
@@ -21,6 +22,10 @@ void setup() {
   p3d = (PGraphics3D)g;
 
   buffer = createGraphics(width, height, P3D);
+  clr_halo = new float[3];
+  clr_halo[0] = red(bg_color);
+  clr_halo[1] = green(bg_color);
+  clr_halo[2] = blue(bg_color);
 
   // Shaders
   println("gathering shaders...");
@@ -28,16 +33,16 @@ void setup() {
   lineShader2 = loadShader("linefrag.glsl", "linevert.glsl");
 
   lineShader.set("stroke_weight", (float)spare_slider2);
-  lineShader.set("stroke_color", stroke_red);
+  lineShader.set("stroke_color", clr_red);
   lineShader.set("render_solid", 0);
   lineShader2.set("stroke_weight", (float)spare_slider3);
-  lineShader2.set("stroke_color", stroke_white);
+  lineShader2.set("stroke_color", clr_white);
   lineShader2.set("push", spare_slider1);
   lineShader2.set("render_solid", 1);
   
   pointShader = new PShader(this, "point_vert.glsl", "point_frag.glsl");
   pointShader.set("weight", extinct_pts_weight);
-  pointShader.set("sprite", loadImage("particle.png"));
+  // pointShader.set("sprite", loadImage("particle.png"));
   println("loaded shaders.");
 
   // Sets random seed so we get same results each time
@@ -60,7 +65,7 @@ void setup() {
   ///////////////////////////////////////////////////////////////////////
   float timer = millis();
   GROW();
-  // GROW();
+  GROW();
   println("tree_list size: " + tree_list.size());
   println("tree mesh size: " + tree_meshes.get(0).getVertexCount());
   println("max depth: " + max_depth);
