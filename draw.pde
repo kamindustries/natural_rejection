@@ -1,16 +1,9 @@
 void draw() {
 
+  hint(ENABLE_DEPTH_TEST);
   background(bg_color);
   blendMode(BLEND);
   
-  ///////////////////////////////////////////////////////////////////////
-  // RE DRAW EVERY  F R A M E
-  ///////////////////////////////////////////////////////////////////////
-  if (FULL_TREE==false){
-    if (frameCount%24==0) {
-      // GROW();
-    }
-  }
 
   camera_pos = cam.getPosition();
   camera_lookAt = cam.getLookAt();

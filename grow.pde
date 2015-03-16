@@ -145,7 +145,7 @@ void GROW() {
   // D R A W   E X T I N C T   C U R V E S
   ///////////////////////////////////////////////////////////////////////
   for (int i = 0; i < extinct_meshes.size(); i++){
-    float j = 3;
+    float j = 0;
     if (j >= max_depth) j = max_depth;
     
     Branch p = extinct_branches.get(i);
@@ -169,16 +169,21 @@ void GROW() {
     mesh.stroke(c0);
 
       while (p != null) {
-        j = (max_depth - j) / (float)max_depth;
-        j *= 10.;
+        if (j>=max_depth) j=max_depth-1;
+        // j = (max_depth - j) / (float)max_depth;
+        // j *= 10.;
+        float j_scale = (max_depth - j) / (float)max_depth;
+        j_scale *= 10.;
+        if (j<1) j_scale = 10. / (float)max_depth;
 
         PVector o = p.position;
         PVector r = new PVector(random(-1.,1.), random(-1.,1.), random(-1.,1.));
-        r.mult(j * spare_slider7 / 100.0);
+        r.mult(j_scale * spare_slider7 / 100.0);
 
         if (p.parent == null) {
+          // PVector perp_vector = p.grow_dir.cross(r);
           PVector perp_vector = p.grow_dir.cross(r);
-          perp_vector.mult(j * spare_slider6 * 0.2);
+          perp_vector.mult(j_scale * spare_slider6 * 0.2);
           r.mult(40.);
           o.add(r);
           // o.add(perp_vector);
@@ -191,7 +196,7 @@ void GROW() {
         }
         else {
           PVector perp_vector = p.grow_dir.cross(r);
-          perp_vector.mult(j * spare_slider6);
+          perp_vector.mult(j_scale * spare_slider6);
           o.add(r);
           o.add(perp_vector);
           

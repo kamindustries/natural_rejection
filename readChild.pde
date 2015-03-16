@@ -128,10 +128,11 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
     int extinct = _parent[i].getInt("EXTINCT");
     XML _name = _parent[i].getChild("NAME");  
     String name = _name.getContent();
-    if (name == "") name = "[no name]";
+    String tmp_name = _name.getContent();
+    if (tmp_name == "") tmp_name = "[no name]";
 
     if (PRINT_INFO == true){
-      println(spacing + "Name: " + name + ", " + children.length + ", " + id);
+      println(spacing + "Name: " + tmp_name + ", " + children.length + ", " + id);
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -145,7 +146,7 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
     PVector rot_cos = PVector.mult(tan1, cos(angle + random(-rand_scale, rand_scale)));
     PVector rot_sin = PVector.mult(cross_p, sin(angle + random(-rand_scale, rand_scale)));
     PVector new_grow_dir = PVector.add(rot_cos, rot_sin);
-    // len.mult(2.);
+    len.mult(spare_slider12);
     new_grow_dir.add(len);
     new_grow_dir.normalize();
     
@@ -170,10 +171,6 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
     else if (children.length == 0 && random(0.,1.)<1.){
       extinct_branches.add(next_branch);
     }
-    // if (children.length > 0){
-    //   tree_list.add(branch);
-    //   tree_list.add(next_branch);
-    // }
 
     ///////////////////////////////////////////////////////////////////////
     // Burrow deeper into the tree
@@ -194,10 +191,10 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
       // }
       
 
-      ///////////////////////////////////////////////////////////////////////
-      // Begin recrusive loop
-      ///////////////////////////////////////////////////////////////////////
-      readChild(children, current_depth+1, next_branch);
+    ///////////////////////////////////////////////////////////////////////
+    // Begin recrusive loop
+    ///////////////////////////////////////////////////////////////////////
+    readChild(children, current_depth+1, next_branch);
 
     // }
   }

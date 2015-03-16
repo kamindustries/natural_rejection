@@ -101,18 +101,33 @@ void keyPressed() {
     }
   }
   if (key == ' '){
-    camera_pos = cam.getPosition();
-    camera_lookAt = cam.getLookAt();
-    float cam_zoom = (float)cam.getDistance();
-  
-    PVector fix_zoom = new PVector(camera_lookAt[0],camera_lookAt[1],camera_lookAt[2]);
-    PVector cam_pv = new PVector(camera_pos[0],camera_pos[1],camera_pos[2]);
-  
-    println("**************");
-    println("cam pos: "+camera_pos[0]+", "+camera_pos[1]+", "+camera_pos[2]);
-    println("lookat: "+camera_lookAt[0]+", "+camera_lookAt[1]+", "+camera_lookAt[2]);
-    println("zoom: "+cam_zoom);
-    println("");
+    GROW();
+  }
+  if (key == 't'){
+    if (display_title==true) {
+      title_display_time = 0;
+      display_title = false;
+      println("display title true, display text=0");
+      println(title_fade);
+    }
+    else if (display_title==false){
+      title_display_time = 1000000000;
+      display_title = true;
+      println("display title true, display text=100000000");
+      println(title_fade);
+    }
+  }
+  if (key == CODED) {
+    if (keyCode == UP) {
+      text_list_size += 1;
+      if (text_list_size >= 20) text_list_size = 20;
+      update_text = true;
+    } 
+    if (keyCode == DOWN) {
+      text_list_size -= 1;
+      if (text_list_size <= 1) text_list_size = 1;
+      update_text = true;
+    } 
   }
 }
 

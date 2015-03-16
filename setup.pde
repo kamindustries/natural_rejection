@@ -1,6 +1,6 @@
 void setup() {
   // size(1280,800,P3D);
-  size(960,560,OPENGL);
+  size(1920,1080,OPENGL);
 
   // Setting up the camera
   cam= new PeasyCam(this,0,0,100,600);       
@@ -16,7 +16,6 @@ void setup() {
   
   // Control P5 stuff      
   setupGUI();
- 
 
   // Graphics
   gfx = new ToxiclibsSupport(this);
@@ -91,6 +90,15 @@ void setup() {
   ArrayList<float[]> fade_text_rand = new ArrayList<float[]>();
   ArrayList<String> text_names_list = new ArrayList<String>();
 
-  drawGUI();
+  // arrays for title fading
+  title_fade = new float[title.length()];
+  title_fade_rand = new float[title.length()];
+  for (int i = 0; i < title.length(); i++) {
+    title_fade[i] = 255;
+    title_fade_rand[i] = random(.3,1.);
+  }
+  println("rand:"+title_fade_rand[0]);
+
+  // drawGUI();
 
 }

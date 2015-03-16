@@ -16,7 +16,7 @@ ToxiclibsSupport gfx;
  
 XML xml;
 
-boolean FULL_TREE = true;
+boolean FULL_TREE = false;
 boolean DRAW_MAIN = true;
 boolean DRAW_HALO = false;
 boolean DRAW_SKELETON = false;
@@ -54,14 +54,19 @@ int hover_id = -1;
 boolean lock_selection = false;
 boolean mouse_drag = false;
 boolean update_text = true;
+int text_list_size = 4;
 // float [][] fade_text;
 // float [][] fade_text_rand;
-float text_fade_speed = .03;
+float text_fade_speed = .06;
 ArrayList<float[]> fade_text = new ArrayList<float[]>();
 ArrayList<float[]> fade_text_rand = new ArrayList<float[]>();
 ArrayList<String> text_names_list = new ArrayList<String>();
-// ArrayList<float[]> fade_text;
-// ArrayList<float[]> fade_text_rand;
+float [] title_fade;
+float [] title_fade_rand;
+int title_display_time = 100;
+boolean display_title = true;
+String title = "Natural Rejection";
+String subtitle = "Extinct species from the Tree of Life Web Project phylogenetic tree";
 
 int marginX = 20;
 int marginY = 20;
@@ -99,6 +104,7 @@ XML[] axiom;
 
 PFont font1 = createFont("Verdana", 14, true);
 PFont font2 = createFont("monaco", 10, true);
+PFont font3 = createFont("Verdana", 18, true);
 
 int hud_offset = 400;
 int hud_spacing = 10;
@@ -107,9 +113,14 @@ float spare_slider2 = .7;
 float spare_slider3 = 2.0;
 float spare_slider4 = .18;
 float spare_slider5 = 2.5;
-float spare_slider6 = 10.0;
-float spare_slider7 = .14;
+float spare_slider6 = 25.0;
+float spare_slider7 = 1.0;
 float spare_slider8 = .9;
 float spare_slider9 = 0.1;
 float spare_slider10 = 0.1;
 float spare_slider11 = .1;
+float spare_slider12 = 2.;
+
+boolean sketchFullScreen() {
+  return true;
+}
