@@ -169,6 +169,40 @@ void drawGUI() {
     fill(title_fade[0]+50, 255-title_fade[0]);
     text(subtitle, width - (marginX*2) - textWidth(title) - 30, (marginY*2)+20);
 
+    ///////////////////////////////////////////////////////////////////////
+    // help menu
+    ///////////////////////////////////////////////////////////////////////
+    textAlign(RIGHT);
+    textFont(font2);
+    if (frameCount >= display_help_delay) {
+      help_dialog_fade += EaseIn(help_dialog_fade, 140, ease_speed*.2);
+      if (help_dialog_fade <= 140) help_dialog_fade = 140;
+    }
+    if (frameCount >= display_help_delay+display_help_timer) {
+      display_help = 0;
+      display_help_delay = 2000000000;
+    }
+    else if (display_help==1 && help_dialog_fade >= 139) {
+      help_dialog_fade += EaseIn(help_dialog_fade, 140, ease_speed*.7);
+      if (help_dialog_fade<=140) help_dialog_fade=140;
+    }
+    else if (display_help==0 && help_dialog_fade <= 254) {
+      help_dialog_fade += EaseIn(help_dialog_fade, 255, ease_speed*.7);
+      if (help_dialog_fade>=255) help_dialog_fade=255;
+    }
+    for (int i=0; i<help_dialog.length; i+=2){
+      float x_offset = width - (marginX*2) - textWidth(title) - 30;
+      float y_offset = (i * 6) + (marginY*2)+45;
+      fill(help_dialog_fade, 255);
+      if (i==0) text(help_dialog[i], width - (marginX*2) - textWidth(title) - 30, y_offset);
+      else {
+        fill((help_dialog_fade/255)*help_dialog_fade, 255);
+        text(help_dialog[i-1], x_offset, y_offset);
+        fill(help_dialog_fade, 255);
+        text(help_dialog[i], x_offset - 10 - textWidth(help_dialog[i-1]), y_offset);
+      }
+    }
+
   }
   
 
@@ -293,6 +327,45 @@ void setupGUI() {
   .setSize(230,9)
   ;
 
+  // ROTATION and TRANSLATION //
+
+  cp5.addSlider("rotate X")
+  .setPosition(marginX + 300, marginY+(13*hud_spacing)+hud_offset)
+  .setRange(0, 2*PI)
+  .setValue(3.5)
+  .setSize(130,9)
+  ;
+  cp5.addSlider("rotate Y")
+  .setPosition(marginX + 300, marginY+(14*hud_spacing)+hud_offset)
+  .setRange(0, 2*PI)
+  .setValue(0.0)
+  .setSize(130,9)
+  ;
+  cp5.addSlider("rotate Z")
+  .setPosition(marginX + 300, marginY+(15*hud_spacing)+hud_offset)
+  .setRange(0, 2*PI)
+  .setValue(0.5)
+  .setSize(130,9)
+  ;
+  cp5.addSlider("translate X")
+  .setPosition(marginX + 300, marginY+(16*hud_spacing)+hud_offset)
+  .setRange(-2000, 2000)
+  .setValue(300)
+  .setSize(130,9)
+  ;
+  cp5.addSlider("translate Y")
+  .setPosition(marginX + 300, marginY+(17*hud_spacing)+hud_offset)
+  .setRange(-2000, 2000)
+  .setValue(830)
+  .setSize(130,9)
+  ;
+  cp5.addSlider("translate Z")
+  .setPosition(marginX + 300, marginY+(18*hud_spacing)+hud_offset)
+  .setRange(-2000, 2000)
+  .setValue(900)
+  .setSize(130,9)
+  ;
+
   // this is important:
   cp5.setAutoDraw(false);
 
@@ -351,6 +424,25 @@ void controlEvent(ControlEvent theEvent) {
   if (theEvent.isFrom(cp5.getController("gain"))) {
     gain = theEvent.getController().getValue();
   }
+    if (theEvent.isFrom(cp5.getController("rotate X"))) {
+    master_r_x = theEvent.getController().getValue();
+  }
+    if (theEvent.isFrom(cp5.getController("rotate Y"))) {
+    master_r_y = theEvent.getController().getValue();
+  }
+    if (theEvent.isFrom(cp5.getController("rotate Z"))) {
+    master_r_z = theEvent.getController().getValue();
+  }
+    if (theEvent.isFrom(cp5.getController("translate X"))) {
+    master_t_x = theEvent.getController().getValue();
+  }
+    if (theEvent.isFrom(cp5.getController("translate Y"))) {
+    master_t_y = theEvent.getController().getValue();
+  }
+    if (theEvent.isFrom(cp5.getController("translate Z"))) {
+    master_t_z = theEvent.getController().getValue();
+  }
+
   // if (theEvent.isFrom(checkbox)) {
   //     user_toggle_table1 = (int)checkbox.getArrayValue()[0];
   //     user_toggle_table2 = (int)checkbox.getArrayValue()[1];

@@ -26,7 +26,11 @@ vec3 clipToWindow(vec4 clip, vec4 viewport) {
 void main() {
 
   // vec3 stroke_c = vec3(stroke_color[0],stroke_color[1],stroke_color[2]);
-  float c_ceil = color.r*color.r;
+  float c_ceil = color.r;
+  c_ceil = abs(1.-c_ceil) * 2.;
+  if(c_ceil>=.7) c_ceil=.7;
+  if(c_ceil<=.0001) c_ceil=.0001;
+  c_ceil *= c_ceil;
   // if (c_ceil <= .5) c_ceil = .7;
   // vec3 stroke_c = vec3( abs(1.-c_ceil),
   //                       abs(1.-c_ceil),
@@ -57,8 +61,8 @@ void main() {
   if (push > 0. || push < 0.) gl_Position.z = clip0.z + (push/10.0);
   else gl_Position.z = clip0.z + (alpha*-.0015);
 
-  float z_fog1 = (clip1.z * .0004)-0.;
-  float z_fog0 = 1.-(clip0.z * .0004)-0.2;
+  float z_fog1 = (clip1.z * .0003)-0.;
+  float z_fog0 = 1.-(clip0.z * .00015)-0.2;
 
   // set color to assigned stroke color
   vec4 out_color;
@@ -66,8 +70,9 @@ void main() {
   // out_color.rgb += (z_fog1*.5);
   // out_color.a = alpha;
   out_color.a = z_fog0;
-  if (out_color.a <= 0.03) out_color.a = 0.03;
-  if (out_color.a >= 0.3) out_color.a = 0.3;
+  // out_color.a = 1.;
+  if (out_color.a <= 0.1) out_color.a = 0.1;
+  if (out_color.a >= 0.4) out_color.a = 0.4;
   // out_color.rgb = vec3(color.r,color.r,color.r);
   // out_color.a = 1.;
   

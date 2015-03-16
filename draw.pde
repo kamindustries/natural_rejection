@@ -129,7 +129,13 @@ void draw() {
       }
 
       shader(lineShader, LINES);
+      pushMatrix();
+      translate(master_t_x,master_t_y,master_t_z);
+      rotate(master_r_x, 1, 0, 0);
+      rotate(master_r_y, 0, 1, 0);
+      rotate(master_r_z, 0, 0, 1);
       shape(extinct_meshes.get(i));
+      popMatrix();
 
       // PVector extinct_vertex = extinct_points.getVertex(i);
       // shader(pointShader, POINTS);
@@ -138,15 +144,22 @@ void draw() {
   }
     if (DRAW_SKELETON == true){
       // resetShader();
+      pushMatrix();
+      rotate(PI, 1, 0, 0);
       shader(lineShader3, LINES);
       shape(tree_meshes.get(0));
+      popMatrix();
     }
 
     if (DRAW_HALO==true){
       shader(lineShader2, LINES);
+      pushMatrix();
+      rotate(PI, 1, 0, 0);
+
       for (int i = 0; i < extinct_meshes.size(); i++) {
         shape(extinct_meshes.get(i));
       }
+      popMatrix();
     }
   
   // DRAW FULL TREE

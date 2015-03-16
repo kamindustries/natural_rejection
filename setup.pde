@@ -1,9 +1,10 @@
 void setup() {
   // size(1280,800,P3D);
-  size(1920,1080,OPENGL);
+  // size(1920,1080,OPENGL);
+  size(1440,900,OPENGL);
 
   // Setting up the camera
-  cam= new PeasyCam(this,0,300,100,600);       
+  cam= new PeasyCam(this,0,300,100,1200);       
   cam.setMinimumDistance(90);
   cam.setMaximumDistance(4000);
   cam.setSuppressRollRotationMode();

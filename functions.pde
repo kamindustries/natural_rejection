@@ -48,6 +48,10 @@ void keyPressed() {
   if (key == '.'){
     saveFrame("snapshot.####.png");
   }
+  if (key == '?'){
+    if (display_help==1) display_help=0;
+    else if (display_help==0) display_help=1;
+  }
   if (key == CODED) {
     if (keyCode == UP) {
       text_list_size += 1;

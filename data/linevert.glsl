@@ -57,8 +57,8 @@ void main() {
   else gl_Position.z = clip0.z + (alpha*-.0015);
 
   // float z_fog = (abs(1.-((length(gl_Position.xyz)+1.) * 0.001)) * 1.)+.1;
-  float z_fog1 = (clip1.z * .0001)-.1;
-  float z_fog0 = 1.-(clip0.z * .0004)+0.1;
+  float z_fog1 = (pow(clip1.z,1.2) * .00005)*.4;
+  float z_fog0 = 1.-(clip0.z * .00025)+0.1;
 
   // set color to assigned stroke color
   vec4 out_color;

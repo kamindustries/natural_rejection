@@ -55,11 +55,13 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
   float perturb = _parent.length;
   if (current_depth == 0) perturb = 20;
   if (perturb >= 20) perturb = 5;
-  if (perturb <= 1) perturb = 2;
+  if (perturb <= 2) perturb = 2;
   perturb *= perturb*0.5;
-  // perturb *= pow((max_depth+1)/((float)current_depth+1.),1.4);
-  // perturb *= pow((current_depth+1)/((float)max_depth+1.),.7);
-  perturb *= (current_depth)/((float)max_depth+1.);
+  float perturb_grad = current_depth/((float)max_depth+1);
+  if(perturb_grad >= .8) perturb_grad = .8; //clamp angle falloff with generation
+
+  // perturb *= (current_depth)/((float)max_depth+1.);
+  perturb *= perturb_grad;
   perturb *= spare_slider5 * 0.1;
   
   cross_p.mult(perturb);
@@ -145,8 +147,8 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
     new_grow_dir.add(len);
     new_grow_dir.normalize();
     float cd = current_depth + 3.0;
-    if (cd >= max_depth) cd = max_depth-3;
-    // new_grow_dir.mult(((max_depth+1 - cd)/(float)max_depth)*spare_slider12);
+    if (cd >= max_depth) cd = max_depth-3; //max length multiplier
+    if (max_depth - cd <= 10) cd = 10; //min length multiplier
     new_grow_dir.mult(((max_depth - cd)/(float)max_depth)*spare_slider12);
         
     // new_grow_dir = initial_grow_dir;

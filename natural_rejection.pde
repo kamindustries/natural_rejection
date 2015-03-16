@@ -16,7 +16,7 @@ ToxiclibsSupport gfx;
  
 XML xml;
 
-boolean FULL_TREE = true;
+boolean FULL_TREE = false;
 boolean DRAW_MAIN = true;
 boolean DRAW_HALO = false;
 boolean DRAW_SKELETON = false;
@@ -68,10 +68,33 @@ ArrayList<float[]> fade_text_rand = new ArrayList<float[]>();
 ArrayList<String> text_names_list = new ArrayList<String>();
 float [] title_fade;
 float [] title_fade_rand;
-int title_display_time = 400;
+int title_display_time = 600;
 boolean display_title = false;
 String title = "Natural Rejection";
 String subtitle = "Extinct species from the Tree of Life Web Project phylogenetic database";
+// String [] help_dialog = {"keyboard controls:", 
+//                             "< "+char(8593)+" > increase taxonomy list",
+//                             "< "+char(8595)+" > decrease taxonomy list",
+//                             "< 1 > extinct species",
+//                             "< 2 > halo effect",
+//                             "< 3 > entire tree",
+//                             "< H > show GUI",
+//                             "< space > rebuild tree",
+//                             "< ? > show help menu"};
+String [] help_dialog = {"keyboard controls:", 
+                            ""+char(8593), " increase taxonomy list",
+                            ""+char(8595), " decrease taxonomy list",
+                            "1", " extinct species",
+                            "2", " halo effect",
+                            "3", " entire tree",
+                            "H", " show GUI",
+                            "space", " rebuild tree",
+                            "?", " show help menu"};
+float help_dialog_fade = 255;
+int display_help_delay = 0;
+int display_help_timer = 250;
+int display_help = -1;
+
 char arrow = 8627;
 
 int marginX = 20;
@@ -128,6 +151,13 @@ float spare_slider10 = 0.05;
 float spare_slider11 = .3;
 float spare_slider12 = 2.;
 float spare_slider13 = 1.;
+
+float master_r_x = 3.5;
+float master_r_y = 0.0;
+float master_r_z = 0.5;
+float master_t_x = 300;
+float master_t_y = 830.0;
+float master_t_z = 900.0;
 
 boolean sketchFullScreen() {
   return true;
