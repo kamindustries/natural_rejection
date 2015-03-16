@@ -45,6 +45,9 @@ void keyPressed() {
       println(title_fade);
     }
   }
+  if (key == '.'){
+    saveFrame("snapshot.####.png");
+  }
   if (key == CODED) {
     if (keyCode == UP) {
       text_list_size += 1;
@@ -66,6 +69,7 @@ void mouseMoved() {
   // draw the scene in the buffer
 
   PVector cam_mouse = new PVector(cam.getPosition()[0],cam.getPosition()[1],cam.getPosition()[2]);
+  buffer.perspective(PI/2., float(width)/float(height), 1/10.0, 10000.0);
   buffer.beginDraw();
   buffer.background(getColor(-1)); // since background is not an object, its id is -1
   // buffer.noFill();

@@ -1,5 +1,6 @@
 void draw() {
-
+  
+  perspective(PI/2., float(width)/float(height), 1/10.0, 10000.0);
   hint(ENABLE_DEPTH_TEST);
   background(bg_color);
   blendMode(BLEND);
@@ -27,11 +28,11 @@ void draw() {
 
   s+=(0.02*spare_slider13);
 
-  if (FULL_TREE==false){
+  // if (FULL_TREE==false){
     if (frameCount%24==0) lineShader = loadShader("linefrag.glsl", "linevert.glsl");
     if (frameCount%24==0) lineShader3 = loadShader("linefrag_skel.glsl", "linevert_skel.glsl");
     if (frameCount%24==0) pointShader = new PShader(this, "point_vert.glsl", "point_frag.glsl");
-  }
+  // }
   if (DRAW_MAIN){
     lineShader.set("stroke_weight", (float)spare_slider2);
     lineShader.set("stroke_color", clr_black);
@@ -102,7 +103,7 @@ void draw() {
           if (lock_selection==true || hover_id > 0) {
             fade_val_a[i] += EaseIn(fade_val_a[i], .07, ease_speed);
           }
-          else fade_val_a[i] += EaseIn(fade_val_a[i], .3, ease_speed);
+          else fade_val_a[i] += EaseIn(fade_val_a[i], 1., ease_speed);
         }
 
         if (fade_val[i] <= 0.01) fade_val[i] = 0.0;
@@ -110,9 +111,9 @@ void draw() {
         float ease_out_color = fade_val[i] - EaseIn(fade_val[i], c, ease_speed);
         float ease_out_pt_color = fade_val[i];
 
-        clr_red[0] += ease_out_color * 0.5 * 1.; 
-        clr_red[1] += ease_out_color * 0.5 * 1.;
-        clr_red[2] += ease_out_color * 0.5 * 1.;
+        clr_red[0] += ease_out_color * 0.5 * clr_red[0]; 
+        clr_red[1] += ease_out_color * 0.5 * clr_red[1];
+        clr_red[2] += ease_out_color * 0.5 * clr_red[2];
         if (clr_red[0]<=0) clr_red[0] = 0.;
         if (clr_red[1]<=0) clr_red[1] = 0.;
         if (clr_red[2]<=0) clr_red[2] = 0.;
@@ -136,7 +137,7 @@ void draw() {
     }
   }
     if (DRAW_SKELETON == true){
-      resetShader();
+      // resetShader();
       shader(lineShader3, LINES);
       shape(tree_meshes.get(0));
     }

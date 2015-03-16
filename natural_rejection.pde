@@ -16,7 +16,7 @@ ToxiclibsSupport gfx;
  
 XML xml;
 
-boolean FULL_TREE = false;
+boolean FULL_TREE = true;
 boolean DRAW_MAIN = true;
 boolean DRAW_HALO = false;
 boolean DRAW_SKELETON = false;
@@ -118,9 +118,9 @@ int hud_spacing = 10;
 float spare_slider1 = 0.1;
 float spare_slider2 = .7;
 float spare_slider3 = 2.0;
-float spare_slider4 = .18;
-float spare_slider5 = 2.5;
-float spare_slider6 = 0.1;
+float spare_slider4 = .18; //.11
+float spare_slider5 = 1.5; //1.5
+float spare_slider6 = .23;
 float spare_slider7 = 1.0;
 float spare_slider8 = .9;
 float spare_slider9 = 0.14;

@@ -72,13 +72,9 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
   float dot = init_grow_dir.dot(branch.grow_dir);
   PVector len = PVector.mult(branch.grow_dir, dot);
   len.mult(spare_slider4 * .1 * ((current_depth+1.)/(float)max_depth));
-  // len.mult(spare_slider4 * 1.0 * (max_depth-current_depth)/(float)max_depth);
-  // len.mult(spare_slider4 * .01 * (max_depth-current_depth)/(float)max_depth);
-
 
   // go down the tree to the root adding more branches
   // stochastically
-
   // Branch p = branch.parent;
   // int offset_scale = current_depth;
 
@@ -146,10 +142,13 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
     PVector rot_cos = PVector.mult(tan1, cos(angle + random(-rand_scale, rand_scale)));
     PVector rot_sin = PVector.mult(cross_p, sin(angle + random(-rand_scale, rand_scale)));
     PVector new_grow_dir = PVector.add(rot_cos, rot_sin);
-    len.mult(spare_slider12);
     new_grow_dir.add(len);
     new_grow_dir.normalize();
-    
+    float cd = current_depth + 3.0;
+    if (cd >= max_depth) cd = max_depth-3;
+    // new_grow_dir.mult(((max_depth+1 - cd)/(float)max_depth)*spare_slider12);
+    new_grow_dir.mult(((max_depth - cd)/(float)max_depth)*spare_slider12);
+        
     // new_grow_dir = initial_grow_dir;
     // new_grow_dir.normalize();
 

@@ -87,9 +87,9 @@ void GROW() {
         color cw = color(255,255,255);
         color cr = color(0,0,0);
 
-        if (b1.children == 0) {
-          c1 = cr; 
-        }
+        // if (b1.children == 0) { //turn tips black
+        //   c1 = cr; 
+        // }
         mesh.vertex(b0.position.x, b0.position.y, b0.position.z);
         mesh.stroke(c1);
         mesh.vertex(b1.position.x, b1.position.y, b1.position.z);
@@ -163,10 +163,11 @@ void GROW() {
     mesh = createShape();
     mesh.beginShape();
     mesh.noFill();
-    // mesh.curveTightness(spare_slider9);
     // extinct_points.strokeWeight(10);
+    // mesh.curveTightness(1.);
 
-    mesh.curveVertex(p.position.x, p.position.y, p.position.z);
+    // mesh.curveVertex(p.position.x, p.position.y, p.position.z);
+    mesh.vertex(p.position.x, p.position.y, p.position.z);
     mesh.stroke(c0);
 
       while (p != null) {
@@ -176,21 +177,54 @@ void GROW() {
         float j_scale = (max_depth - j) / (float)max_depth;
         j_scale *= 10.;
         if (j<1){ 
-          j_scale = 10. / (float)max_depth;
+          // j_scale = 1. / (float)max_depth;
+          j_scale = 0.;
         }
         PVector o = p.position;
         PVector r = new PVector(random(-1.,1.), random(-1.,1.), random(-1.,1.));
+        // r.add(o);
+        // r.normalize();
+
+        // r.mult(spare_slider7);
+        // r.mult((j_scale) / (float)max_depth);
+        // float angle = (2 * PI * (j/(float)max_depth));
+        float angle1 = random(0,2*PI);
+        float angle2 = random(0,2*PI);
+        PVector inv_grow_dir = PVector.mult(p.grow_dir, -1.0);
+        r.add(inv_grow_dir);
         r.normalize();
-        // r.mult(j_scale * spare_slider7 / 100.0);
+        PVector green_vector = inv_grow_dir.cross(r);
+        PVector y_vector = green_vector.cross(inv_grow_dir);
+        float dot = green_vector.dot(inv_grow_dir);
+        PVector grow_dir_scaled = PVector.mult(inv_grow_dir, dot);
+
+        PVector rot_cos = PVector.mult(green_vector, cos(angle1));
+        PVector rot_sin = PVector.mult(y_vector, sin(angle2));
+        PVector new_angle = PVector.add(rot_cos, rot_sin);
+        // new_angle.add(grow_dir_scaled);
+        // new_angle.normalize();
+        // new_angle.mult(j_scale * spare_slider6 * .1);
+        // o.add(new_angle);
+        new_angle.mult(spare_slider6 * j_scale);
+        // y_vector.mult(spare_slider6);
+        
+        PVector new_offset = new PVector(random(-.5,.5), random(-.5,.5), random(-.5,.5));
+        // new_offset.mult(4.0/(float)j_scale);
+        new_offset.mult(spare_slider7 * j_scale * random(0.2,1.));
+
+        // o.add(new_angle);
+        o.add(new_offset);
+
+
 
         if (p.parent == null) {
-          PVector perp_vector = p.grow_dir.cross(r);
-          // perp_vector.cross(o);
-          perp_vector.mult(j_scale * spare_slider6 * 0.6);
-          // perp_vector.mult(j_scale * spare_slider6 * 1.);
+          // green_vector.normalize();
+          // green_vector.cross(o);
+          // green_vector.mult(j_scale * spare_slider6 * 1.0);
+          // green_vector.mult(j_scale * spare_slider6 * 1.);
           // r.mult(40.);
           // o.add(r);
-          o.add(perp_vector);
+          // o.add(green_vector);
           // o.add(r);
 
           mesh.curveVertex(o.x, o.y, o.z);
@@ -200,10 +234,10 @@ void GROW() {
           break;
         }
         else {
-          PVector perp_vector = p.grow_dir.cross(r);
-          perp_vector.mult(j_scale * spare_slider6);
+          // green_vector.normalize();
+          // green_vector.mult(j_scale * spare_slider6);
           // o.add(r);
-          o.add(perp_vector);
+          // o.add(green_vector);
           // o.add(r);
 
           mesh.curveVertex(o.x, o.y, o.z);

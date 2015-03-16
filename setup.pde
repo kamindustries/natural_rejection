@@ -10,7 +10,7 @@ void setup() {
   cam.setResetOnDoubleClick(false);
   camera_pos = cam.getPosition();
   camera_lookAt = cam.getLookAt();
-  perspective(PI/3.0, float(width)/float(height), 1/10.0, 10000.0);
+  perspective(PI/2., float(width)/float(height), 1/10.0, 10000.0);
   push_back = new float[3];
   halo_displ = (float)cam.getDistance();
   
@@ -41,9 +41,6 @@ void setup() {
   lineShader2.set("push", spare_slider1);
   lineShader2.set("render_solid", 1);
 
-  lineShader3.set("stroke_color", clr_black);
-  lineShader3.set("render_solid", 1);
-  lineShader3.set("stroke_weight", 1.);
   lineShader3.set("alpha", 1.);
   
   pointShader = new PShader(this, "point_vert.glsl", "point_frag.glsl");
@@ -103,7 +100,6 @@ void setup() {
     title_fade[i] = 255;
     title_fade_rand[i] = random(.3,1.);
   }
-  println("rand:"+title_fade_rand[0]);
 
   // drawGUI();
 

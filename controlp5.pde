@@ -1,6 +1,7 @@
 void drawGUI() {
   hint(DISABLE_DEPTH_TEST);
   currCameraMatrix = new PMatrix3D(p3d.camera);
+  perspective(PI/3., float(width)/float(height), 1/10.0, 10000.0);
   camera();
   if(show_hud==true){
     cp5.draw(); //DRAW CONTROLS AFTER CAMERA FOR GREAT SUCCESS
@@ -88,7 +89,7 @@ void drawGUI() {
             if (i>0) y_offset += 8;
             // Add indentation
             String spacing = "";
-            int spacing_max = int((i*i)*1.5);
+            int spacing_max = int(i*1.5);
             if (spacing_max>=14) spacing_max=14;
             if (i==1) {
               if(j==0) spacing+= " " + arrow + " ";
@@ -190,80 +191,80 @@ void setupGUI() {
   .setPosition(marginX, marginY+(2*hud_spacing)+hud_offset)
   .setRange(-1.f, 1.f)
   .setValue(0.1)
-  .setSize(300,9)
+  .setSize(230,9)
   .setLabelVisible(true)
   ;
   cp5.addSlider("main stroke w")
   .setPosition(marginX, marginY+(3*hud_spacing)+hud_offset)
   .setRange(0.1, 10.0)
   .setValue(.7)
-  .setSize(300,9)
+  .setSize(230,9)
   ;
   cp5.addSlider("halo stroke w")
   .setPosition(marginX, marginY+(4*hud_spacing)+hud_offset)
   .setRange(0.1, 10.0)
   .setValue(2.0)
-  .setSize(300,9)
+  .setSize(230,9)
   ;
   cp5.addSlider("grow dir mult")
   .setPosition(marginX, marginY+(5*hud_spacing)+hud_offset)
-  .setRange(0.01, 2.0)
-  .setValue(.18)
-  .setSize(300,9)
+  .setRange(0.01, 1.0)
+  .setValue(.12)
+  .setSize(230,9)
   ;  
   cp5.addSlider("perturb mult")
   .setPosition(marginX, marginY+(6*hud_spacing)+hud_offset)
-  .setRange(0.01, 10.0)
-  .setValue(2.5)
-  .setSize(300,9)
+  .setRange(0.01, 2.0)
+  .setValue(1.5)
+  .setSize(230,9)
   ;  
   cp5.addSlider("thickness offset")
   .setPosition(marginX, marginY+(7*hud_spacing)+hud_offset)
   .setRange(0.0, 2.0)
-  .setValue(0.1)
-  .setSize(300,9)
+  .setValue(.23)
+  .setSize(230,9)
   ;  
   cp5.addSlider("thickness random")
   .setPosition(marginX, marginY+(8*hud_spacing)+hud_offset)
-  .setRange(0.0, 2.0)
+  .setRange(0.0, 10.0)
   .setValue(1.0)
-  .setSize(300,9)
+  .setSize(230,9)
   ;  
   cp5.addSlider("len mult")
   .setPosition(marginX, marginY+(9*hud_spacing)+hud_offset)
-  .setRange(0, 2.0)
-  .setValue(1.)
-  .setSize(300,9)
+  .setRange(0, 6.0)
+  .setValue(2.)
+  .setSize(230,9)
   ;
   cp5.addSlider("anim speed")
   .setPosition(marginX, marginY+(10*hud_spacing)+hud_offset)
   .setRange(0, 10.0)
   .setValue(1.)
-  .setSize(300,9)
+  .setSize(230,9)
   ;
   cp5.addSlider("color r")
   .setPosition(marginX, marginY+(11*hud_spacing)+hud_offset)
   .setRange(0, 1.0)
   .setValue(0.09)
-  .setSize(300,9)
+  .setSize(230,9)
   ;  
   cp5.addSlider("color g")
   .setPosition(marginX, marginY+(12*hud_spacing)+hud_offset)
   .setRange(0, 1.0)
   .setValue(0.12)
-  .setSize(300,9)
+  .setSize(230,9)
   ; 
   cp5.addSlider("color b")
   .setPosition(marginX, marginY+(13*hud_spacing)+hud_offset)
   .setRange(0, 1.0)
   .setValue(0.22)
-  .setSize(300,9)
+  .setSize(230,9)
   ;
   cp5.addSlider("color rand")
   .setPosition(marginX, marginY+(14*hud_spacing)+hud_offset)
   .setRange(0, 1.0)
   .setValue(.24)
-  .setSize(300,9)
+  .setSize(230,9)
   ;
 
 
@@ -271,25 +272,25 @@ void setupGUI() {
   .setPosition(marginX, marginY+(15*hud_spacing)+hud_offset)
   .setRange(0, 1.0)
   .setValue(0.95)
-  .setSize(300,9)
+  .setSize(230,9)
   ;  
   cp5.addSlider("highlight g")
   .setPosition(marginX, marginY+(16*hud_spacing)+hud_offset)
   .setRange(0, 1.0)
   .setValue(0.14)
-  .setSize(300,9)
+  .setSize(230,9)
   ; 
   cp5.addSlider("highlight b")
   .setPosition(marginX, marginY+(17*hud_spacing)+hud_offset)
   .setRange(0, 1.0)
   .setValue(0.05)
-  .setSize(300,9)
+  .setSize(230,9)
   ;
   cp5.addSlider("gain")
   .setPosition(marginX, marginY+(18*hud_spacing)+hud_offset)
   .setRange(0, 5.0)
   .setValue(1.6)
-  .setSize(300,9)
+  .setSize(230,9)
   ;
 
   // this is important:

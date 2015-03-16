@@ -41,7 +41,8 @@ void main() {
   vec3 win1 = clipToWindow(clip1, viewport); 
   vec2 tangent = win1.xy - win0.xy;
   vec2 normal = normalize(vec2(-tangent.y, tangent.x));
-  
+
+
   // float foo = 1.0;
   // if (stroke_c_avg >=0.98) foo = stroke_weight;
 
@@ -55,20 +56,25 @@ void main() {
   if (push > 0. || push < 0.) gl_Position.z = clip0.z + (push/10.0);
   else gl_Position.z = clip0.z + (alpha*-.0015);
 
-  float z_fog = 1.0-abs(length(gl_Position.xyz) * 0.001) * 1.;
+  // float z_fog = (abs(1.-((length(gl_Position.xyz)+1.) * 0.001)) * 1.)+.1;
+  float z_fog1 = (clip1.z * .0001)-.1;
+  float z_fog0 = 1.-(clip0.z * .0004)+0.1;
 
   // set color to assigned stroke color
   vec4 out_color;
   // out_color = color;
   // out_color.rgb = color.rgb;
-  out_color.rgb = stroke_c;
+  out_color.rgb = stroke_c + vec3(z_fog1,z_fog1,z_fog1);
   out_color.a = alpha;
   if (render_solid == 1) {
     out_color.rgb = stroke_c.rgb;
     out_color.a = 1.0;
   }
-  if (render_solid < 1) out_color.a *= z_fog;
-  if (out_color.a <= 0.03) out_color.a = 0.03;
+  else if (render_solid < 1) out_color.a *= (color.a * z_fog0)  ;
+  if (out_color.a <= 0.07) out_color.a = 0.07;
+
+  // out_color.rgb = vec3(z_fog0,z_fog0,z_fog0);
+  // out_color.a = 1.;
   
   // out_color = color;
   vertColor = out_color;
