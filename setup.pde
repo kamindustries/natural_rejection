@@ -3,7 +3,7 @@ void setup() {
   size(1920,1080,OPENGL);
 
   // Setting up the camera
-  cam= new PeasyCam(this,0,0,100,600);       
+  cam= new PeasyCam(this,0,300,100,600);       
   cam.setMinimumDistance(90);
   cam.setMaximumDistance(4000);
   cam.setSuppressRollRotationMode();
@@ -31,6 +31,7 @@ void setup() {
   println("gathering shaders...");
   lineShader = loadShader("linefrag.glsl", "linevert.glsl");
   lineShader2 = loadShader("linefrag.glsl", "linevert.glsl");
+  lineShader3 = loadShader("linefrag_skel.glsl", "linevert_skel.glsl");
 
   lineShader.set("stroke_weight", (float)spare_slider2);
   lineShader.set("stroke_color", clr_red);
@@ -39,6 +40,11 @@ void setup() {
   lineShader2.set("stroke_color", clr_white);
   lineShader2.set("push", spare_slider1);
   lineShader2.set("render_solid", 1);
+
+  lineShader3.set("stroke_color", clr_black);
+  lineShader3.set("render_solid", 1);
+  lineShader3.set("stroke_weight", 1.);
+  lineShader3.set("alpha", 1.);
   
   pointShader = new PShader(this, "point_vert.glsl", "point_frag.glsl");
   pointShader.set("weight", extinct_pts_weight);

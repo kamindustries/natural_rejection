@@ -25,27 +25,26 @@ vec3 clipToWindow(vec4 clip, vec4 viewport) {
   
 void main() {
 
-  vec3 stroke_c = vec3(stroke_color[0],stroke_color[1],stroke_color[2]);
-  float stroke_c_avg = (stroke_c.r+stroke_c.g+stroke_c.b)/3.0;
+  // vec3 stroke_c = vec3(stroke_color[0],stroke_color[1],stroke_color[2]);
+  vec3 stroke_c = vec3( abs(1.-color.r),
+                        abs(1.-color.g),
+                        abs(1.-color.b));
 
   vec4 clip0 = transform * vertex;
   vec4 clip1 = clip0 + transform * vec4(direction.xyz, 0);
   
-  // float thickness_mod = color.r;
-  // if (thickness_mod<=0.15) thickness_mod = 0.15;
-  // thickness_mod = thickness_mod;
+  float thickness_mod = color.r;
+  if (thickness_mod<=0.15) thickness_mod = 0.15;
+  thickness_mod *= thickness_mod;
   // float thickness = direction.w * stroke_weight * thickness_mod * 2.0;
-  float thickness = direction.w * stroke_weight * 0.9 * 2.0;
+  // float thickness = direction.w * stroke_weight * 1.0 * 2.0;
+  float thickness = direction.w * thickness_mod * 1.0 * 2.0;
 
   vec3 win0 = clipToWindow(clip0, viewport); 
   vec3 win1 = clipToWindow(clip1, viewport); 
   vec2 tangent = win1.xy - win0.xy;
   vec2 normal = normalize(vec2(-tangent.y, tangent.x));
   
-  // float foo = 1.0;
-  // if (stroke_c_avg >=0.98) foo = stroke_weight;
-
-  // vec2 offset = normal * thickness * foo;
   vec2 offset = normal * thickness;
 
   gl_Position.xy = clip0.xy + offset.xy;
@@ -59,15 +58,9 @@ void main() {
 
   // set color to assigned stroke color
   vec4 out_color;
-  // out_color = color;
-  // out_color.rgb = color.rgb;
   out_color.rgb = stroke_c;
-  out_color.a = alpha;
-  if (render_solid == 1) {
-    out_color.rgb = stroke_c.rgb;
-    out_color.a = 1.0;
-  }
-  if (render_solid < 1) out_color.a *= z_fog;
+  // out_color.a = alpha;
+  out_color.a = z_fog;
   if (out_color.a <= 0.03) out_color.a = 0.03;
   
   // out_color = color;

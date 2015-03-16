@@ -25,10 +25,11 @@ void draw() {
 
   // textFont(font1);
 
-  s+=0.02;
+  s+=(0.02*spare_slider13);
 
   if (FULL_TREE==false){
     if (frameCount%24==0) lineShader = loadShader("linefrag.glsl", "linevert.glsl");
+    if (frameCount%24==0) lineShader3 = loadShader("linefrag_skel.glsl", "linevert_skel.glsl");
     if (frameCount%24==0) pointShader = new PShader(this, "point_vert.glsl", "point_frag.glsl");
   }
   if (DRAW_MAIN){
@@ -53,27 +54,34 @@ void draw() {
 
       float f = i/(float)extinct_meshes.size();
       float c = (sin(s + (f * PI * 2.)) + 1.) * 0.5  ;
-      if (c <= 0.05) c = 0.05;
-      c = c*c;
-      clr_red[0] = (c * 1.0 * spare_slider8) + rnd.x;
-      clr_red[1] = (c * 1.0 * spare_slider9) + rnd.y;
-      clr_red[2] = (c * 1.0 * spare_slider10)+ rnd.z;
-      
+      c = pow(c, 4);
+      if (c <= 0.001) c = 0.001;
+      if (c >= 1.0) c = 1.0;
+      clr_red[0] = ((base_cR + (c*spare_slider8) + rnd.x)/(2+spare_slider11))*gain;
+      clr_red[1] = ((base_cG + (c*spare_slider9) + rnd.y)/(2+spare_slider11))*gain;
+      clr_red[2] = ((base_cB + (c*spare_slider10)+ rnd.z)/(2+spare_slider11))*gain;
+
       lineShader.set("stroke_color", clr_red);
       lineShader.set("alpha", fade_val_a);
 
       // HOVER MODS
       if (extinct_picked[i] == 1) {
         fade_val[i] += EaseIn(fade_val[i], hover_max, ease_speed);
-        fade_val_a[i] += EaseIn(fade_val_a[i], 1., ease_speed);
+        fade_val_a[i] += EaseIn(fade_val_a[i], 2., ease_speed);
 
         if (fade_val[i] >= hover_max*.98) fade_val[i] = hover_max;
         if (fade_val[i] <= 0.05) fade_val[i] = 0.0;
 
-        clr_red[0] += fade_val[i] * 0.5 * spare_slider8;
-        clr_red[1] += fade_val[i] * 0.5 * spare_slider9;
-        clr_red[2] += fade_val[i] * 0.5 * spare_slider10;
+        // clr_red[0] += fade_val[i] * 0.13 * spare_slider8; //makes hover color mostly red
+        // clr_red[1] += fade_val[i] * 0.5 * spare_slider9;
+        // clr_red[2] += fade_val[i] * 0.5 * spare_slider10;       
+
+        clr_red[0] += fade_val[i] * 0.5 * clr_red[0]; //makes hover color mostly red
+        clr_red[1] += fade_val[i] * 0.5 * clr_red[1];         
+        clr_red[2] += fade_val[i] * 0.5 * clr_red[2]; 
         if (clr_red[0]>=1) clr_red[0] = 1.;
+        if (clr_red[1]>=1) clr_red[1] = 1.;
+        if (clr_red[2]>=1) clr_red[2] = 1.;
 
         float w = (float)spare_slider2 * (fade_val[i]+1.);
         
@@ -92,20 +100,22 @@ void draw() {
         }
         if (fade_val_a[i] > 0) {
           if (lock_selection==true || hover_id > 0) {
-            fade_val_a[i] += EaseIn(fade_val_a[i], .1, ease_speed);
+            fade_val_a[i] += EaseIn(fade_val_a[i], .07, ease_speed);
           }
-          else fade_val_a[i] += EaseIn(fade_val_a[i], .55, ease_speed);
+          else fade_val_a[i] += EaseIn(fade_val_a[i], .3, ease_speed);
         }
 
-        if (fade_val[i] <= 0.05) fade_val[i] = 0.0;
-        if (fade_val_a[i] <= 0.05) fade_val_a[i] = 0.0;
+        if (fade_val[i] <= 0.01) fade_val[i] = 0.0;
+        if (fade_val_a[i] <= 0.01) fade_val_a[i] = 0.0;
         float ease_out_color = fade_val[i] - EaseIn(fade_val[i], c, ease_speed);
         float ease_out_pt_color = fade_val[i];
 
-        clr_red[0] += ease_out_color * 0.5 * spare_slider8;
-        clr_red[1] += ease_out_color * 0.5 * spare_slider9;
-        clr_red[2] += ease_out_color * 0.5 * spare_slider10;
+        clr_red[0] += ease_out_color * 0.5 * 1.; 
+        clr_red[1] += ease_out_color * 0.5 * 1.;
+        clr_red[2] += ease_out_color * 0.5 * 1.;
         if (clr_red[0]<=0) clr_red[0] = 0.;
+        if (clr_red[1]<=0) clr_red[1] = 0.;
+        if (clr_red[2]<=0) clr_red[2] = 0.;
         
         float w = (float)spare_slider2 * (fade_val[i]+1.);
         
@@ -126,6 +136,8 @@ void draw() {
     }
   }
     if (DRAW_SKELETON == true){
+      resetShader();
+      shader(lineShader3, LINES);
       shape(tree_meshes.get(0));
     }
 

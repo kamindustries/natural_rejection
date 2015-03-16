@@ -67,7 +67,8 @@ void GROW() {
   tree_meshes.add(new PShape());
 
   // load meshes with vertex info.
-  // need to do some smart coloration based on age
+  // colors based on age
+  // also has option to make tips black (to scale later)
   for(int j = 0; j < tree_meshes.size(); j++) {
 
     PShape mesh = tree_meshes.get(j);
@@ -102,7 +103,7 @@ void GROW() {
   geom_calc_time = (millis() - xml_timer)/1000.0;
 
   ///////////////////////////////////////////////////////////////////////
-  // mesh containing extinct species as vertex pts
+  // mesh containing EXTINCT species as vertex pts
   // also loads extinct arraylist containing appropriate number of pshapes
   ///////////////////////////////////////////////////////////////////////
   display_name = "";
@@ -174,19 +175,23 @@ void GROW() {
         // j *= 10.;
         float j_scale = (max_depth - j) / (float)max_depth;
         j_scale *= 10.;
-        if (j<1) j_scale = 10. / (float)max_depth;
-
+        if (j<1){ 
+          j_scale = 10. / (float)max_depth;
+        }
         PVector o = p.position;
         PVector r = new PVector(random(-1.,1.), random(-1.,1.), random(-1.,1.));
-        r.mult(j_scale * spare_slider7 / 100.0);
+        r.normalize();
+        // r.mult(j_scale * spare_slider7 / 100.0);
 
         if (p.parent == null) {
-          // PVector perp_vector = p.grow_dir.cross(r);
           PVector perp_vector = p.grow_dir.cross(r);
-          perp_vector.mult(j_scale * spare_slider6 * 0.2);
-          r.mult(40.);
-          o.add(r);
-          // o.add(perp_vector);
+          // perp_vector.cross(o);
+          perp_vector.mult(j_scale * spare_slider6 * 0.6);
+          // perp_vector.mult(j_scale * spare_slider6 * 1.);
+          // r.mult(40.);
+          // o.add(r);
+          o.add(perp_vector);
+          // o.add(r);
 
           mesh.curveVertex(o.x, o.y, o.z);
           mesh.stroke(c0);
@@ -197,9 +202,10 @@ void GROW() {
         else {
           PVector perp_vector = p.grow_dir.cross(r);
           perp_vector.mult(j_scale * spare_slider6);
-          o.add(r);
+          // o.add(r);
           o.add(perp_vector);
-          
+          // o.add(r);
+
           mesh.curveVertex(o.x, o.y, o.z);
           mesh.stroke(c0);
           

@@ -26,7 +26,6 @@ void main() {
 
   vec4 foo_mat = clip + projection * vec4(offset, 0., 0.);
   
-  float z_fog = 1.0-abs(length(foo_mat.xyz) * 0.0001);
 
   float dx = 2. * (viewport.z - mouse.x) / viewport.z - 1.;
   float dy = 2. * (viewport.w - mouse.y) / viewport.w - 1.;
@@ -55,31 +54,15 @@ void main() {
   // mouse_scale = 1.-abs(mouse_scale * weight * weight);
   float t1 = 1.-(mouse_scale * .6 * .6);
   mouse_scale = t1 * 1.;
-  mouse_scale *= log(1./mouse_scale) * -.25;
-  // if (mouse_scale <= 0.1) mouse_scale = weight;
-  // if( mouse_scale >= m_max) mouse_scale *= 1./log(100.);
-  // if (mouse_scale <= 1.0) mouse_scale = 1.;
-  // if (mouse_scale >= m_max) mouse_scale *= 1./sqrt(mouse_scale);
-  // if (mouse_scale <= m_min) mouse_scale += abs(m_min * mouse_scale * -1.);
-  // if (mouse_scale <= .1) mouse_scale = .3;
-
-  // float clamp_z = abs(foo_mat.z);
-  // clamp_z = .01 * clamp_z;
-  // float z_min = .1;
-  // float z_max = mouse_scale * .5;
-  // if (clamp_z <= z_min) clamp_z = z_min * .9;
-  // if (clamp_z >= z_max) clamp_z = z_max;
-  // mouse_scale = (mouse_scale + clamp_z);
-  // mouse_scale *= mouse_scale;
-  // mouse_scale *= mouse_scale;
-  // if (mouse_scale <= m_min) mouse_scale = m_min;
-  // if (mouse_scale >= 2.) mouse_scale = 2.;
+  mouse_scale *= log(1./mouse_scale) * -.35;
 
   vec2 new_offset = offset;
   new_offset.xy *= vec2(mouse_scale,mouse_scale);
   vec4 out_position = clip + projection * vec4(new_offset, 0., 0.);
   gl_Position.xyw = out_position.xyw;
   gl_Position.z = out_position.z - 0.01;
+  
+  float z_fog = 1.0-abs(length(gl_Position.xyz) * 0.001) * 1.;
 
   // new_weight *= dx;
   // new_weight += 10.;

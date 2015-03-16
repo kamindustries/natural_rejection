@@ -60,15 +60,15 @@ void drawGUI() {
           }
           update_text = false;
         } 
-        //trigger animation
+        //display text & animate
         for (int i = 0; i < text_names_list.size(); i++){
           String current_name = text_names_list.get(i);
           float[] current_fades = fade_text.get(i);
           float[] current_fades_rand = fade_text_rand.get(i);
           // set text size for each row
-          if (i == 0) textSize(14-(i*1.5));
-          float text_size = 11-(i*.5);
-          if (text_size <= 6) text_size = 6;
+          if (i == 0) textSize(22-(i*1.5));
+          float text_size = 18-(i*2);
+          if (text_size <= 10) text_size = 10;
           textSize(text_size);
           String word = new String();
           word = "";
@@ -85,10 +85,29 @@ void drawGUI() {
             fill(ease_out_color, 255-ease_out_color);
 
             float y_offset = marginY*2+(i*20);
-            if (i>0) y_offset += 10;
-            text(ch, (marginX*2) + textWidth(word) + ((j*15)/(i+1)), y_offset);
+            if (i>0) y_offset += 8;
+            // Add indentation
+            String spacing = "";
+            int spacing_max = int((i*i)*1.5);
+            if (spacing_max>=14) spacing_max=14;
+            if (i==1) {
+              if(j==0) spacing+= " " + arrow + " ";
+              word += spacing;
+            }
+            if (i>1) {
+              if (j==0){
+                for (int sp=0; sp<spacing_max; sp++){
+                  spacing += " ";
+                }
+                spacing += arrow + " ";
+                word += spacing;
+              }
+            }
             word += ch;
             if (c0 == ' ') word += " ";
+            if (i>0&&j==0) text(arrow + " " + ch, (marginX*3) + textWidth(word) + ((j*15)/(i+1)), y_offset);
+            else text(ch, (marginX*3) + textWidth(word) + ((j*15)/(i+1)), y_offset);
+
           }
           fade_text.set(i, current_fades);
           fade_text_rand.set(i, current_fades_rand);
@@ -103,7 +122,7 @@ void drawGUI() {
     textFont(font3);
     textAlign(LEFT);
     pushMatrix();
-      translate(width - (textWidth(title)*3.333),0,0);
+      translate(width - (textWidth(title)*3.),0,0);
       for (int i = 0; i < title.length(); i++){
         char c0 = title.charAt(i);
         String ch = new String();
@@ -114,7 +133,7 @@ void drawGUI() {
         
         //fade in
         if (frameCount < title_display_time){
-          title_fade[i] += EaseIn(title_fade[i], 5 + (title_fade_rand[i]*15), title_speed_mod);
+          title_fade[i] += EaseIn(title_fade[i], 5 + (title_fade_rand[i]*16), title_speed_mod);
           float ease_out_color = title_fade[i];
           fill(ease_out_color, 255-ease_out_color);
           if (title_fade[i]<= 20) title_fade[i]=20;
@@ -144,10 +163,10 @@ void drawGUI() {
     ///////////////////////////////////////////////////////////////////////
     // subtitle
     ///////////////////////////////////////////////////////////////////////
+    textAlign(RIGHT);
     textFont(font2);
-    // translate(width - (textWidth(subtitle)*1.), marginY*3,0);
     fill(title_fade[0]+50, 255-title_fade[0]);
-    text(subtitle, width - (textWidth(subtitle)) - (marginX*2), 10+(marginY*3));
+    text(subtitle, width - (marginX*2) - textWidth(title) - 30, (marginY*2)+20);
 
   }
   
@@ -165,6 +184,7 @@ void setupGUI() {
   // cp5.setControlFont(fontSliders);
   color invert_bg = color(255-red(bg_color),255-green(bg_color),255-blue(bg_color));
   cp5.setColorLabel(invert_bg);
+  hud_offset = height - (19*14);
 
   cp5.addSlider("halo displace")
   .setPosition(marginX, marginY+(2*hud_spacing)+hud_offset)
@@ -199,8 +219,8 @@ void setupGUI() {
   ;  
   cp5.addSlider("thickness offset")
   .setPosition(marginX, marginY+(7*hud_spacing)+hud_offset)
-  .setRange(0.0, 100.0)
-  .setValue(25.0)
+  .setRange(0.0, 2.0)
+  .setValue(0.1)
   .setSize(300,9)
   ;  
   cp5.addSlider("thickness random")
@@ -209,36 +229,69 @@ void setupGUI() {
   .setValue(1.0)
   .setSize(300,9)
   ;  
-  cp5.addSlider("color r")
-  .setPosition(marginX, marginY+(9*hud_spacing)+hud_offset)
-  .setRange(0, 1.0)
-  .setValue(0.9)
-  .setSize(300,9)
-  ;  
-  cp5.addSlider("color g")
-  .setPosition(marginX, marginY+(10*hud_spacing)+hud_offset)
-  .setRange(0, 1.0)
-  .setValue(0.1)
-  .setSize(300,9)
-  ; 
-  cp5.addSlider("color b")
-  .setPosition(marginX, marginY+(11*hud_spacing)+hud_offset)
-  .setRange(0, 1.0)
-  .setValue(0.1)
-  .setSize(300,9)
-  ;
-  cp5.addSlider("color rand")
-  .setPosition(marginX, marginY+(12*hud_spacing)+hud_offset)
-  .setRange(0, 1.0)
-  .setValue(.1)
-  .setSize(300,9)
-  ;
   cp5.addSlider("len mult")
-  .setPosition(marginX, marginY+(13*hud_spacing)+hud_offset)
-  .setRange(0, 20.0)
+  .setPosition(marginX, marginY+(9*hud_spacing)+hud_offset)
+  .setRange(0, 2.0)
   .setValue(1.)
   .setSize(300,9)
   ;
+  cp5.addSlider("anim speed")
+  .setPosition(marginX, marginY+(10*hud_spacing)+hud_offset)
+  .setRange(0, 10.0)
+  .setValue(1.)
+  .setSize(300,9)
+  ;
+  cp5.addSlider("color r")
+  .setPosition(marginX, marginY+(11*hud_spacing)+hud_offset)
+  .setRange(0, 1.0)
+  .setValue(0.09)
+  .setSize(300,9)
+  ;  
+  cp5.addSlider("color g")
+  .setPosition(marginX, marginY+(12*hud_spacing)+hud_offset)
+  .setRange(0, 1.0)
+  .setValue(0.12)
+  .setSize(300,9)
+  ; 
+  cp5.addSlider("color b")
+  .setPosition(marginX, marginY+(13*hud_spacing)+hud_offset)
+  .setRange(0, 1.0)
+  .setValue(0.22)
+  .setSize(300,9)
+  ;
+  cp5.addSlider("color rand")
+  .setPosition(marginX, marginY+(14*hud_spacing)+hud_offset)
+  .setRange(0, 1.0)
+  .setValue(.24)
+  .setSize(300,9)
+  ;
+
+
+  cp5.addSlider("highlight r")
+  .setPosition(marginX, marginY+(15*hud_spacing)+hud_offset)
+  .setRange(0, 1.0)
+  .setValue(0.95)
+  .setSize(300,9)
+  ;  
+  cp5.addSlider("highlight g")
+  .setPosition(marginX, marginY+(16*hud_spacing)+hud_offset)
+  .setRange(0, 1.0)
+  .setValue(0.14)
+  .setSize(300,9)
+  ; 
+  cp5.addSlider("highlight b")
+  .setPosition(marginX, marginY+(17*hud_spacing)+hud_offset)
+  .setRange(0, 1.0)
+  .setValue(0.05)
+  .setSize(300,9)
+  ;
+  cp5.addSlider("gain")
+  .setPosition(marginX, marginY+(18*hud_spacing)+hud_offset)
+  .setRange(0, 5.0)
+  .setValue(1.6)
+  .setSize(300,9)
+  ;
+
   // this is important:
   cp5.setAutoDraw(false);
 
@@ -268,19 +321,34 @@ void controlEvent(ControlEvent theEvent) {
     spare_slider7 = theEvent.getController().getValue();
   }
   if (theEvent.isFrom(cp5.getController("color r"))) {
-    spare_slider8 = theEvent.getController().getValue();
+    base_cR = theEvent.getController().getValue();
   }  
   if (theEvent.isFrom(cp5.getController("color g"))) {
-    spare_slider9 = theEvent.getController().getValue();
+    base_cG = theEvent.getController().getValue();
   }
   if (theEvent.isFrom(cp5.getController("color b"))) {
-    spare_slider10 = theEvent.getController().getValue();
+    base_cB = theEvent.getController().getValue();
   }
   if (theEvent.isFrom(cp5.getController("color rand"))) {
     spare_slider11 = theEvent.getController().getValue();
   }
   if (theEvent.isFrom(cp5.getController("len mult"))) {
     spare_slider12 = theEvent.getController().getValue();
+  }
+  if (theEvent.isFrom(cp5.getController("anim speed"))) {
+    spare_slider13 = theEvent.getController().getValue();
+  }
+  if (theEvent.isFrom(cp5.getController("highlight r"))) {
+    spare_slider8 = theEvent.getController().getValue();
+  }  
+  if (theEvent.isFrom(cp5.getController("highlight g"))) {
+    spare_slider9 = theEvent.getController().getValue();
+  }
+  if (theEvent.isFrom(cp5.getController("highlight b"))) {
+    spare_slider10 = theEvent.getController().getValue();
+  }
+  if (theEvent.isFrom(cp5.getController("gain"))) {
+    gain = theEvent.getController().getValue();
   }
   // if (theEvent.isFrom(checkbox)) {
   //     user_toggle_table1 = (int)checkbox.getArrayValue()[0];
