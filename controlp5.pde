@@ -82,7 +82,7 @@ void drawGUI() {
             if (i == 0) ch = ch.toUpperCase();
 
             float speed_mod = text_fade_speed * current_fades_rand[j] ;
-            current_fades[j] += EaseIn(current_fades[j], 60 + (i * 4), speed_mod);
+            current_fades[j] += EaseIn(current_fades[j], 30 + (i * 5), speed_mod);
             float ease_out_color = current_fades[j];
             fill(ease_out_color, 255-ease_out_color);
 
@@ -91,31 +91,32 @@ void drawGUI() {
             // Add indentation
             String spacing = "";
             int spacing_max = int(i*1.5);
-            if (spacing_max>=14) spacing_max=14;
+            if (spacing_max>=7) spacing_max=7;
             if (i==1) {
-              if(j==0) spacing+= " " + arrow + " ";
+              if(j==0) spacing+= arrow + " ";
               word += spacing;
             }
             if (i>1) {
               if (j==0){
                 for (int sp=0; sp<spacing_max; sp++){
-                  spacing += " ";
+                  // spacing += " ";
                 }
                 spacing += arrow + " ";
                 word += spacing;
               }
             }
             word += ch;
+            // if (i==0&&j==0) text(hover_id, marginX*3, height-200); //display id at bottom
             if (c0 == ' ') word += " ";
             if (i>0&&j==0) text(arrow + " " + ch, (marginX*3) + textWidth(word) + ((j*15)/(i+1)), y_offset);
-            else text(ch, (marginX*3) + textWidth(word) + ((j*15)/(i+1)), y_offset);
+            else text(ch, (marginX*3) + textWidth(word) + ((j*12)/(i+1)), y_offset);
 
           }
           fade_text.set(i, current_fades);
           fade_text_rand.set(i, current_fades_rand);
         }
     }
-
+  }
     ///////////////////////////////////////////////////////////////////////
     // T I T L E
     ///////////////////////////////////////////////////////////////////////
@@ -175,6 +176,7 @@ void drawGUI() {
     ///////////////////////////////////////////////////////////////////////
     textAlign(RIGHT);
     textFont(font2);
+    if (display_help!=-1){
     if (frameCount >= display_help_delay) {
       help_dialog_fade += EaseIn(help_dialog_fade, 140, ease_speed*.2);
       if (help_dialog_fade <= 140) help_dialog_fade = 140;
@@ -189,22 +191,27 @@ void drawGUI() {
     }
     else if (display_help==0 && help_dialog_fade <= 254) {
       help_dialog_fade += EaseIn(help_dialog_fade, 255, ease_speed*.7);
-      if (help_dialog_fade>=255) help_dialog_fade=255;
+      if (help_dialog_fade>=255) {
+        help_dialog_fade=255;
+        display_help=-1;
+      }
     }
     for (int i=0; i<help_dialog.length; i+=2){
       float x_offset = width - (marginX*2) - textWidth(title) - 30;
-      float y_offset = (i * 6) + (marginY*2)+45;
-      fill(help_dialog_fade, 255);
+      float y_offset = (i * 7) + (marginY*2)+45;
+      fill(help_dialog_fade, 255-(help_dialog_fade+1));
       if (i==0) text(help_dialog[i], width - (marginX*2) - textWidth(title) - 30, y_offset);
       else {
-        fill((help_dialog_fade/255)*help_dialog_fade, 255);
+        fill((help_dialog_fade/255)*help_dialog_fade, 255-(help_dialog_fade+1));
         text(help_dialog[i-1], x_offset, y_offset);
-        fill(help_dialog_fade, 255);
+        fill(help_dialog_fade, 255-(help_dialog_fade+1));
         text(help_dialog[i], x_offset - 10 - textWidth(help_dialog[i-1]), y_offset);
       }
     }
+    }
 
-  }
+
+  // }
   
 
 }
@@ -224,7 +231,7 @@ void setupGUI() {
 
   cp5.addSlider("halo displace")
   .setPosition(marginX, marginY+(2*hud_spacing)+hud_offset)
-  .setRange(-1.f, 1.f)
+  .setRange(0.001f, 1.f)
   .setValue(0.1)
   .setSize(230,9)
   .setLabelVisible(true)
@@ -244,13 +251,13 @@ void setupGUI() {
   cp5.addSlider("grow dir mult")
   .setPosition(marginX, marginY+(5*hud_spacing)+hud_offset)
   .setRange(0.01, 1.0)
-  .setValue(.12)
+  .setValue(.1)
   .setSize(230,9)
   ;  
   cp5.addSlider("perturb mult")
   .setPosition(marginX, marginY+(6*hud_spacing)+hud_offset)
   .setRange(0.01, 2.0)
-  .setValue(1.5)
+  .setValue(1.81)
   .setSize(230,9)
   ;  
   cp5.addSlider("thickness offset")
@@ -265,10 +272,10 @@ void setupGUI() {
   .setValue(1.0)
   .setSize(230,9)
   ;  
-  cp5.addSlider("len mult")
+  cp5.addSlider("length mult")
   .setPosition(marginX, marginY+(9*hud_spacing)+hud_offset)
   .setRange(0, 6.0)
-  .setValue(2.)
+  .setValue(3.05)
   .setSize(230,9)
   ;
   cp5.addSlider("anim speed")
@@ -280,25 +287,25 @@ void setupGUI() {
   cp5.addSlider("color r")
   .setPosition(marginX, marginY+(11*hud_spacing)+hud_offset)
   .setRange(0, 1.0)
-  .setValue(0.09)
+  .setValue(0.06)
   .setSize(230,9)
   ;  
   cp5.addSlider("color g")
   .setPosition(marginX, marginY+(12*hud_spacing)+hud_offset)
   .setRange(0, 1.0)
-  .setValue(0.12)
+  .setValue(0.05)
   .setSize(230,9)
   ; 
   cp5.addSlider("color b")
   .setPosition(marginX, marginY+(13*hud_spacing)+hud_offset)
   .setRange(0, 1.0)
-  .setValue(0.22)
+  .setValue(0.03)
   .setSize(230,9)
   ;
   cp5.addSlider("color rand")
   .setPosition(marginX, marginY+(14*hud_spacing)+hud_offset)
   .setRange(0, 1.0)
-  .setValue(.24)
+  .setValue(.19)
   .setSize(230,9)
   ;
 
@@ -306,19 +313,19 @@ void setupGUI() {
   cp5.addSlider("highlight r")
   .setPosition(marginX, marginY+(15*hud_spacing)+hud_offset)
   .setRange(0, 1.0)
-  .setValue(0.95)
+  .setValue(0.93)
   .setSize(230,9)
   ;  
   cp5.addSlider("highlight g")
   .setPosition(marginX, marginY+(16*hud_spacing)+hud_offset)
   .setRange(0, 1.0)
-  .setValue(0.14)
+  .setValue(0.09)
   .setSize(230,9)
   ; 
   cp5.addSlider("highlight b")
   .setPosition(marginX, marginY+(17*hud_spacing)+hud_offset)
   .setRange(0, 1.0)
-  .setValue(0.05)
+  .setValue(0.18)
   .setSize(230,9)
   ;
   cp5.addSlider("gain")
@@ -368,7 +375,7 @@ void controlEvent(ControlEvent theEvent) {
   if (theEvent.isFrom(cp5.getController("color rand"))) {
     spare_slider11 = theEvent.getController().getValue();
   }
-  if (theEvent.isFrom(cp5.getController("len mult"))) {
+  if (theEvent.isFrom(cp5.getController("length mult"))) {
     spare_slider12 = theEvent.getController().getValue();
   }
   if (theEvent.isFrom(cp5.getController("anim speed"))) {

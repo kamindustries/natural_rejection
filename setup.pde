@@ -1,10 +1,9 @@
 void setup() {
-  // size(1280,800,P3D);
-  // size(1920,1080,OPENGL);
-  size(1440,900,OPENGL);
+  size(1920,1080,OPENGL);
+  // size(1440,900,OPENGL);
 
   // Setting up the camera
-  cam= new PeasyCam(this,0,300,100,1200);       
+  cam= new PeasyCam(this,0,300,100,500);
   cam.setMinimumDistance(90);
   cam.setMaximumDistance(4000);
   cam.setSuppressRollRotationMode();
@@ -19,7 +18,7 @@ void setup() {
   setupGUI();
 
   // Graphics
-  gfx = new ToxiclibsSupport(this);
+  // gfx = new ToxiclibsSupport(this);
   p3d = (PGraphics3D)g;
 
   buffer = createGraphics(width, height, P3D);
@@ -102,6 +101,9 @@ void setup() {
     title_fade_rand[i] = random(.3,1.);
   }
 
+  Branch branch_lookat = extinct_branches.get(963);
+  // cam.position(0,0,0);
+  cam.lookAt(branch_lookat.position.x,branch_lookat.position.y,branch_lookat.position.z);
   // drawGUI();
 
 }

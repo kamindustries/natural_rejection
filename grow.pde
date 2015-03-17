@@ -14,7 +14,8 @@ void GROW() {
   float xml_timer = millis();
   PVector root_pos = new PVector(0.0, 0.0, 0.0);
   PVector trunk_pos = new PVector(0.0, branch_length/10.0, 0.0);
-  PVector init_grow_dir = new PVector(0.05, 1., 0.05);
+  // PVector init_grow_dir = new PVector(0.05, 1., 0.05);
+  PVector init_grow_dir = new PVector(.7, -.3, 1.);
   root = new Branch(null, root_pos, init_grow_dir, 1, 0, "root");
   trunk = new Branch(null, trunk_pos, root.grow_dir, root.children, 0, "trunk");
   // tree_list.add(root);

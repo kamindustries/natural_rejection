@@ -73,10 +73,6 @@ void draw() {
         if (fade_val[i] >= hover_max*.98) fade_val[i] = hover_max;
         if (fade_val[i] <= 0.05) fade_val[i] = 0.0;
 
-        // clr_red[0] += fade_val[i] * 0.13 * spare_slider8; //makes hover color mostly red
-        // clr_red[1] += fade_val[i] * 0.5 * spare_slider9;
-        // clr_red[2] += fade_val[i] * 0.5 * spare_slider10;       
-
         clr_red[0] += fade_val[i] * 0.5 * clr_red[0]; //makes hover color mostly red
         clr_red[1] += fade_val[i] * 0.5 * clr_red[1];         
         clr_red[2] += fade_val[i] * 0.5 * clr_red[2]; 
@@ -86,14 +82,11 @@ void draw() {
 
         float w = (float)spare_slider2 * (fade_val[i]+1.);
         
-        // if (lock_selection==true) {
-        //   a += EaseIn(fade_val[i]*.5, 1., ease_speed);
-        // }
-
         lineShader.set("stroke_color", clr_red);
         lineShader.set("stroke_weight", w);
         lineShader.set("alpha", fade_val_a[i]);
       }
+      
       else {
         // FADE OUT
         if (fade_val[i] > 0) {
@@ -138,7 +131,6 @@ void draw() {
   }
     if (DRAW_SKELETON == true){
       // resetShader();
-      pushMatrix();
       shader(lineShader3, LINES);
       shape(tree_meshes.get(0));
     }
@@ -150,139 +142,19 @@ void draw() {
       }
     }
   
-  // DRAW FULL TREE
-  // else {
-
-  //   lineShader.set("stroke_weight", (float)spare_slider2);
-  //   shader(lineShader, LINES);
-  //   for (int i = 0; i < extinct_meshes.size(); i++) {
-
-  //     // AMBIENT COLOR CYCLING
-  //     float f = i/(float)extinct_meshes.size();
-  //     float c = (sin(s + (f * PI * 2.)) + 1.) * 0.5  ;
-  //     if (c <= 0.05) c = 0.05;
-  //     c = c*c;
-  //     clr_red[0] = c;
-  //     lineShader.set("stroke_color", clr_red);
-
-  //     // HOVER MODS
-  //     if (extinct_picked[i] == 1) {
-  //       lineShader.set("stroke_color", clr_green);
-  //       lineShader.set("stroke_weight", 2.);
-
-  //       pointShader.set("stroke_color", clr_green);
-  //     }
-  //     else {
-  //       lineShader.set("stroke_weight", (float)spare_slider2);
-  //     }
-  //     shape(extinct_meshes.get(i));
-  //   }
-
-  //   // lineShader2.set("stroke_weight", (float)spare_slider3);
-  //   // shader(lineShader2, LINES);
-  //   // for (int i = 0; i < extinct_meshes.size(); i++) {
-  //   //   shape(extinct_meshes.get(i));
-  //   // }
-  // }
-
-  // pushMatrix();
-  //   lineShader.set("stroke_weight", (float)spare_slider2);
-  //   lineShader.set("stroke_color", clr_black);
-  //   shader(lineShader, LINES);
-  //   shape(tree_meshes.get(0));
-  // popMatrix();
-  
-  // noFill();
-  
-  // pushMatrix();
-  //   lineShader.set("stroke_weight", (float)spare_slider3);
-  //   lineShader.set("stroke_color", clr_white);
-  //   shader(lineShader, LINES);    
-  //   translate(push_back[0]/halo_displ, push_back[1]/halo_displ, push_back[2]/halo_displ);
-  //   shape(tree_meshes.get(1));
-  // popMatrix();
-
-    // resetShader();
-    // resetShader(LINES);
-    // resetShader(POINTS);
-
   // Pick ray tests
   if (extinct_branches.size()>0){
-    
+      
+    // display "cubes"- the things resolving the 3D picking
     // for (int i = 0; i < cubes.length; i++) {
     //   cubes[i].display(this.g);
     // }
-    ///////////////// turn this back on /////////////////
-    ///////////////// turn this back on /////////////////
+
     shader(pointShader, POINTS);
     stroke(0);
     shape(extinct_points);
-    // for (int i = 0; i < extinct_branches.size(); i++){
-    // shape(extinct_points);
-      // Branch p = extinct_branches.get(i);
-      // point(p.position.x,p.position.y,p.position.z);
-
-    // Ray3D r = PickRay(camera_pos);
-
-    // }
-
-    float radius = 10.0;
-
-    // shader(pointShader, POINTS);
-
-    // for (int i = 0; i < extinct_points.getVertexCount(); i++) {
-
-      // strokeWeight(10);
-      // shader(pointShader, POINTS);
-      // cubes[i].display(this.g);
-
-      // PVector origin = new PVector(0.0,0.0,0.0);
-      // PVector cam_lookat_pv = new PVector(camera_lookAt[0],camera_lookAt[1],camera_lookAt[2]);
-      // PVector cam_pv = new PVector(camera_pos[0],camera_pos[1],camera_pos[2]);
-  
-      // PVector cen = extinct_points.getVertex(i);
-      // PVector cen2 = extinct_points.getVertex(i);
-      // PVector cen_orig = extinct_points.getVertex(i);
-      
-      // cen.sub(origin);
-      // cen.normalize();
-      // cen.mult(sqrt(sqrt(cam_zoom)));
-      // cen.add(cen_orig);
-
-      // cen2.sub(cam_lookat_pv);
-      // cen2.normalize();
-      // cen2.mult(sqrt(cam_zoom) * 1.);
-      // cen.add(cen2);
-
-      // cam_lookat_pv.add(cen);
-      // cam_lookat_pv.normalize();
-      // cam_lookat_pv.mult(sqrt(cam_zoom) * -1.0);
-      // cen.add(cam_lookat_pv); //fix for peasycam "zoom"
-
-
-      ///////////////////////////////////////////////////////////////////////
-      // do intersection calculation
-      ///////////////////////////////////////////////////////////////////////
-    //   float f = IntersectSphere(r, cen, radius);
-
-    //   // If hovering, do something
-    //   if (f > 0.0) {
-    //     hover[i] = f;
-    //     fill(0,255,0);
-    //     text("cool", cen_orig.x, cen_orig.y + 10, cen_orig.z + 5);
-    //     if (frameCount%15==0) {
-    //       println("**************");
-    //       println("cen orig: "+cen_orig);
-    //       println("cen: "+cen);
-    //       println("cam pos: "+camera_pos[0]+", "+camera_pos[1]+", "+camera_pos[2]);
-    //       println("lookat: "+camera_lookAt[0]+", "+camera_lookAt[1]+", "+camera_lookAt[2]);
-    //       println("zoom: "+cam_zoom);
-    //       println("");
-    //     }
-    //   }
-    //   if (f <= 0.0) hover[i] = 0.0;
-    // }
   }
+
   resetShader();
   resetShader(LINES);
   resetShader(POINTS);

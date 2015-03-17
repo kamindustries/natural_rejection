@@ -35,18 +35,21 @@ void keyPressed() {
     if (display_title==true) {
       title_display_time = 0;
       display_title = false;
-      println("display title true, display text=0");
-      println(title_fade);
     }
     else if (display_title==false){
       title_display_time = 1000000000;
       display_title = true;
-      println("display title true, display text=100000000");
-      println(title_fade);
     }
   }
   if (key == '.'){
-    saveFrame("snapshot.####.png");
+    int y = year();   // 2003, 2004, 2005, etc.
+    int m = month();  // Values from 1 - 12
+    int d = day();    // Values from 1 - 31
+    int h = hour();    // Values from 0 - 23
+    int i = minute();  // Values from 0 - 59
+    int s = second();  // Values from 0 - 59
+    String filename = "images/naturalreject."+y+m+d+"."+h+m+s+".png";
+    saveFrame(filename);
   }
   if (key == '?'){
     if (display_help==1) display_help=0;
@@ -225,3 +228,13 @@ int getId(color c) {
 //   int finish = start + _dur;
 //   float x = finish - 1
 // }
+      
+    // this previously was in the draw call //
+    // for (int i = 0; i < extinct_branches.size(); i++){
+    // shape(extinct_points);
+      // Branch p = extinct_branches.get(i);
+      // point(p.position.x,p.position.y,p.position.z);
+
+    // Ray3D r = PickRay(camera_pos);
+
+    // }

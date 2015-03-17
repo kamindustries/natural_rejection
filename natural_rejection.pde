@@ -4,19 +4,19 @@ import peasy.org.apache.commons.math.*;
 import peasy.*;
 import peasy.org.apache.commons.math.geometry.*;
 // 3D creations
-import toxi.processing.*;
-import toxi.geom.*;
-import toxi.geom.mesh.*;
-import toxi.geom.mesh.subdiv.*;
-import toxi.math.*;
-import toxi.physics.*;
-import toxi.physics.behaviors.*;
-import toxi.physics.constraints.*;
-ToxiclibsSupport gfx;
+// import toxi.processing.*;
+// import toxi.geom.*;
+// import toxi.geom.mesh.*;
+// import toxi.geom.mesh.subdiv.*;
+// import toxi.math.*;
+// import toxi.physics.*;
+// import toxi.physics.behaviors.*;
+// import toxi.physics.constraints.*;
+// ToxiclibsSupport gfx;
  
 XML xml;
 
-boolean FULL_TREE = false;
+boolean FULL_TREE = true;
 boolean DRAW_MAIN = true;
 boolean DRAW_HALO = false;
 boolean DRAW_SKELETON = false;
@@ -24,6 +24,7 @@ boolean PRINT_INFO = false;
 boolean show_hud = false;
 boolean show_text = true;
 boolean update_cubes = true;
+int screenshot_number = 0;
 
 PGraphics buffer;   // buffer
 Cube[] cubes;       // cubes
@@ -40,9 +41,9 @@ float [] mouseXY = {0.,0.};
 float halo_displ;
 
 color bg_color = color(255,255,255);
-float base_cR = .09;
-float base_cG = .12;
-float base_cB = .22;
+float base_cR = .06;
+float base_cG = .05;
+float base_cB = .03;
 float gain = 1.6;
 
 float s = 0.0;
@@ -72,19 +73,22 @@ int title_display_time = 600;
 boolean display_title = false;
 String title = "Natural Rejection";
 String subtitle = "Extinct species from the Tree of Life Web Project phylogenetic database";
-String [] help_dialog = {"keyboard controls:", 
-                            ""+char(8593), " increase taxonomy list",
-                            ""+char(8595), " decrease taxonomy list",
-                            "1", " extinct species",
-                            "2", " halo effect",
-                            "3", " entire tree",
-                            "H", " show GUI",
-                            "space", " rebuild tree",
-                            "?", " show help menu"};
+String [] help_dialog = {
+                            "keyboard controls:  ", 
+                            "?", "  show this menu",
+                            ""+char(8593), "  increase taxonomy list",
+                            ""+char(8595), "  decrease taxonomy list",
+                            "1", "  extinct species",
+                            "2", "  halo effect",
+                            "3", "  entire tree",
+                            "H", "  show GUI",
+                            "t", "  show title",
+                            "space", "  rebuild tree",};
+                          
 float help_dialog_fade = 255;
-int display_help_delay = 0;
-int display_help_timer = 250;
-int display_help = -1;
+int display_help_delay = 90;
+int display_help_timer = 240;
+int display_help = 1;
 
 char arrow = 8627;
 
@@ -132,15 +136,15 @@ int hud_spacing = 10;
 float spare_slider1 = 0.1;
 float spare_slider2 = .7;
 float spare_slider3 = 2.0;
-float spare_slider4 = .18; //.11
-float spare_slider5 = 1.5; //1.5
+float spare_slider4 = .1; //.11
+float spare_slider5 = 1.81; //1.5
 float spare_slider6 = .23;
 float spare_slider7 = 1.0;
-float spare_slider8 = .9;
-float spare_slider9 = 0.14;
-float spare_slider10 = 0.05;
-float spare_slider11 = .3;
-float spare_slider12 = 2.;
+float spare_slider8 = .93;
+float spare_slider9 = 0.09;
+float spare_slider10 = 0.03;
+float spare_slider11 = .19;  //color random
+float spare_slider12 = 3.05; //length mult
 float spare_slider13 = 1.;
 
 boolean sketchFullScreen() {

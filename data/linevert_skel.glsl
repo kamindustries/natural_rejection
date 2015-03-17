@@ -72,7 +72,7 @@ void main() {
   out_color.a = z_fog0;
   // out_color.a = 1.;
   if (out_color.a <= 0.1) out_color.a = 0.1;
-  if (out_color.a >= 0.4) out_color.a = 0.4;
+  if (out_color.a >= 0.22) out_color.a = 0.22;
   // out_color.rgb = vec3(color.r,color.r,color.r);
   // out_color.a = 1.;
   
