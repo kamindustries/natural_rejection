@@ -78,6 +78,8 @@ void mouseMoved() {
   buffer.background(getColor(-1)); // since background is not an object, its id is -1
   // buffer.noFill();
   buffer.stroke(0,0,255);
+  // buffer.pushMatrix();
+
   buffer.setMatrix(p3d.camera);
   for (int i = 0; i < cubes.length; i++) {
     PVector pos = new PVector(cubes[i].x, cubes[i].y, cubes[i].z);

@@ -72,15 +72,6 @@ int title_display_time = 600;
 boolean display_title = false;
 String title = "Natural Rejection";
 String subtitle = "Extinct species from the Tree of Life Web Project phylogenetic database";
-// String [] help_dialog = {"keyboard controls:", 
-//                             "< "+char(8593)+" > increase taxonomy list",
-//                             "< "+char(8595)+" > decrease taxonomy list",
-//                             "< 1 > extinct species",
-//                             "< 2 > halo effect",
-//                             "< 3 > entire tree",
-//                             "< H > show GUI",
-//                             "< space > rebuild tree",
-//                             "< ? > show help menu"};
 String [] help_dialog = {"keyboard controls:", 
                             ""+char(8593), " increase taxonomy list",
                             ""+char(8595), " decrease taxonomy list",
@@ -151,13 +142,6 @@ float spare_slider10 = 0.05;
 float spare_slider11 = .3;
 float spare_slider12 = 2.;
 float spare_slider13 = 1.;
-
-float master_r_x = 3.5;
-float master_r_y = 0.0;
-float master_r_z = 0.5;
-float master_t_x = 300;
-float master_t_y = 830.0;
-float master_t_z = 900.0;
 
 boolean sketchFullScreen() {
   return true;
