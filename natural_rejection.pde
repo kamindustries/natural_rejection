@@ -3,16 +3,6 @@ import peasy.test.*;
 import peasy.org.apache.commons.math.*;
 import peasy.*;
 import peasy.org.apache.commons.math.geometry.*;
-// 3D creations
-// import toxi.processing.*;
-// import toxi.geom.*;
-// import toxi.geom.mesh.*;
-// import toxi.geom.mesh.subdiv.*;
-// import toxi.math.*;
-// import toxi.physics.*;
-// import toxi.physics.behaviors.*;
-// import toxi.physics.constraints.*;
-// ToxiclibsSupport gfx;
  
 XML xml;
 
@@ -133,9 +123,9 @@ PFont font3 = createFont("Verdana", 30, true);
 
 int hud_offset = 400;
 int hud_spacing = 10;
-float spare_slider1 = 0.1;
+float spare_slider1 = 0.06;
 float spare_slider2 = .7;
-float spare_slider3 = 2.0;
+float spare_slider3 = 1.4;
 float spare_slider4 = .1; //.11
 float spare_slider5 = 1.81; //1.5
 float spare_slider6 = .23;
@@ -147,6 +137,6 @@ float spare_slider11 = .19;  //color random
 float spare_slider12 = 3.05; //length mult
 float spare_slider13 = 1.;
 
-boolean sketchFullScreen() {
-  return true;
-}
+// boolean sketchFullScreen() {
+//   return true;
+// }

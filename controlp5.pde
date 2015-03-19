@@ -231,8 +231,8 @@ void setupGUI() {
 
   cp5.addSlider("halo displace")
   .setPosition(marginX, marginY+(2*hud_spacing)+hud_offset)
-  .setRange(0.001f, 1.f)
-  .setValue(0.1)
+  .setRange(0.001f, 0.5f)
+  .setValue(0.06)
   .setSize(230,9)
   .setLabelVisible(true)
   ;
@@ -245,7 +245,7 @@ void setupGUI() {
   cp5.addSlider("halo stroke w")
   .setPosition(marginX, marginY+(4*hud_spacing)+hud_offset)
   .setRange(0.1, 10.0)
-  .setValue(2.0)
+  .setValue(1.4)
   .setSize(230,9)
   ;
   cp5.addSlider("grow dir mult")

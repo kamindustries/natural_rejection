@@ -146,7 +146,8 @@ void GROW() {
   ///////////////////////////////////////////////////////////////////////
   // D R A W   E X T I N C T   C U R V E S
   ///////////////////////////////////////////////////////////////////////
-  for (int i = 0; i < extinct_meshes.size(); i++){
+  // for (int i = 0; i < extinct_meshes.size(); i++){
+  for (int i = 0; i < extinct_points.getVertexCount(); i++){
     float j = 0;
     if (j >= max_depth) j = max_depth;
     
@@ -160,18 +161,25 @@ void GROW() {
     color cr = color(0,0,0);
 
 
-    PShape mesh = extinct_meshes.get(i);
+    // PShape mesh = extinct_meshes.get(i);
+    PShape mesh;
     mesh = createShape();
     mesh.beginShape();
+    // mesh.beginShape(POINTS);
     mesh.noFill();
     // extinct_points.strokeWeight(10);
     // mesh.curveTightness(1.);
 
-    // mesh.curveVertex(p.position.x, p.position.y, p.position.z);
-    mesh.vertex(p.position.x, p.position.y, p.position.z);
+    mesh.curveVertex(p.position.x, p.position.y, p.position.z);
+
+    // mesh.vertex(p.position.x, p.position.y, p.position.z);
+
     mesh.stroke(c0);
 
-      while (p != null) {
+      // while (p != null) {
+      for (int q=0; q<max_depth; q++){
+        if(p.parent==null) break;
+
         if (j>=max_depth) j=max_depth-1;
         // j = (max_depth - j) / (float)max_depth;
         // j *= 10.;
@@ -213,8 +221,8 @@ void GROW() {
         // new_offset.mult(4.0/(float)j_scale);
         new_offset.mult(spare_slider7 * j_scale * random(0.2,1.));
 
-        // o.add(new_angle);
-        o.add(new_offset);
+        o.add(new_angle);
+        // o.add(new_offset);
 
 
 
@@ -228,10 +236,15 @@ void GROW() {
           // o.add(green_vector);
           // o.add(r);
 
+          // turn back on
           mesh.curveVertex(o.x, o.y, o.z);
           mesh.stroke(c0);
           mesh.curveVertex(o.x, o.y, o.z);
           mesh.stroke(c0);
+
+          // mesh.vertex(o.x, o.y, o.z);
+          // mesh.stroke(c0);
+
           break;
         }
         else {
@@ -241,9 +254,17 @@ void GROW() {
           // o.add(green_vector);
           // o.add(r);
 
+
+          // mesh.curveVertex(o.x, o.y, o.z);
+          // PVector foo_final = new PVector(random(-1.,1.), random(-1.,1.), random(-1.,1.));
+          // PVector foo_final = new PVector(0.,0.,0.);
+          // foo_final.mult(j_scale);
+          // foo_final.add(p.position);
+          // mesh.vertex(foo_final.x, foo_final.y, foo_final.z);
+          // mesh.curveVertex(foo_final.x, foo_final.y, foo_final.z);
           mesh.curveVertex(o.x, o.y, o.z);
           mesh.stroke(c0);
-          
+
           p = p.parent;
         }
         j++;

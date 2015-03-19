@@ -122,6 +122,7 @@ void draw() {
       }
 
       shader(lineShader, LINES);
+      // shader(pointShader, POINTS);
       shape(extinct_meshes.get(i));
 
       // PVector extinct_vertex = extinct_points.getVertex(i);
