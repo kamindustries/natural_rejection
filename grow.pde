@@ -191,12 +191,7 @@ void GROW() {
         }
         PVector o = p.position;
         PVector r = new PVector(random(-1.,1.), random(-1.,1.), random(-1.,1.));
-        // r.add(o);
-        // r.normalize();
 
-        // r.mult(spare_slider7);
-        // r.mult((j_scale) / (float)max_depth);
-        // float angle = (2 * PI * (j/(float)max_depth));
         float angle1 = random(0,2*PI);
         float angle2 = random(0,2*PI);
         PVector inv_grow_dir = PVector.mult(p.grow_dir, -1.0);
@@ -210,33 +205,15 @@ void GROW() {
         PVector rot_cos = PVector.mult(green_vector, cos(angle1));
         PVector rot_sin = PVector.mult(y_vector, sin(angle2));
         PVector new_angle = PVector.add(rot_cos, rot_sin);
-        // new_angle.add(grow_dir_scaled);
-        // new_angle.normalize();
-        // new_angle.mult(j_scale * spare_slider6 * .1);
-        // o.add(new_angle);
         new_angle.mult(spare_slider6 * j_scale);
-        // y_vector.mult(spare_slider6);
         
         PVector new_offset = new PVector(random(-.5,.5), random(-.5,.5), random(-.5,.5));
-        // new_offset.mult(4.0/(float)j_scale);
         new_offset.mult(spare_slider7 * j_scale * random(0.2,1.));
 
         o.add(new_angle);
-        // o.add(new_offset);
-
-
 
         if (p.parent == null) {
-          // green_vector.normalize();
-          // green_vector.cross(o);
-          // green_vector.mult(j_scale * spare_slider6 * 1.0);
-          // green_vector.mult(j_scale * spare_slider6 * 1.);
-          // r.mult(40.);
-          // o.add(r);
-          // o.add(green_vector);
-          // o.add(r);
 
-          // turn back on
           mesh.curveVertex(o.x, o.y, o.z);
           mesh.stroke(c0);
           mesh.curveVertex(o.x, o.y, o.z);
@@ -248,20 +225,7 @@ void GROW() {
           break;
         }
         else {
-          // green_vector.normalize();
-          // green_vector.mult(j_scale * spare_slider6);
-          // o.add(r);
-          // o.add(green_vector);
-          // o.add(r);
 
-
-          // mesh.curveVertex(o.x, o.y, o.z);
-          // PVector foo_final = new PVector(random(-1.,1.), random(-1.,1.), random(-1.,1.));
-          // PVector foo_final = new PVector(0.,0.,0.);
-          // foo_final.mult(j_scale);
-          // foo_final.add(p.position);
-          // mesh.vertex(foo_final.x, foo_final.y, foo_final.z);
-          // mesh.curveVertex(foo_final.x, foo_final.y, foo_final.z);
           mesh.curveVertex(o.x, o.y, o.z);
           mesh.stroke(c0);
 

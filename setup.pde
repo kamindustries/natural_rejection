@@ -1,7 +1,7 @@
 void setup() {
-  // size(1920,1080,OPENGL);
+  size(1920,1080,OPENGL);
   // size(1440,900,OPENGL);
-  size(960,580,OPENGL);
+  // size(960,580,OPENGL);
 
   // Setting up the camera
   cam= new PeasyCam(this,0,300,100,500);
@@ -50,7 +50,7 @@ void setup() {
   println("loaded shaders.");
 
   // Sets random seed so we get same results each time
-  randomSeed(0);
+  randomSeed(2);
 
   ///////////////////////////////////////////////////////////////////////
   // Read XML
@@ -102,9 +102,16 @@ void setup() {
     title_fade_rand[i] = random(.3,1.);
   }
 
-  Branch branch_lookat = extinct_branches.get(963);
-  // cam.position(0,0,0);
+  Branch branch_lookat = extinct_branches.get(105);
   cam.lookAt(branch_lookat.position.x,branch_lookat.position.y,branch_lookat.position.z);
-  // drawGUI();
+  camera_autoBranch = extinct_branches.get(105);
+  camera_autoPos = new PVector( camera_autoBranch.position.x,
+                                camera_autoBranch.position.y-50,
+                                camera_autoBranch.position.z-1000);
+  camera_autoCen = new PVector( camera_autoBranch.position.x,
+                                camera_autoBranch.position.y,
+                                camera_autoBranch.position.z);
+  camera_autoRand = PVector.random3D();
+  camera_autoRand.mult(100.);
 
 }

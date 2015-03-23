@@ -60,7 +60,6 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
   float perturb_grad = current_depth/((float)max_depth+1);
   if(perturb_grad >= .8) perturb_grad = .8; //clamp angle falloff with generation
 
-  // perturb *= (current_depth)/((float)max_depth+1.);
   perturb *= perturb_grad;
   perturb *= spare_slider5 * 0.1;
   
@@ -75,41 +74,6 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
   PVector len = PVector.mult(branch.grow_dir, dot);
   len.mult(spare_slider4 * .1 * ((current_depth+1.)/(float)max_depth));
 
-  // go down the tree to the root adding more branches
-  // stochastically
-  // Branch p = branch.parent;
-  // int offset_scale = current_depth;
-
-  // float rand_foo = random(1.0);
-  // if (branch.children == 0 && rand_foo < 0.001) {
-  //   while (p != null) {
-  //     // if (p.parent != null) {
-  //     if (p.parent == null) {
-  //       break;
-  //     } else {
-  //       PVector offset = new PVector(random(-1,1), random(-1,1), random(-1,1));
-  //       offset.mult(4.0/(float)offset_scale);
-  //       PVector offset2 = PVector.mult(offset, 0.5);
-
-
-  //       PVector pos = PVector.add(p.position, offset2);
-  //       PVector pos2 = PVector.add(p.parent.position, offset);
-  //       Branch extra1 = new Branch(null, pos, p.grow_dir, 0);
-  //       Branch extra2 = new Branch(null, pos2, p.grow_dir, 0);
-  //       tree_list.add(extra1);
-  //       tree_list.add(extra2);
-  //       offset_scale--;
-  //       p = p.parent;
-  //     }
-  //   }
-  // }
-  
-  // String base_name = new String();
-  // if (depth == 0) {
-  //   XML _base_name = _parent[0].getChild("NAME");  
-  //   base_name = _base_name.getContent();
-  //   println(base_name + ", " + _parent[0].getInt("CHILDCOUNT"));
-  // }
 
   
   ///////////////////////////////////////////////////////////////////////
@@ -151,9 +115,6 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
     if (max_depth - cd <= 10) cd = 10; //min length multiplier
     new_grow_dir.mult(((max_depth - cd)/(float)max_depth)*spare_slider12);
         
-    // new_grow_dir = initial_grow_dir;
-    // new_grow_dir.normalize();
-
 
     PVector new_pos = PVector.mult(new_grow_dir, current_branch_length);  
     new_pos.add(branch.position);
@@ -173,24 +134,6 @@ void readChild(XML[] _parent, int _depth, Branch _branch) {
       extinct_branches.add(next_branch);
     }
 
-    ///////////////////////////////////////////////////////////////////////
-    // Burrow deeper into the tree
-    ///////////////////////////////////////////////////////////////////////
-
-    // if (children.length > 0) {
-
-      // Print all the child names under current node as a kind of preview
-      // println(dash);
-      // int child_count = 0;
-      // for (int j = 0; j < children.length; j++) {
-      //   XML _child_name = children[j].getChild("NAME");
-      //   String child_name = _child_name.getContent();
-      //   if (child_name == "") child_name = "[no_name]";
-      //   child_count = children[j].getInt("CHILDCOUNT");
-
-      // println(spacing + child_name + ", " + child_count);
-      // }
-      
 
     ///////////////////////////////////////////////////////////////////////
     // Begin recrusive loop

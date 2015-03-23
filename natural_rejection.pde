@@ -29,6 +29,14 @@ float [] camera_lookAt;
 float [] push_back;
 float [] mouseXY = {0.,0.};
 float halo_displ;
+float camera_fov = PI/2.5;
+int camera_animate = 0;
+float camera_easeSpeed = 0.00;
+PVector camera_autoPos;
+PVector camera_autoCen;
+PVector camera_autoRand;
+Branch camera_autoBranch;
+int autoBranch_id = 970;
 
 color bg_color = color(255,255,255);
 float base_cR = .06;
@@ -59,21 +67,23 @@ ArrayList<float[]> fade_text_rand = new ArrayList<float[]>();
 ArrayList<String> text_names_list = new ArrayList<String>();
 float [] title_fade;
 float [] title_fade_rand;
-int title_display_time = 600;
+int title_display_time = 100;
 boolean display_title = false;
+boolean display_help_mouse = true;
 String title = "Natural Rejection";
 String subtitle = "Extinct species from the Tree of Life Web Project phylogenetic database";
-String [] help_dialog = {
-                            "keyboard controls:  ", 
-                            "?", "  show this menu",
+String [] help_info = { "Hover over branch tips to show species name",
+                        "Click to lock selection",
+                        "Double click to focus on node" };
+                      
+String [] help_dialog = {   "controls:  ", 
                             ""+char(8593), "  increase taxonomy list",
                             ""+char(8595), "  decrease taxonomy list",
-                            "1", "  extinct species",
-                            "2", "  halo effect",
-                            "3", "  entire tree",
+                            "1", "  halo effect",
+                            "2", "  entire tree",
                             "H", "  show GUI",
-                            "t", "  show title",
-                            "space", "  rebuild tree",};
+                            "R", "  rebuild tree",
+                            "?", "  show this menu",};
                           
 float help_dialog_fade = 255;
 int display_help_delay = 90;
@@ -124,10 +134,10 @@ PFont font3 = createFont("Verdana", 30, true);
 int hud_offset = 400;
 int hud_spacing = 10;
 float spare_slider1 = 0.06;
-float spare_slider2 = .7;
-float spare_slider3 = 1.4;
-float spare_slider4 = .1; //.11
-float spare_slider5 = 1.81; //1.5
+float spare_slider2 = .65;
+float spare_slider3 = 1.0;
+float spare_slider4 = .16; //.11
+float spare_slider5 = 3.89; //1.5
 float spare_slider6 = .23;
 float spare_slider7 = 1.0;
 float spare_slider8 = .93;
@@ -136,7 +146,13 @@ float spare_slider10 = 0.03;
 float spare_slider11 = .19;  //color random
 float spare_slider12 = 3.05; //length mult
 float spare_slider13 = 1.;
+float spare_sliderx = 2350.;
+float spare_slidery = 0.;
+float spare_sliderz = 950.;
+float spare_sliderx2 = 1900.;
+float spare_slidery2 = 90.;
+float spare_sliderz2 = 2000.;
 
-// boolean sketchFullScreen() {
-//   return true;
-// }
+boolean sketchFullScreen() {
+  return true;
+}

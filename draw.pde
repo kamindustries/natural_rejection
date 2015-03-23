@@ -1,9 +1,10 @@
 void draw() {
   
-  perspective(PI/2., float(width)/float(height), 1/10.0, 10000.0);
+  perspective(camera_fov, float(width)/float(height), 1/10.0, 10000.0);
   hint(ENABLE_DEPTH_TEST);
   background(bg_color);
   blendMode(BLEND);
+
   
 
   camera_pos = cam.getPosition();
@@ -13,9 +14,11 @@ void draw() {
   push_back[2]=camera_pos[2]-camera_lookAt[2];
   mouseXY[0] = mouseX;
   mouseXY[1] = mouseY;
-  
+
   float cam_zoom = (float)cam.getDistance();
   halo_displ = cam_zoom * spare_slider1;
+  
+  AutoCamera();
 
   // TURNS OFF CAMERA CONTROLS WHEN HOVERING OVER SLIDER
   if (cp5.window(this).isMouseOver()) {
@@ -86,7 +89,7 @@ void draw() {
         lineShader.set("stroke_weight", w);
         lineShader.set("alpha", fade_val_a[i]);
       }
-      
+
       else {
         // FADE OUT
         if (fade_val[i] > 0) {
@@ -94,6 +97,7 @@ void draw() {
         }
         if (fade_val_a[i] > 0) {
           if (lock_selection==true || hover_id > 0) {
+            update_text = false;
             fade_val_a[i] += EaseIn(fade_val_a[i], .07, ease_speed);
           }
           else fade_val_a[i] += EaseIn(fade_val_a[i], 1., ease_speed);

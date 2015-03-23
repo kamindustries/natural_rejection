@@ -16,7 +16,7 @@ void drawGUI() {
   textAlign(RIGHT);
   if (show_text==true){
     if (selected_branch.name != "trunk"&&selected_branch.name != null) {
-      if (display_name != selected_branch.name || update_text == true){
+      if (display_name != selected_branch.name ){
         
           fade_text.clear();
           fade_text_rand.clear();
@@ -61,7 +61,8 @@ void drawGUI() {
             }
             update_text = false;
           
-        } 
+        }
+
         //display text & animate
         for (int i = 0; i < text_names_list.size(); i++){
           String current_name = text_names_list.get(i);
@@ -81,8 +82,12 @@ void drawGUI() {
             ch += c0;
             if (i == 0) ch = ch.toUpperCase();
 
-            float speed_mod = text_fade_speed * current_fades_rand[j] ;
-            current_fades[j] += EaseIn(current_fades[j], 30 + (i * 5), speed_mod);
+            float speed_mod = text_fade_speed * current_fades_rand[j];
+            if (update_text == true) {
+              current_fades[j] += EaseIn(current_fades[j], 255 + (i * 5), speed_mod);
+              if (current_fades[j] >= 255) current_fades[j] = 255;
+            }
+            else current_fades[j] += EaseIn(current_fades[j], 30 + (i * 5), speed_mod);
             float ease_out_color = current_fades[j];
             fill(ease_out_color, 255-ease_out_color);
 
@@ -106,7 +111,6 @@ void drawGUI() {
               }
             }
             word += ch;
-            // if (i==0&&j==0) text(hover_id, marginX*3, height-200); //display id at bottom
             if (c0 == ' ') word += " ";
             if (i>0&&j==0) text(arrow + " " + ch, (marginX*3) + textWidth(word) + ((j*15)/(i+1)), y_offset);
             else text(ch, (marginX*3) + textWidth(word) + ((j*12)/(i+1)), y_offset);
@@ -149,7 +153,8 @@ void drawGUI() {
           }
         //fade out
         else if (frameCount >= title_display_time) {
-            title_fade[i] += EaseIn(title_fade[i], 255, title_speed_mod);
+            // title_fade[i] += EaseIn(title_fade[i], 255, title_speed_mod);
+            title_fade[i] += EaseIn(title_fade[i], 240*(0.5 * (1.+sin(frameCount * .005))), title_speed_mod);
             if (title_fade[i]>= 255) title_fade[i]=255;
             float ease_out_color = title_fade[i];
             fill(ease_out_color, 255-ease_out_color);
@@ -171,43 +176,54 @@ void drawGUI() {
     fill(title_fade[0]+50, 255-title_fade[0]);
     text(subtitle, width - (marginX*2) - textWidth(title) - 30, (marginY*2)+20);
 
+    if (display_help_mouse == true){
+      textFont(font2);
+      textAlign(RIGHT);
+      fill(title_fade[2]+25, 255-title_fade[2]);
+      for (int i=0; i<help_info.length; i++){
+        text(help_info[i], width - (marginX*2) - textWidth(title) - 30, (i*11) + (marginY*2)+45);
+      }
+    }
+
     ///////////////////////////////////////////////////////////////////////
     // help menu
     ///////////////////////////////////////////////////////////////////////
     textAlign(RIGHT);
     textFont(font2);
     if (display_help!=-1){
-    if (frameCount >= display_help_delay) {
-      help_dialog_fade += EaseIn(help_dialog_fade, 140, ease_speed*.2);
-      if (help_dialog_fade <= 140) help_dialog_fade = 140;
-    }
-    if (frameCount >= display_help_delay+display_help_timer) {
-      display_help = 0;
-      display_help_delay = 2000000000;
-    }
-    else if (display_help==1 && help_dialog_fade >= 139) {
-      help_dialog_fade += EaseIn(help_dialog_fade, 140, ease_speed*.7);
-      if (help_dialog_fade<=140) help_dialog_fade=140;
-    }
-    else if (display_help==0 && help_dialog_fade <= 254) {
-      help_dialog_fade += EaseIn(help_dialog_fade, 255, ease_speed*.7);
-      if (help_dialog_fade>=255) {
-        help_dialog_fade=255;
-        display_help=-1;
+      if (frameCount >= display_help_delay) {
+        help_dialog_fade += EaseIn(help_dialog_fade, 140, ease_speed*.2);
+        if (help_dialog_fade <= 140) help_dialog_fade = 140;
       }
-    }
-    for (int i=0; i<help_dialog.length; i+=2){
-      float x_offset = width - (marginX*2) - textWidth(title) - 30;
-      float y_offset = (i * 7) + (marginY*2)+45;
-      fill(help_dialog_fade, 255-(help_dialog_fade+1));
-      if (i==0) text(help_dialog[i], width - (marginX*2) - textWidth(title) - 30, y_offset);
-      else {
-        fill((help_dialog_fade/255)*help_dialog_fade, 255-(help_dialog_fade+1));
-        text(help_dialog[i-1], x_offset, y_offset);
+      if (frameCount >= display_help_delay+display_help_timer) {
+        display_help = 0;
+        display_help_delay = 2000000000;
+      }
+      else if (display_help==1 && help_dialog_fade >= 139) {
+        help_dialog_fade += EaseIn(help_dialog_fade, 140, ease_speed*.7);
+        if (help_dialog_fade<=140) help_dialog_fade=140;
+      }
+      else if (display_help==0 && help_dialog_fade <= 254) {
+        help_dialog_fade += EaseIn(help_dialog_fade, 255, ease_speed*.7);
+        if (help_dialog_fade>=255) {
+          help_dialog_fade=255;
+          display_help=-1;
+        }
+      }
+      
+
+      for (int i=0; i<help_dialog.length; i+=2){
+        float x_offset = width - (marginX*2) - textWidth(title) - 30;
+        float y_offset = (i * 7) + (marginY*2)+95;
         fill(help_dialog_fade, 255-(help_dialog_fade+1));
-        text(help_dialog[i], x_offset - 10 - textWidth(help_dialog[i-1]), y_offset);
+        if (i==0) text(help_dialog[i], width - (marginX*2) - textWidth(title) - 30, y_offset);
+        else {
+          fill((help_dialog_fade/255)*help_dialog_fade, 255-(help_dialog_fade+1));
+          text(help_dialog[i-1], x_offset, y_offset);
+          fill(help_dialog_fade, 255-(help_dialog_fade+1));
+          text(help_dialog[i], x_offset - 10 - textWidth(help_dialog[i-1]), y_offset);
+        }
       }
-    }
     }
 
 
@@ -238,26 +254,26 @@ void setupGUI() {
   ;
   cp5.addSlider("main stroke w")
   .setPosition(marginX, marginY+(3*hud_spacing)+hud_offset)
-  .setRange(0.1, 10.0)
+  .setRange(0.1, 2.0)
   .setValue(.7)
   .setSize(230,9)
   ;
   cp5.addSlider("halo stroke w")
   .setPosition(marginX, marginY+(4*hud_spacing)+hud_offset)
-  .setRange(0.1, 10.0)
-  .setValue(1.4)
+  .setRange(0.1, 2.0)
+  .setValue(1.0)
   .setSize(230,9)
   ;
   cp5.addSlider("grow dir mult")
   .setPosition(marginX, marginY+(5*hud_spacing)+hud_offset)
-  .setRange(0.01, 1.0)
-  .setValue(.1)
+  .setRange(0.001, .25)
+  .setValue(.16)
   .setSize(230,9)
   ;  
   cp5.addSlider("perturb mult")
   .setPosition(marginX, marginY+(6*hud_spacing)+hud_offset)
-  .setRange(0.01, 2.0)
-  .setValue(1.81)
+  .setRange(0.01, 5.0)
+  .setValue(3.89)
   .setSize(230,9)
   ;  
   cp5.addSlider("thickness offset")
@@ -307,9 +323,7 @@ void setupGUI() {
   .setRange(0, 1.0)
   .setValue(.19)
   .setSize(230,9)
-  ;
-
-
+  ; 
   cp5.addSlider("highlight r")
   .setPosition(marginX, marginY+(15*hud_spacing)+hud_offset)
   .setRange(0, 1.0)
@@ -332,6 +346,42 @@ void setupGUI() {
   .setPosition(marginX, marginY+(18*hud_spacing)+hud_offset)
   .setRange(0, 5.0)
   .setValue(1.6)
+  .setSize(230,9)
+  ;
+  cp5.addSlider("translate x")
+  .setPosition(marginX, marginY+(19*hud_spacing)+hud_offset)
+  .setRange(-5000, 5000.0)
+  .setValue(2347)
+  .setSize(230,9)
+  ;
+  cp5.addSlider("translate y")
+  .setPosition(marginX, marginY+(20*hud_spacing)+hud_offset)
+  .setRange(-5000, 5000.0)
+  .setValue(0)
+  .setSize(230,9)
+  ;
+  cp5.addSlider("translate z")
+  .setPosition(marginX, marginY+(21*hud_spacing)+hud_offset)
+  .setRange(-5000, 5000.0)
+  .setValue(950)
+  .setSize(230,9)
+  ;
+  cp5.addSlider("translate x2")
+  .setPosition(marginX+240, marginY+(19*hud_spacing)+hud_offset)
+  .setRange(-5000, 5000.0)
+  .setValue(1900)
+  .setSize(230,9)
+  ;
+  cp5.addSlider("translate y2")
+  .setPosition(marginX+240, marginY+(20*hud_spacing)+hud_offset)
+  .setRange(-5000, 5000.0)
+  .setValue(90)
+  .setSize(230,9)
+  ;
+  cp5.addSlider("translate z2")
+  .setPosition(marginX+240, marginY+(21*hud_spacing)+hud_offset)
+  .setRange(-5000, 5000.0)
+  .setValue(2000)
   .setSize(230,9)
   ;
 
@@ -392,6 +442,24 @@ void controlEvent(ControlEvent theEvent) {
   }
   if (theEvent.isFrom(cp5.getController("gain"))) {
     gain = theEvent.getController().getValue();
+  }
+  if (theEvent.isFrom(cp5.getController("translate x"))) {
+    spare_sliderx = theEvent.getController().getValue();
+  }
+  if (theEvent.isFrom(cp5.getController("translate y"))) {
+    spare_slidery = theEvent.getController().getValue();
+  }
+  if (theEvent.isFrom(cp5.getController("translate z"))) {
+    spare_sliderz = theEvent.getController().getValue();
+  }  
+  if (theEvent.isFrom(cp5.getController("translate x2"))) {
+    spare_sliderx2 = theEvent.getController().getValue();
+  }
+  if (theEvent.isFrom(cp5.getController("translate y2"))) {
+    spare_slidery2 = theEvent.getController().getValue();
+  }
+  if (theEvent.isFrom(cp5.getController("translate z2"))) {
+    spare_sliderz2 = theEvent.getController().getValue();
   }
 
 
