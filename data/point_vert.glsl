@@ -49,11 +49,11 @@ void main() {
   float mouse_dot = dot(mouse_vec.xyz, mouse_to_clip.xyz);
   float mouse_dot_sqrt = sqrt((mouse_dot));
   float mouse_scale = (f) * 960.;
-  float m_min = .25;
+  float m_min = .05;
   float m_max = 1.5;
-  // mouse_scale = 1.-abs(mouse_scale * weight * weight);
+
   float t1 = 1.-(mouse_scale * .6 * .6);
-  mouse_scale = t1 * 1.;
+  mouse_scale = t1 * 1.33; //MAIN SCALE
   mouse_scale *= log(1./mouse_scale) * -.35;
 
   vec2 new_offset = offset;

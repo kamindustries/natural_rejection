@@ -13,6 +13,7 @@ boolean DRAW_SKELETON = false;
 boolean PRINT_INFO = false;
 boolean show_hud = false;
 boolean show_text = true;
+boolean hide_title = false;
 boolean update_cubes = true;
 int screenshot_number = 0;
 
@@ -58,7 +59,7 @@ int hover_id = -1;
 boolean lock_selection = false;
 boolean mouse_drag = false;
 boolean update_text = true;
-int text_list_size = 4;
+int text_list_size = 8;
 // float [][] fade_text;
 // float [][] fade_text_rand;
 float text_fade_speed = .06;

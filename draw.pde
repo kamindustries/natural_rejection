@@ -3,9 +3,8 @@ void draw() {
   perspective(camera_fov, float(width)/float(height), 1/10.0, 10000.0);
   hint(ENABLE_DEPTH_TEST);
   background(bg_color);
-  blendMode(BLEND);
-
-  
+  // blendMode(BLEND);
+  smooth();
 
   camera_pos = cam.getPosition();
   camera_lookAt = cam.getLookAt();
@@ -18,6 +17,9 @@ void draw() {
   float cam_zoom = (float)cam.getDistance();
   halo_displ = cam_zoom * spare_slider1;
   
+  ///////////////////////////////////////////////////////////////////////
+  // A U T O   C A M E R A
+  ///////////////////////////////////////////////////////////////////////
   AutoCamera();
 
   // TURNS OFF CAMERA CONTROLS WHEN HOVERING OVER SLIDER
@@ -27,15 +29,13 @@ void draw() {
     cam.setActive(true);
   }
 
-  // textFont(font1);
-
   s+=(0.02*spare_slider13);
 
-  // if (FULL_TREE==false){
+  if (FULL_TREE==false){
     if (frameCount%24==0) lineShader = loadShader("linefrag.glsl", "linevert.glsl");
     if (frameCount%24==0) lineShader3 = loadShader("linefrag_skel.glsl", "linevert_skel.glsl");
     if (frameCount%24==0) pointShader = new PShader(this, "point_vert.glsl", "point_frag.glsl");
-  // }
+  }
   if (DRAW_MAIN){
     lineShader.set("stroke_weight", (float)spare_slider2);
     lineShader.set("stroke_color", clr_black);
@@ -164,9 +164,10 @@ void draw() {
   resetShader(LINES);
   resetShader(POINTS);
 
-  // box at orgin...for debugging stuff
-  // box(10); 
 
+  //fade to white to auto camera
+  FadeToAuto();
+  
   drawGUI();
   
   if (show_hud==true){

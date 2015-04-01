@@ -124,38 +124,24 @@ void drawGUI() {
     ///////////////////////////////////////////////////////////////////////
     // T I T L E
     ///////////////////////////////////////////////////////////////////////
-    String word = new String();
-    word = "";
-    textFont(font3);
-    textAlign(LEFT);
-    pushMatrix();
-      translate(width - (textWidth(title)*3.),0,0);
-      for (int i = 0; i < title.length(); i++){
-        char c0 = title.charAt(i);
-        String ch = new String();
-        ch += c0;
-        ch = ch.toUpperCase();
+    if (hide_title == false){
+      String word = new String();
+      word = "";
+      textFont(font3);
+      textAlign(LEFT);
+      pushMatrix();
+        translate(width - (textWidth(title)*3.),0,0);
+        for (int i = 0; i < title.length(); i++){
+          char c0 = title.charAt(i);
+          String ch = new String();
+          ch += c0;
+          ch = ch.toUpperCase();
 
-        float title_speed_mod = 0.025 * title_fade_rand[i] ;
-        
-        //fade in
-        if (frameCount < title_display_time){
-          title_fade[i] += EaseIn(title_fade[i], 5 + (title_fade_rand[i]*16), title_speed_mod);
-          float ease_out_color = title_fade[i];
-          fill(ease_out_color, 255-ease_out_color);
-          if (title_fade[i]<= 20) title_fade[i]=20;
-          float x_pos = (marginX*2) + textWidth(word) + (i*15);
-          float y_pos = marginY*2;
-          text(ch, x_pos, y_pos);
-          word += ch;
-          if (c0 == ' ') word += " ";
-        
-          }
-        //fade out
-        else if (frameCount >= title_display_time) {
-            // title_fade[i] += EaseIn(title_fade[i], 255, title_speed_mod);
-            title_fade[i] += EaseIn(title_fade[i], 240*(0.5 * (1.+sin(frameCount * .005))), title_speed_mod);
-            if (title_fade[i]>= 255) title_fade[i]=255;
+          float title_speed_mod = 0.025 * title_fade_rand[i] ;
+          
+          //fade in
+          if (frameCount < title_display_time){
+            title_fade[i] += EaseIn(title_fade[i], 5 + (title_fade_rand[i]*16), title_speed_mod);
             float ease_out_color = title_fade[i];
             fill(ease_out_color, 255-ease_out_color);
             if (title_fade[i]<= 20) title_fade[i]=20;
@@ -164,64 +150,81 @@ void drawGUI() {
             text(ch, x_pos, y_pos);
             word += ch;
             if (c0 == ' ') word += " ";
-          }
-      }
-    popMatrix();
+          
+            }
+          //fade out
+          else if (frameCount >= title_display_time) {
+              // title_fade[i] += EaseIn(title_fade[i], 255, title_speed_mod);
+              title_fade[i] += EaseIn(title_fade[i], 240*(0.5 * (1.+sin(frameCount * .005))), title_speed_mod);
+              if (title_fade[i]>= 255) title_fade[i]=255;
+              float ease_out_color = title_fade[i];
+              fill(ease_out_color, 255-ease_out_color);
+              if (title_fade[i]<= 20) title_fade[i]=20;
+              float x_pos = (marginX*2) + textWidth(word) + (i*15);
+              float y_pos = marginY*2;
+              text(ch, x_pos, y_pos);
+              word += ch;
+              if (c0 == ' ') word += " ";
+            }
+        }
+      popMatrix();
+
     
-    ///////////////////////////////////////////////////////////////////////
-    // subtitle
-    ///////////////////////////////////////////////////////////////////////
-    textAlign(RIGHT);
-    textFont(font2);
-    fill(title_fade[0]+50, 255-title_fade[0]);
-    text(subtitle, width - (marginX*2) - textWidth(title) - 30, (marginY*2)+20);
-
-    if (display_help_mouse == true){
-      textFont(font2);
+      ///////////////////////////////////////////////////////////////////////
+      // subtitle
+      ///////////////////////////////////////////////////////////////////////
       textAlign(RIGHT);
-      fill(title_fade[2]+25, 255-title_fade[2]);
-      for (int i=0; i<help_info.length; i++){
-        text(help_info[i], width - (marginX*2) - textWidth(title) - 30, (i*11) + (marginY*2)+45);
-      }
-    }
+      textFont(font2);
+      fill(title_fade[0]+10, 255-title_fade[0]);
+      text(subtitle, width - (marginX*2) - textWidth(title) - 30, (marginY*2)+20);
 
-    ///////////////////////////////////////////////////////////////////////
-    // help menu
-    ///////////////////////////////////////////////////////////////////////
-    textAlign(RIGHT);
-    textFont(font2);
-    if (display_help!=-1){
-      if (frameCount >= display_help_delay) {
-        help_dialog_fade += EaseIn(help_dialog_fade, 140, ease_speed*.2);
-        if (help_dialog_fade <= 140) help_dialog_fade = 140;
-      }
-      if (frameCount >= display_help_delay+display_help_timer) {
-        display_help = 0;
-        display_help_delay = 2000000000;
-      }
-      else if (display_help==1 && help_dialog_fade >= 139) {
-        help_dialog_fade += EaseIn(help_dialog_fade, 140, ease_speed*.7);
-        if (help_dialog_fade<=140) help_dialog_fade=140;
-      }
-      else if (display_help==0 && help_dialog_fade <= 254) {
-        help_dialog_fade += EaseIn(help_dialog_fade, 255, ease_speed*.7);
-        if (help_dialog_fade>=255) {
-          help_dialog_fade=255;
-          display_help=-1;
+      if (display_help_mouse == true){
+        textFont(font2);
+        textAlign(RIGHT);
+        fill(title_fade[2]+25, 255-title_fade[2]);
+        for (int i=0; i<help_info.length; i++){
+          text(help_info[i], width - (marginX*2) - textWidth(title) - 30, (i*11) + (marginY*2)+45);
         }
       }
-      
 
-      for (int i=0; i<help_dialog.length; i+=2){
-        float x_offset = width - (marginX*2) - textWidth(title) - 30;
-        float y_offset = (i * 7) + (marginY*2)+95;
-        fill(help_dialog_fade, 255-(help_dialog_fade+1));
-        if (i==0) text(help_dialog[i], width - (marginX*2) - textWidth(title) - 30, y_offset);
-        else {
-          fill((help_dialog_fade/255)*help_dialog_fade, 255-(help_dialog_fade+1));
-          text(help_dialog[i-1], x_offset, y_offset);
+      ///////////////////////////////////////////////////////////////////////
+      // help menu
+      ///////////////////////////////////////////////////////////////////////
+      textAlign(RIGHT);
+      textFont(font2);
+      if (display_help!=-1){
+        if (frameCount >= display_help_delay) {
+          help_dialog_fade += EaseIn(help_dialog_fade, 140, ease_speed*.2);
+          if (help_dialog_fade <= 140) help_dialog_fade = 140;
+        }
+        if (frameCount >= display_help_delay+display_help_timer) {
+          display_help = 0;
+          display_help_delay = 2000000000;
+        }
+        else if (display_help==1 && help_dialog_fade >= 139) {
+          help_dialog_fade += EaseIn(help_dialog_fade, 140, ease_speed*.7);
+          if (help_dialog_fade<=140) help_dialog_fade=140;
+        }
+        else if (display_help==0 && help_dialog_fade <= 254) {
+          help_dialog_fade += EaseIn(help_dialog_fade, 255, ease_speed*.7);
+          if (help_dialog_fade>=255) {
+            help_dialog_fade=255;
+            display_help=-1;
+          }
+        }
+        
+
+        for (int i=0; i<help_dialog.length; i+=2){
+          float x_offset = width - (marginX*2) - textWidth(title) - 30;
+          float y_offset = (i * 7) + (marginY*2)+95;
           fill(help_dialog_fade, 255-(help_dialog_fade+1));
-          text(help_dialog[i], x_offset - 10 - textWidth(help_dialog[i-1]), y_offset);
+          if (i==0) text(help_dialog[i], width - (marginX*2) - textWidth(title) - 30, y_offset);
+          else {
+            fill((help_dialog_fade/255)*help_dialog_fade, 255-(help_dialog_fade+1));
+            text(help_dialog[i-1], x_offset, y_offset);
+            fill(help_dialog_fade, 255-(help_dialog_fade+1));
+            text(help_dialog[i], x_offset - 10 - textWidth(help_dialog[i-1]), y_offset);
+          }
         }
       }
     }
@@ -267,7 +270,7 @@ void setupGUI() {
   cp5.addSlider("grow dir mult")
   .setPosition(marginX, marginY+(5*hud_spacing)+hud_offset)
   .setRange(0.001, .25)
-  .setValue(.16)
+  .setValue(.19)
   .setSize(230,9)
   ;  
   cp5.addSlider("perturb mult")

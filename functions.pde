@@ -35,7 +35,7 @@ void Picking3D(int _autoMode){
     update_text = false;
 
     if (cubes[hover_id].update == true) {
-      println("got " + hover_id);
+      // println("got " + hover_id);
       cubes[hover_id].changeColor();
       update_cubes = true;
     }
@@ -100,6 +100,10 @@ void keyPressed() {
       display_title = true;
     }
   }
+  if (key == 'T'){
+    if (hide_title==true) hide_title=false;
+    else if (hide_title==false) hide_title=true;
+  }
   if (key == '.'){
     int y = year();   // 2003, 2004, 2005, etc.
     int m = month();  // Values from 1 - 12
@@ -154,10 +158,12 @@ void mousePressed(MouseEvent e) {
 }
 void mouseDragged(){
   camera_animate = 1;
+
   mouse_drag = true;
 }
 void mouseReleased(){
   camera_animate = 1;
+
   if (mouse_drag==false && hover_id==-1){
     lock_selection=false;
   }
@@ -191,12 +197,12 @@ int getId(color c) {
 ///////////////////////////////////////////////////////////////////////
 // A U T O   C A M E R A
 ///////////////////////////////////////////////////////////////////////
-float cam_speed = 0.003;
-int camera_autoTimer = 500;
-int camera_autoUpdate = 1200;
+int camera_autoTimer = 1000; // how long to wait to trigger auto cam
+float cam_speed = 0.002; // how fast the camera moves
+int camera_autoUpdate = 1600; // how often to switch to a new branch
 
 void AutoCamera(){
-  camera_animate++;
+
   if(camera_animate >= camera_autoTimer){ //timer for triggering auto mode
 
     float x_new = camera_pos[0];
@@ -218,10 +224,10 @@ void AutoCamera(){
       if ( random(0.,1.) <= 0.5) random_negative[0] = -1.;
       if ( random(0.,1.) <= 0.5) random_negative[1] = -1.;
       if ( random(0.,1.) <= 0.5) random_negative[2] = -1.;
-      // range is from -1 to -0.5 and 0.5 to 1
-      camera_autoRand = new PVector(random(.4,1.)*random_negative[0],
-                                    random(.4,1.)*random_negative[1],
-                                    random(.4,1.)*random_negative[2]);
+      // range is from -1 to -0.2 and 0.2 to 1
+      camera_autoRand = new PVector(random(.2,1.)*random_negative[0],
+                                    random(.2,1.)*random_negative[1],
+                                    random(.2,1.)*random_negative[2]);
       camera_autoRand.mult(500.0);
       camera_easeSpeed = 0;
     }
@@ -265,7 +271,7 @@ void AutoCamera(){
     // if within range we highlight it and lock it off 
     float eta = PVector.sub(camera_autoPos,new_pos).mag();
     cam.setDistance(eta);
-    if (eta <= 150) {
+    if (eta <= 400) {
       hover_id = autoBranch_id;
       update_text = false;
       Picking3D(1);
@@ -287,87 +293,48 @@ void AutoCamera(){
 
   // when user triggers auto camera to turn off, we make peasycam look at the currently
   // selected branch from auto camera
-  if (camera_animate < camera_autoTimer && camera_autoBranch != null){
-    float x_new = camera_autoBranch.position.x;
-    float y_new = camera_autoBranch.position.y;
-    float z_new = camera_autoBranch.position.z;
-    cam.lookAt(x_new,y_new,z_new);
-    display_help = 1;
-    camera_autoBranch = null;
+  else if (camera_animate == 1 && camera_autoBranch != null) {
+      float x_new = camera_autoBranch.position.x;
+      float y_new = camera_autoBranch.position.y;
+      float z_new = camera_autoBranch.position.z;
+      cam.lookAt(x_new,y_new,z_new);
+      display_help = 1;
+      camera_autoBranch = null;
   }
+
+  // increment camera animate
+  camera_animate++;
+
+
 
 }
 
+
+float fade_length = 48;
 ///////////////////////////////////////////////////////////////////////
-// Return ray
+// F A D E   T O   A U T O C A M
 ///////////////////////////////////////////////////////////////////////
-// Ray3D PickRay(float[] _cam_pos){
+void FadeToAuto(){
+  noStroke();
+  // FADE OUT
+  if(camera_animate > camera_autoTimer && camera_animate < camera_autoTimer+fade_length){
+    float fade = (camera_animate - camera_autoTimer)/fade_length;
+    pushMatrix();
+      translate(camera_autoPos.x, camera_autoPos.y, camera_autoPos.z);
+      fill(255,255-(fade*255.));
+      box(2000,1100,2);
+    popMatrix();
+  }
 
-//   PMatrix3D proj = p3d.projection.get();
-//   PMatrix3D modvw = p3d.modelview.get();
-//   PVector cam = new PVector(_cam_pos[0],_cam_pos[1],_cam_pos[2]);
+  // FADE IN
+  else if(camera_animate >= camera_autoTimer-fade_length && camera_animate <= camera_autoTimer){ 
+    float fade = (camera_autoTimer - camera_animate)/fade_length;
+    pushMatrix();
+      translate(camera_pos[0], camera_pos[1], camera_pos[2]);
+      fill(255,255-(fade*255.));
+      box(2000,1100,2);
+    popMatrix();
+  }
+}
 
-//   // GluLookAt  ...
-//   float x = 2* ((float)mouseX) / (float)width - 1;
-//   float y = 2* ((float)height - (float)mouseY) / (float)height - 1;
-//   float z = 1.0;
-//   PVector vect = new PVector(x, y, z);
-  
-//   PVector transformVect = new PVector();
- 
-//   proj.apply(modvw);
-//   proj.invert();
-//   proj.mult(vect, transformVect);
 
-//   stroke(200);
-
-//   Ray3D ray = new Ray3D(new Vec3D(cam.x, cam.y, cam.z), 
-//                         new Vec3D(transformVect.x,transformVect.y,transformVect.z));
-
-//   return ray;
-// }
-
-///////////////////////////////////////////////////////////////////////
-// Picking sphere
-///////////////////////////////////////////////////////////////////////
-// float IntersectSphere(Ray3D _r, PVector _cen, float _radius){
-
-//   Vec3D _d = _r.getDirection();
-//   PVector d = new PVector(_d.x, _d.y, _d.z);
-//   PVector o = new PVector(_r.x, _r.y, _r.z);
-
-//   PVector o_c = PVector.sub(o, _cen);
-//   float a = d.dot(d);
-//   float b = 2. * (d.dot(o_c));
-//   float c = (o_c.dot(o_c)) - _radius * _radius;
-//   float detect = b*b - 4*a*c;
-
-//   if(detect > 0.0) {
-//     float t1 = (-b - sqrt(detect)) / (2.0 * a);
-//     if(t1 > 0.0) return t1;
-//     float t2 = (-b + sqrt(detect)) / (2.0 * a);
-//     if (t2 > 0.0) return t2;
-//   }
-//   else if (detect == 0.0) {
-//     float t = -b / (2.0 * a);
-//     if (t > 0.0) return t;
-//   }
-
-//   return 0.; //we ignore negative intersections, -1 qualifies as a miss
-// }
-
-// float LerpVal(float _value, float _dur){
-//   int start = frameCount;
-//   int finish = start + _dur;
-//   float x = finish - 1
-// }
-      
-    // this previously was in the draw call //
-    // for (int i = 0; i < extinct_branches.size(); i++){
-    // shape(extinct_points);
-      // Branch p = extinct_branches.get(i);
-      // point(p.position.x,p.position.y,p.position.z);
-
-    // Ray3D r = PickRay(camera_pos);
-
-    // }
