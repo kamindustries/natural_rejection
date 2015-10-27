@@ -1,10 +1,9 @@
 void draw() {
   
+  background(bg_color);
   perspective(camera_fov, float(width)/float(height), 1/10.0, 10000.0);
   hint(ENABLE_DEPTH_TEST);
-  background(bg_color);
   // blendMode(BLEND);
-  smooth();
 
   camera_pos = cam.getPosition();
   camera_lookAt = cam.getLookAt();
@@ -32,24 +31,25 @@ void draw() {
   s+=(0.02*spare_slider13);
 
   if (FULL_TREE==false){
-    if (frameCount%24==0) lineShader = loadShader("linefrag.glsl", "linevert.glsl");
-    if (frameCount%24==0) lineShader3 = loadShader("linefrag_skel.glsl", "linevert_skel.glsl");
-    if (frameCount%24==0) pointShader = new PShader(this, "point_vert.glsl", "point_frag.glsl");
+    // if (frameCount%24==0) lineShader = loadShader("linefrag.glsl", "linevert.glsl");
+    // if (frameCount%24==0) lineShader3 = loadShader("linefrag_skel.glsl", "linevert_skel.glsl");
+    // if (frameCount%24==0) pointShader = new PShader(this, "point_vert.glsl", "point_frag.glsl");
   }
   if (DRAW_MAIN){
-    lineShader.set("stroke_weight", (float)spare_slider2);
-    lineShader.set("stroke_color", clr_black);
-    lineShader.set("push", 0);
-    lineShader.set("render_solid", 0);
-    lineShader.set("alpha", 1.);
-    lineShader2.set("stroke_weight", (float)spare_slider3);
-    lineShader2.set("stroke_color", clr_white);
-    lineShader2.set("push", spare_slider1);
-    lineShader2.set("render_solid", 1);
-    lineShader2.set("alpha", 1.);
-    pointShader.set("mouse", mouseXY);
-    pointShader.set("weight", .8);
-  
+    if (frameCount%12==0){
+      lineShader.set("stroke_weight", (float)spare_slider2);
+      lineShader.set("stroke_color", clr_black);
+      lineShader.set("push", 0);
+      lineShader.set("render_solid", 0);
+      lineShader.set("alpha", 1.);
+      lineShader2.set("stroke_weight", (float)spare_slider3);
+      lineShader2.set("stroke_color", clr_white);
+      lineShader2.set("push", spare_slider1);
+      lineShader2.set("render_solid", 1);
+      lineShader2.set("alpha", 1.);
+      pointShader.set("mouse", mouseXY);
+      pointShader.set("weight", .8);
+    }
     for (int i = 0; i < extinct_meshes.size(); i++) {
       
       // AMBIENT COLOR CYCLING
@@ -129,6 +129,11 @@ void draw() {
       // shader(pointShader, POINTS);
       shape(extinct_meshes.get(i));
 
+      if (DRAW_HALO==true){
+        shader(lineShader2, LINES);
+        shape(extinct_meshes.get(i));
+      }
+
       // PVector extinct_vertex = extinct_points.getVertex(i);
       // shader(pointShader, POINTS);
       // point(extinct_vertex.x,extinct_vertex.y,extinct_vertex.z);
@@ -140,12 +145,12 @@ void draw() {
       shape(tree_meshes.get(0));
     }
 
-    if (DRAW_HALO==true){
-      shader(lineShader2, LINES);
-      for (int i = 0; i < extinct_meshes.size(); i++) {
-        shape(extinct_meshes.get(i));
-      }
-    }
+    // if (DRAW_HALO==true){
+    //   shader(lineShader2, LINES);
+    //   for (int i = 0; i < extinct_meshes.size(); i++) {
+    //     shape(extinct_meshes.get(i));
+    //   }
+    // }
   
   // Pick ray tests
   if (extinct_branches.size()>0){
@@ -160,9 +165,9 @@ void draw() {
     shape(extinct_points);
   }
 
-  resetShader();
-  resetShader(LINES);
-  resetShader(POINTS);
+  // resetShader();
+  // resetShader(LINES);
+  // resetShader(POINTS);
 
 
   //fade to white to auto camera

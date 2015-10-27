@@ -168,7 +168,7 @@ void GROW() {
     // mesh.beginShape(POINTS);
     mesh.noFill();
     // extinct_points.strokeWeight(10);
-    // mesh.curveTightness(1.);
+    mesh.curveTightness(cv_t);
 
     mesh.curveVertex(p.position.x, p.position.y, p.position.z);
 

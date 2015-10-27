@@ -44,9 +44,10 @@ float base_cR = .06;
 float base_cG = .05;
 float base_cB = .03;
 float gain = 1.6;
+float cv_t = -.35;
 
 float s = 0.0;
-float anim_speed = 1.3;
+float anim_speed = 2.0;
 int[] extinct_picked;
 String[] extinct_names;
 String display_name;
@@ -59,7 +60,7 @@ int hover_id = -1;
 boolean lock_selection = false;
 boolean mouse_drag = false;
 boolean update_text = true;
-int text_list_size = 8;
+int text_list_size = 9;
 // float [][] fade_text;
 // float [][] fade_text_rand;
 float text_fade_speed = .06;
@@ -154,6 +155,6 @@ float spare_sliderx2 = 1900.;
 float spare_slidery2 = 90.;
 float spare_sliderz2 = 2000.;
 
-boolean sketchFullScreen() {
-  return true;
-}
+// boolean sketchFullScreen() {
+//   return true;
+// }

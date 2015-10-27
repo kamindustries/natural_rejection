@@ -1,7 +1,8 @@
 void setup() {
-  size(1920,1080,OPENGL);
-  // size(1440,900,OPENGL);
+  size(1920,1080,P3D);
+  // size(1440,900,P3D);
   // size(960,580,OPENGL);
+  smooth();
 
   // Setting up the camera
   cam= new PeasyCam(this,0,300,100,500);

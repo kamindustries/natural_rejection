@@ -145,7 +145,7 @@ void drawGUI() {
             float ease_out_color = title_fade[i];
             fill(ease_out_color, 255-ease_out_color);
             if (title_fade[i]<= 20) title_fade[i]=20;
-            float x_pos = (marginX*2) + textWidth(word) + (i*15);
+            float x_pos = (marginX*5) + textWidth(word) + (i*15);
             float y_pos = marginY*2;
             text(ch, x_pos, y_pos);
             word += ch;
@@ -160,7 +160,7 @@ void drawGUI() {
               float ease_out_color = title_fade[i];
               fill(ease_out_color, 255-ease_out_color);
               if (title_fade[i]<= 20) title_fade[i]=20;
-              float x_pos = (marginX*2) + textWidth(word) + (i*15);
+              float x_pos = (marginX*5) + textWidth(word) + (i*15);
               float y_pos = marginY*2;
               text(ch, x_pos, y_pos);
               word += ch;
@@ -176,14 +176,14 @@ void drawGUI() {
       textAlign(RIGHT);
       textFont(font2);
       fill(title_fade[0]+10, 255-title_fade[0]);
-      text(subtitle, width - (marginX*2) - textWidth(title) - 30, (marginY*2)+20);
+      text(subtitle, width - (marginX*2) - textWidth(title) + 30, (marginY*2)+20);
 
       if (display_help_mouse == true){
         textFont(font2);
         textAlign(RIGHT);
         fill(title_fade[2]+25, 255-title_fade[2]);
         for (int i=0; i<help_info.length; i++){
-          text(help_info[i], width - (marginX*2) - textWidth(title) - 30, (i*11) + (marginY*2)+45);
+          text(help_info[i], width - (marginX*2) - textWidth(title) + 30, (i*11) + (marginY*2)+45);
         }
       }
 
@@ -215,15 +215,15 @@ void drawGUI() {
         
 
         for (int i=0; i<help_dialog.length; i+=2){
-          float x_offset = width - (marginX*2) - textWidth(title) - 30;
+          float x_offset = width - (marginX*2) - textWidth(title) + 30;
           float y_offset = (i * 7) + (marginY*2)+95;
           fill(help_dialog_fade, 255-(help_dialog_fade+1));
-          if (i==0) text(help_dialog[i], width - (marginX*2) - textWidth(title) - 30, y_offset);
+          if (i==0) text(help_dialog[i], width - (marginX*2) - textWidth(title) + 30, y_offset);
           else {
             fill((help_dialog_fade/255)*help_dialog_fade, 255-(help_dialog_fade+1));
             text(help_dialog[i-1], x_offset, y_offset);
             fill(help_dialog_fade, 255-(help_dialog_fade+1));
-            text(help_dialog[i], x_offset - 10 - textWidth(help_dialog[i-1]), y_offset);
+            text(help_dialog[i], x_offset - 0 - textWidth(help_dialog[i-1]), y_offset);
           }
         }
       }
@@ -300,7 +300,7 @@ void setupGUI() {
   cp5.addSlider("anim speed")
   .setPosition(marginX, marginY+(10*hud_spacing)+hud_offset)
   .setRange(0, 10.0)
-  .setValue(1.)
+  .setValue(2.)
   .setSize(230,9)
   ;
   cp5.addSlider("color r")

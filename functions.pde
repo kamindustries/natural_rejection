@@ -83,6 +83,10 @@ void keyPressed() {
       show_text=true;
     }
   }
+  // trigger auto camera
+  if (key == 'i'){
+    camera_animate = camera_autoTimer;
+  }
   if (key == 'c'){
     if (display_help_mouse==true) display_help_mouse=false;
     else if (display_help_mouse==false) display_help_mouse=true;
@@ -118,6 +122,14 @@ void keyPressed() {
     if (display_help==1) display_help=0;
     else if (display_help==0) display_help=1;
   }
+  if (key == ']'){
+    cv_t += 0.2;
+    println("curve tightness: " + cv_t);
+  }
+  if (key == '['){
+    cv_t -= 0.2;
+    println("curve tightness: " + cv_t);
+  }
   if (key == CODED) {
     if (keyCode == UP) {
       text_list_size += 1;
@@ -135,7 +147,7 @@ void keyPressed() {
 }
 
 void mouseMoved() {
-  camera_animate = 1;
+  // camera_animate = 1;
 
   Picking3D(0);
 }
@@ -198,8 +210,8 @@ int getId(color c) {
 // A U T O   C A M E R A
 ///////////////////////////////////////////////////////////////////////
 int camera_autoTimer = 1000; // how long to wait to trigger auto cam
-float cam_speed = 0.002; // how fast the camera moves
-int camera_autoUpdate = 1600; // how often to switch to a new branch
+float cam_speed = 0.003; // how fast the camera moves
+int camera_autoUpdate = 1000; // how often to switch to a new branch
 
 void AutoCamera(){
 
